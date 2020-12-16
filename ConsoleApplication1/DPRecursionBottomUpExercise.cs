@@ -4,10 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using Amazon.AWSSupport.Model;
-//using Amazon.CloudTrail;
-//using Amazon.Lambda.Model;
-using Microsoft.Practices.Unity.Utility;
 
 namespace ConsoleApplication1
 {

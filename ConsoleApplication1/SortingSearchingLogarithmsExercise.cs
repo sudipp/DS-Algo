@@ -1111,6 +1111,7 @@ namespace ConsoleApplication1
         {
             public int MaxProfit(int[] prices)
             {
+                return 0;
                 //Buy/sell ATMOST 2 times
                 //DP ???
 
@@ -1124,7 +1125,7 @@ namespace ConsoleApplication1
         {
             //TopK(new int[] { 1,2 }, 2);
 
-            SortArrayByParityII.SortArrayByParity2(new int[] { 2, 2, 4, 2, 8, 4 });
+            SortArrayByParity.EvenOddGroup(new int[] { 2, 2, 4, 2, 8, 4 });
 
             //KthLargestElementInArray.FindKthLrgest(new int[] { 3, 2, 1, 5, 6, 4 }, 2);
             TopKFrequentElements.Get(new int[] { 1,2 }, 2);
