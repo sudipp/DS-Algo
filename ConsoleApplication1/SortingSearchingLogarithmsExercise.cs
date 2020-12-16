@@ -674,6 +674,7 @@ namespace ConsoleApplication1
             }
         }
 
+
         class MergeSort
         {
             public static void Sort()
@@ -1160,13 +1161,63 @@ namespace ConsoleApplication1
         {
             public int MaxProfit(int k, int[] prices)
             {
+                //Buy/sell MANY times
                 return 0;
+            }
+        }
+
+        //309. Best Time to Buy and Sell Stock with Cooldown
+        class BestTimetoBuyandSellStockwithCooldown
+        {
+            public static int MaxProfit(int[] prices)
+            {
+                //buy and sell MULTIPLE times, with COOLDown
+                //Start with Buy at 0...
+                //Traverse list- whenever you see, price went down, then Buy at that price... sell when the price goes up
+
+                int bestBuyAt = 0; //Assume lowest price to buy
+                int totalProfit = 0;
+                int profit = 0;
+
+                int maxProfitFoundAt = 0;
+
+                for (int i = 1; i < prices.Length; i++)
+                {
+                    //buy when price goes down
+                    if (prices[i - 1] > prices[i])// && (maxProfitFoundAt > i))
+                    {
+                        //merge previous profit into total profit
+                        totalProfit += profit;
+                        //reset previous profit as we find next position to buy
+                        profit = 0;
+
+                        //new buy 
+                        bestBuyAt = i;
+                    }
+                    else //sell when price goes up
+                    {
+                        //calculate best profit, from the buy position
+                        if(profit < prices[i] - prices[bestBuyAt])
+                        {
+                            profit = prices[i] - prices[bestBuyAt];
+                            maxProfitFoundAt = i;
+                        }
+
+                        //profit = Math.Max(profit, prices[i] - prices[bestBuyAt]);
+                    }
+                }
+
+                //For any profit we didnt merge into total profit
+                if (profit > 0)
+                    totalProfit += profit;
+
+                return totalProfit;
             }
         }
 
         public static void runTest()
         {
-            BestTimetoBuyandSellStockIII.MaxProfit(new int[] { 7, 6, 4, 3, 1 });
+            BestTimetoBuyandSellStockwithCooldown.MaxProfit(new int[] { 1, 2, 3, 0, 2 });
 
             SortArrayByParity.EvenOddGroup(new int[] { 2, 2, 4, 2, 8, 4 });
 
