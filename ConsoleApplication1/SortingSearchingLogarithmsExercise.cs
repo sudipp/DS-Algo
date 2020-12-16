@@ -1109,21 +1109,64 @@ namespace ConsoleApplication1
         //123. Best Time to Buy and Sell Stock III
         class BestTimetoBuyandSellStockIII
         {
-            public int MaxProfit(int[] prices)
+            public static int MaxProfit(int[] prices)
+            {
+                //Buy/sell ATMOST 2 times
+                //DP ???... 
+
+                //Our problem is to split the array at an Index, where left and right side of array gives us max profit
+                int[] left = new int[prices.Length];
+                int[] right = new int[prices.Length];
+
+                //Calculating profit from LeftSide
+                //Code from BestTimetoBuyandSellStock
+                int bestBuyAt = 0; //Assume lowest price to buy
+                int maxProfit = 0;
+                for (int i = 1; i < prices.Length; i++)
+                {
+                    //New Cheaper price to buy available
+                    if (prices[bestBuyAt] > prices[i])
+                        bestBuyAt = i; //buy it
+                    else //prices are going up... calculate profit
+                        maxProfit = Math.Max(maxProfit, prices[i] - prices[bestBuyAt]);
+
+                    left[i] = maxProfit;
+                }
+
+                //Calculating profit from BackSide
+                int bestSellAt = prices.Length - 1; //Assume highest price to sell
+                maxProfit = 0;
+                for (int i = prices.Length - 2; i >= 0; i--)
+                {
+                    //New Cheaper price to buy available, calculate the profit
+                    if (prices[bestSellAt] > prices[i])
+                        maxProfit = Math.Max(maxProfit, prices[bestSellAt] - prices[i]);
+                    else //best higher price to sell is available
+                        bestSellAt = i; //update sell pointer
+                        
+                    right[i] = maxProfit;
+                }
+
+                int totalProfit = 0;
+                for (int i = 0; i < prices.Length; i++)
+                    totalProfit = Math.Max(totalProfit, left[i] + right[i]);
+                
+                return totalProfit;
+            }
+        }
+
+        //188. Best Time to Buy and Sell Stock IV
+        class BestTimetoBuyandSellStockIV
+        {
+            public int MaxProfit(int k, int[] prices)
             {
                 return 0;
-                //Buy/sell ATMOST 2 times
-                //DP ???
-
-                //for 2 times Max, can we initiate buy/sell from left and right side, till we meet at a point
-                int left = 0;
-                int right = prices[prices.Length -1];
             }
         }
 
         public static void runTest()
         {
-            //TopK(new int[] { 1,2 }, 2);
+            BestTimetoBuyandSellStockIII.MaxProfit(new int[] { 7, 6, 4, 3, 1 });
 
             SortArrayByParity.EvenOddGroup(new int[] { 2, 2, 4, 2, 8, 4 });
 
