@@ -1215,8 +1215,177 @@ namespace ConsoleApplication1
             }
         }
 
+        //48. Rotate Image
+        class RotateImage
+        {
+            //Rotate by 90
+            public static void Rotate(int[][] matrix)
+            {
+                //phase 1 - Swap columns
+                for(int r = 0; r < matrix.Length; r ++)
+                {
+                    for (int c = 0; c < matrix[0].Length / 2; c++)
+                    {
+                        int temp = matrix[r][matrix[0].Length - c -1] ;
+                        matrix[r][matrix[0].Length - c - 1] = matrix[r][c];
+                        matrix[r][c] = temp;
+                    }
+                }
+
+                //phase 2 - SWAP top row and last column
+                for (int r = 0; r < matrix.Length; r++)
+                {
+                    for (int c = 0; c < matrix[0].Length - r; c++)
+                    {
+                        int temp = matrix[r][c];
+                        matrix[r][c] = matrix[matrix.Length - 1 - c][matrix[0].Length - 1 - r];
+                        matrix[matrix.Length - 1 - c][matrix[0].Length - 1 - r] = temp;
+                    }
+                }
+            }
+        }
+
+        //81. Search in Rotated Sorted Array II
+        class SearchInRotatedArray { 
+            public static bool Search(int[] nums, int target)
+            {
+                int l = 0;
+                int r = nums.Length - 1;
+                while (l <= r)
+                {
+                    int mid = l + (r - l) / 2;
+
+                    if (nums[mid] == target)
+                        return true;
+
+                    if (nums[l] == nums[mid])
+                    {
+                        l++;
+                        continue;
+                    }
+                    if (nums[r] == nums[mid])
+                    {
+                        r--;
+                        continue;
+                    }
+
+                    //right side sorted
+                    if (nums[mid] <= nums[r])
+                    {
+                        //right side is sorted 
+                        if (target > nums[mid] && target <= nums[r])
+                            l = mid + 1;
+                        else
+                            r = mid - 1;
+                    }
+                    else //if (nums[l] <= nums[mid]) //left side is sorted
+                    {
+                        if (target >= nums[l] && target < nums[mid])
+                            r = mid - 1;
+                        else
+                            l = mid + 1;
+                    }
+
+                }
+                return false;
+            }
+        }
+
+        //1385. Find the Distance Value Between Two Arrays
+        class FindtheDistanceValueBetweenTwoArrays
+        {
+            public static int FindTheDistanceValue(int[] arr1, int[] arr2, int d)
+            {
+                return 0;
+            }
+        }
+
+        //564. Find the Closest Palindrome
+        class FindtheClosestPalindrome
+        {
+            public static string NearestPalindromic(string n)
+            {
+                if (n == "1")
+                    return "0";
+
+
+                int input = int.Parse(n);
+                int left = input - 10;
+                int right = input + 10;
+
+                int leftClosestPalindrome = GetPalindrome(input, left);
+                int rightClosestPalindrome = GetPalindrome(input, right);
+
+                int l = Math.Abs(input - leftClosestPalindrome);  //309 - 282
+                int r = Math.Abs(input - rightClosestPalindrome); //309 - 303
+
+                return (l > r) ? rightClosestPalindrome.ToString() : leftClosestPalindrome.ToString();
+            }
+
+            private static int GetPalindrome(int input, int side)
+            {
+                //289 -> 282/292
+
+                //309
+                string str = side.ToString();
+                string palindrome = "";
+                int mid = str.Length / 2; //1
+
+                if (mid % 2 == 0) //even
+                {
+                    int valLeft = int.Parse(str.Substring(0, mid) + Reverse(str.Substring(0, mid)));
+                    int valright = int.Parse(str.Substring(mid + 1, str.Length - mid + 1) + Reverse(str.Substring(mid + 1, str.Length - mid + 1)));
+                    //palindrome += str.Substring(0, mid - 1) + str.Substring(0, mid).Reverse();
+                    return valLeft > valright ? valright : valLeft;
+                }
+                else
+                {
+                    int valLeft = int.Parse(str.Substring(0, mid) 
+                        + str[mid] 
+                        + Reverse(str.Substring(0, mid)));
+                    int valright = int.Parse(str.Substring(mid + 1, str.Length - (mid + 1)) 
+                        + str[mid] 
+                        + Reverse(str.Substring(mid + 1, str.Length - (mid + 1))));
+                    return valLeft > valright ? valright : valLeft;
+                    //palindrome += str.Substring(0, mid - 1) + str[mid] + str.Substring(0, mid - 1).Reverse();
+                }
+
+                return int.Parse(palindrome);
+            }
+
+            static string Reverse(string str)
+            {
+                char[] strArr = str.ToCharArray();
+
+                int l = 0;
+                int r = str.Length - 1;
+                while(l<r)
+                {
+                    char temp = strArr[l];
+                    strArr[l] = strArr[r];
+                    strArr[r] = temp;
+                }
+
+                return new string(strArr);
+            }
+        }
+
+        //1383. Maximum Performance of a Team
+        class MaximumPerformanceofaTeam
+        {
+            public static int MaxPerformance(int n, int[] speed, int[] efficiency, int k)
+            {
+                return 0;
+            }
+        }
+
+
         public static void runTest()
         {
+            FindtheClosestPalindrome.NearestPalindromic("123");
+
+            SearchInRotatedArray.Search(new int[] { 1, 1, 2, 1, 1,1,1,1,1,1,1,1 }, 2);
+
             BestTimetoBuyandSellStockwithCooldown.MaxProfit(new int[] { 1, 2, 3, 0, 2 });
 
             SortArrayByParity.EvenOddGroup(new int[] { 2, 2, 4, 2, 8, 4 });

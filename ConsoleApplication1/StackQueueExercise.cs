@@ -1100,4 +1100,28 @@ namespace ConsoleApplication1
             return id;
         }
     }
+
+
+
+
+
+    //224. Basic Calculator
+    class BasicCalculator
+    {
+        //https://leetcode.com/problems/basic-calculator/
+        public int Calculate(string s)
+        {
+            return null;
+        }
+    }
+
+    //227. Basic Calculator II
+    class BasicCalculatorII
+    {
+        //https://leetcode.com/problems/basic-calculator/
+        public int Calculate(string s)
+        {
+            return null;
+        }
+    }
 }

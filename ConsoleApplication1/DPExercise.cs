@@ -8,6 +8,7 @@ namespace ConsoleApplication1
 {
     class DPExercise
     {
+        //62. Unique Paths
         class UniquePath
         {
             //https://leetcode.com/problems/unique-paths/
@@ -53,6 +54,7 @@ namespace ConsoleApplication1
             }
         }
 
+        //63. Unique Paths II
         class UniquePathII
         {
             public static int CountWithObstacle(int[][] grid)
@@ -197,8 +199,10 @@ namespace ConsoleApplication1
             }            
         }
 
+        //343. Integer Break
         class IntegerBreak
         {
+            //https://leetcode.com/problems/integer-break/
             public static int intBreak(int n)
             {
                 //Page 76.....
@@ -387,7 +391,8 @@ namespace ConsoleApplication1
             }
 
         }
-        
+
+        //1547. Minimum Cost to Cut a Stick
         class CutRodStick
         {
             //https://leetcode.com/problems/minimum-cost-to-cut-a-stick/
@@ -444,8 +449,10 @@ namespace ConsoleApplication1
             }
         }
 
+        //72. Edit Distance
         class LevenshteinDistanceMinEditDistance
         {
+            //https://leetcode.com/problems/edit-distance/
             public static int Calculate(string strWord1, string strWord2)
             {
                 //Min edit distance to convert word1 to word2
@@ -616,6 +623,8 @@ namespace ConsoleApplication1
 
         }
 
+        //746. Min Cost Climbing Stairs
+        //70. Climbing Stairs
         class WaysToClimbStairs
         {
             //https://leetcode.com/problems/climbing-stairs/
@@ -676,8 +685,11 @@ namespace ConsoleApplication1
             }
         }
 
+        //198. House Robber
+        //213. House Robber II
         class HouseOfRobbers
         {
+            //https://leetcode.com/problems/house-robber/
             public static int MaxProfit(int[] values)
             {
                 //Repated Subproblems *****
@@ -698,6 +710,7 @@ namespace ConsoleApplication1
                 return memo[memo.Length - 1];
             }
 
+            //https://leetcode.com/problems/house-robber-ii/
             public static int MaxProfit_CircularHome(int[] values)
             {
                 //Repated Subproblems *****
@@ -744,8 +757,10 @@ namespace ConsoleApplication1
             }
         }
 
+        //322. Coin Change
         class CoinChange
         {
+            //https://leetcode.com/problems/coin-change/
             public static int Min(int[] coins, int amount)
             {
                 //O(N*M)
@@ -818,7 +833,8 @@ namespace ConsoleApplication1
                 return tab[tab.Length - 1];
             }
         }
-        
+
+        //118. Pascal's Triangle
         class SubsetSizeK_PascalTriangle
         {
             //https://uplevel.interviewkickstart.com/resource/rc-video-4890-63739-98-496-436191
@@ -845,6 +861,7 @@ namespace ConsoleApplication1
                 return tab[tab.GetLength(0) - 1, tab.GetLength(1) - 1];
             }
 
+            //https://leetcode.com/problems/pascals-triangle/
             public static IList<IList<int>> GeneratePascalTraingle(int rows)
             {
                 if (rows == 0)
@@ -872,6 +889,7 @@ namespace ConsoleApplication1
             }
         }
 
+        //120. Triangle
         class Traingle
         {
             //https://leetcode.com/problems/triangle/
@@ -911,12 +929,13 @@ namespace ConsoleApplication1
             }
         }
 
+        //139. Word Break
         public class WordBreak
         {
             //https://leetcode.com/problems/word-break/
             public static bool IsValid(string str, IList<string> wordDict)
             {
-                //manager picks  a word that is in hashmap, and delegate test rest of string to subordinate to validate, 
+                //manager picks  a word that is in hashmap, and delegate rest of string to subordinate to validate, 
                 //if Subordinate comes back with TRUE, then Manager responses back with TRUE else FALSE
 
                 HashSet<string> dict = new HashSet<string>(wordDict);
@@ -1244,6 +1263,7 @@ namespace ConsoleApplication1
             }
         }
 
+        //256. Paint House
         class PaintHome
         {
             //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4891-6-503-0 [6:02:27]
