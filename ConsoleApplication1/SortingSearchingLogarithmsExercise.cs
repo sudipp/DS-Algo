@@ -1370,18 +1370,176 @@ namespace ConsoleApplication1
             }
         }
 
-        //1383. Maximum Performance of a Team
-        class MaximumPerformanceofaTeam
+        //239. Sliding Window Maximum
+        class MaxValueInSlidingWindow
         {
-            public static int MaxPerformance(int n, int[] speed, int[] efficiency, int k)
+            //https://leetcode.com/problems/sliding-window-maximum/
+            public static int[] GetMax(int[] nums, int winSize)
             {
-                return 0;
+                //O(N) - space O(winSize)
+
+                //https://leetcode.com/problems/sliding-window-maximum/discuss/435402/C-mock-interview-performance-with-code-review-in-2019
+
+                //list will maintain, Descending order value indicies
+                //Always add on the last side...
+                //if the last value is bigger than current, as it direct
+                //if the last value is small than current, keep on removing from last till list is empty or we find a bigger one
+
+                if (nums == null || nums.Length == 0)
+                {
+                    return new int[0];
+                }
+
+                var deque = new LinkedList<int>();
+
+                for (int i = 0; i < winSize; i++)
+                {
+                    var current = nums[i];
+                    //if the last value is bigger than current, as it direct
+                    if (deque.Count == 0 || nums[deque.Last.Value] > current)
+                    {
+                        deque.AddLast(i);
+                    }
+                    else
+                    {
+                        //if the last value is small than current, keep on removing from last till list is empty 
+                        //or we find a bigger one
+                        while (deque.Count > 0 && nums[deque.Last.Value] < current)
+                        {
+                            deque.RemoveLast();
+                        }
+
+                        deque.AddLast(i);
+                    }
+                }
+
+                IList<int> max = new List<int>();
+                max.Add(nums[deque.First.Value]);
+
+                //if Max goes out of window, remove it from first/left
+                if (deque.First.Value == 0)
+                {
+                    deque.RemoveFirst();
+                }
+
+                for (int i = 1; i < nums.Length - winSize + 1; i++)
+                {
+                    int winRightBoundaryIdx = i + winSize - 1;
+
+                    var current = nums[winRightBoundaryIdx];
+
+                    //if the last value is bigger than current, as it direct on the right/last
+                    if (deque.Count == 0 || nums[deque.Last.Value] > current)
+                    {
+                        deque.AddLast(winRightBoundaryIdx);
+                    }
+                    else
+                    {
+                        //if the last value is small than current, keep on removing from last till list is empty 
+                        //or we find a bigger one 
+                        //and add it on the right/last
+                        while (deque.Count > 0 && nums[deque.Last.Value] < current)
+                        {
+                            deque.RemoveLast();
+                        }
+
+                        deque.AddLast(winRightBoundaryIdx);
+                    }
+
+                    max.Add(nums[deque.First.Value]);
+
+                    //if Max goes out of window, remove it from first/left
+                    if (deque.First.Value == i)
+                    {
+                        deque.RemoveFirst();
+                    }
+                }
+
+                return max.ToArray();
+            }
+
+        }
+
+        //1383. Maximum Performance of a Team
+        class MaximumPerformanceOfATeam
+        {
+            //https://leetcode.com/problems/maximum-performance-of-a-team/
+
+            //https://leetcode.com/problems/maximum-performance-of-a-team/discuss/942044/JAVA-PriorityQueue-O(N-log-N)-lots-of-comments
+            //https://leetcode.com/problems/maximum-performance-of-a-team/discuss/595185/Faster-than-88-using-PQ-JAVA
+            public static int MaxPerfAtmostKEngineers(int n, int[] speed, int[] efficiency, int k)
+            {
+                //The main idea is to sort in descending order of efficiency, and fix an efficiency 
+                //from top to bottom at a time, so that the sum of the corresponding speed is as 
+                //large as possible (that is, the number of people is selected as much as possible), 
+                //if the number of people exceeds k, the engineer with smallest speed is deleted ( Use the smallest heap to process), 
+                //and constantly update the performance to get the answer.
+
+                //*************************************************
+                //Sort efficiency with descending order. Because, afterwards, when we iterate whole engineers, every round, 
+                //when calculating the current performance, minimum efficiency is the effiency of the new incoming engineer.
+                //*************************************************
+
+                long MOD = (long)(1000000000 + 7);
+
+                int[][] es = new int[speed.Length][];
+                for (int i = 0; i < es.Length; i++)
+                {
+                    es[i] = new int[2];
+                    es[i][0] = efficiency[i];
+                    es[i][1] = speed[i];
+                }
+
+                //highest to lowest efficiency, since we need instant access to current lowest efficiency while processing performance
+                //Array.Sort(es, 
+                //    new Comparison<int[]>( (i1, i2) => i2[0].CompareTo(i1[0]))
+                //);
+                Array.Sort(es, new DescendingComparer());
+                
+                //Create a Min Heap for slow speed engineers
+                Heap pq = new Heap(k, true);
+
+                long perf = 0, speedsum = 0;
+                for (int i = 0; i < es.Length; i++)
+                {
+                    if (pq.Count == k)
+                    {
+                        //remove min speed (efficiency won't be affected)
+                        //Evict the slowest engineer from out current team
+                        speedsum -= pq.Pop().val; 
+                    }
+
+                    //we are hiring a new engineer, either he is replacing someone as in condition above ^ or he's just a newcomer.
+                    //out team is still small (< k)
+
+                    //Add new/replace existing engineer and new calculate the new speed
+                    pq.Push(new HeapNode(es[i][1], 0,0));
+
+                    speedsum += es[i][1];
+
+                    perf = Math.Max(perf, speedsum * es[i][0]);                    
+                }
+
+                return (int)(perf % MOD);
+            }
+
+            class DescendingComparer : IComparer<int[]>
+            {
+                public int Compare(int[] x, int[] y)
+                {
+                    return y[0].CompareTo(x[0]);
+                }
             }
         }
 
 
         public static void runTest()
         {
+            MaximumPerformanceOfATeam.MaxPerfAtmostKEngineers(6, new int[] { 2, 10, 3, 1, 5, 8 }, new int[] { 5, 4, 3, 9, 7, 2 }, 2);
+            
+           // MaxValueInSlidingWindow.GetMax(new int[] { 1, 3, -1, -3, 5, 3, 6, 7 }, 3);
+            MaxValueInSlidingWindow.GetMax(new int[] { 7157,9172,7262,-9146,3087,5117,4046,7726,-1071,6011,5444,-48,-1385,-7328,3255,1600,586,-5160,-371,-5978,9837,3255,-6137,8587,-3403,9775,260,6016,9797,3371,2395}, 5);
+
             FindtheClosestPalindrome.NearestPalindromic("123");
 
             SearchInRotatedArray.Search(new int[] { 1, 1, 2, 1, 1,1,1,1,1,1,1,1 }, 2);
@@ -1424,4 +1582,5 @@ namespace ConsoleApplication1
             int sortedScores = FindDuplicate_OptimizeSpace(new[] { 1, 2, 3, 4, 5, 5 });
         }
     }
+
 }

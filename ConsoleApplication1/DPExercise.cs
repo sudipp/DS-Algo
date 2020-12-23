@@ -393,22 +393,26 @@ namespace ConsoleApplication1
         }
 
         //1547. Minimum Cost to Cut a Stick
-        class CutRodStick
+        class RodCutStick
         {
             //https://leetcode.com/problems/minimum-cost-to-cut-a-stick/
             //https://www.geeksforgeeks.org/cutting-a-rod-dp-13/
             public static int MaxCost(int n, int[] cuts)
             {
+                //as a lazy manager, i should only think about what the last piece [i], 
+                //when ever subordinates comes back with best price for [i-1], i will use my piece price[i] into it and find the best overall best price
+                //**** Prefix of Optimal Substructure must be Optimal - Its a optimal Substucture*******
+                //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4891-6-503-0     5:35:46
                 /*
-                length | 1   2   3   4   5   6   7   [8]
+                length | 1   2   3   4   [5]   6   7   [8]
                 --------------------------------------------
-                price  | 1   5   8   9  10  17  17   20 */
+                price  | 1   5   8   9   10  17  17   20 */
 
                 //Cutting at index 7 for a length of 8, means NOT cutting at all.
                 //cutting at other indices (i) for a length 8, max ( cutval(i) + maxval at (8-i) )
 
                 int[] memo = new int[n + 1];
-                for (int i = 1; i <= n; i++)
+                for (int i = 1; i <= n; i++) //[5]/[8]
                 {
                     int max = int.MinValue;
                     for(int j = 1; j <= i; j++)
@@ -481,6 +485,9 @@ namespace ConsoleApplication1
                 | -------------------------------
                 | g | 7 | 7 | 6 | 5 | 4 | 4 | 3 |
                 --------------------------------
+
+                //prev column is delete char
+                //previous row is insert char
                 */
                 int[][] memo = new int[strWord2.Length + 1][];
                 for (int r = 0; r < memo.Length; r++)
@@ -498,6 +505,8 @@ namespace ConsoleApplication1
                 {
                     memo[0][c] = c;
                 }
+
+                //f(i,j) = Min (  f(i-1,j-1) + 0(match cost), f(i-1, j) + 1(mismatch cost), f(i, j-1) + 1(mismatch cost))
 
                 for (int r = 1; r < memo.Length; r++)
                 {
@@ -529,6 +538,32 @@ namespace ConsoleApplication1
                 }
 
                 return memo[memo.Length - 1][memo[0].Length - 1];
+            }
+        }
+
+        //1143. Longest Common Subsequence
+        class LongestCommonSubsequence
+        {
+            //https://leetcode.com/problems/longest-common-subsequence/
+            public int LongestCommonSubsequence1(string text1, string text2)
+            {
+                return 0;
+            }
+        }
+
+        //1092. Shortest Common Supersequence
+        class ShortestCommonSupersequence
+        {
+            //https://leetcode.com/problems/shortest-common-supersequence/
+        }
+
+        //516. Longest Palindromic Subsequence
+        class LongestPalindromicSubsequence
+        {
+            //https://leetcode.com/problems/longest-palindromic-subsequence/
+            public int LongestCommonSubsequence1(string text1, string text2)
+            {
+                return 0;
             }
         }
 
@@ -895,13 +930,31 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/triangle/
             public static int MinimumTotal(IList<IList<int>> triangle)
             {
+                //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4891-6-503-0    2:54:00
+
                 //Based on Pascal Triangle ***
-                //O(r^c)
-                //Space (r^c) -- But we can optimize it further to O(r), keep only 2 rows at a time
+                //O(r*c)
+                //Space (r*c) -- But we can optimize it further to O(r), keep only 2 rows at a time
 
                 int[,] dp = new int[triangle.Count, triangle[triangle.Count - 1].Count];
 
                 dp[0, 0] = triangle[0][0];
+                
+                /* Pascal Traingle
+                | -----------------------
+                | 0 |   |   |   |   |   |
+                | -----------------------
+                | s | 1 |   |   |   |   |
+                | -----------------------
+                | i | 2 | 2 |   |   |   |
+                | -----------------------
+                | t | 3 | 3 | 2 |   |   |
+                | -----------------------
+                | t | 4 | 4 | 3 | 2 |   |
+                | -----------------------
+                | i | 5 | 5 | 4 | 3 | 2 |
+                -------------------------
+                */
 
                 //set up base cases -- 2 extreme sides
                 for (int r = 1; r < triangle.Count; r++)
@@ -940,9 +993,13 @@ namespace ConsoleApplication1
 
                 HashSet<string> dict = new HashSet<string>(wordDict);
 
+                /*
+                bool?[] memo1 = new bool?[str.Length + 1];
+                bool b =  DFS(str, dict, memo1, 0);
+                */
+
                 bool[] memo = new bool[str.Length + 1];
-                //bool b =  DFS(str, dict, memo, 0);
-                
+
                 //base case 
                 memo[0] = true;
 
@@ -950,6 +1007,7 @@ namespace ConsoleApplication1
                 {
                     for (int j = 1; j <= i; j++)
                     {
+                        //string lastWord = 0;
                         if (dict.Contains(str.Substring(j - 1, i - j + 1)))
                         {
                             if (memo[j - 1])
@@ -958,6 +1016,15 @@ namespace ConsoleApplication1
                                 break;
                             }
                         }
+                        /*
+                        if (dict.Contains(str.Substring(i - j - 1, i - j + 1)))
+                        {
+                            if (memo[i - j])
+                            {
+                                memo[i] = true;
+                                break;
+                            }
+                        }*/
                     }
                 }
                 return memo[memo.Length - 1];
@@ -965,6 +1032,8 @@ namespace ConsoleApplication1
 
             public static int CountPossibleWordBreaks(string str, IList<string> wordDict)
             {
+                //its a same as IsValid, only you stire is count instead of boolean
+                
                 HashSet<string> dict = new HashSet<string>(wordDict);
                 int[] memo = new int[str.Length + 1];
 
@@ -988,12 +1057,15 @@ namespace ConsoleApplication1
             }
 
             //O(2^N), Space - O(N)
-            private static bool DFS(string str, HashSet<string> dict, bool[] memo, int index)
+            private static bool DFS(string str, HashSet<string> dict, bool?[] memo, int index)
             {
                 if (index == str.Length)
                     return true;
 
-                for(int i = index; i < str.Length; i++ )
+                if (memo[index].HasValue)
+                        return memo[index].Value;
+
+                for (int i = index; i < str.Length; i++ )
                 {
                     if (dict.Contains(str.Substring(index, i - index + 1)))
                         if (DFS(str, dict, memo, i + 1))
@@ -1272,7 +1344,7 @@ namespace ConsoleApplication1
                 if (costs.Length == 0)
                     return 0;
 
-                int[,] memo = new int[3,costs.Length];
+                int[,] memo = new int[3,costs.Length];   //3 color, number of houses
 
                 //Base case
                 //red
@@ -1296,6 +1368,7 @@ namespace ConsoleApplication1
                     memo[2, i] = costs[i][2] + Math.Min(memo[0, i - 1], memo[1, i - 1]);
                 }
 
+                //last house
                 return Math.Min(memo[0, memo.GetLength(1) - 1], Math.Min(memo[1, memo.GetLength(1) - 1], 
                         memo[2, memo.GetLength(1) - 1]));
             }
@@ -1304,6 +1377,9 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            WordBreak.IsValid("aaaaaaa", new List<string>() { "aaaa", "aaa" });
+
+
             IntegerBreak.intBreak(2);
 
             WaysToClimbStairs.GetMinCost(new int[] { 1, 2 }, new int[] { 1, 100, 1, 1, 1, 100, 1, 1, 100, 1 });
@@ -1312,10 +1388,9 @@ namespace ConsoleApplication1
 
 
             WordBreak.CountPossibleWordBreaks("kickstart", new List<string>() { "kick", "start", "kickstart", "is", "awe", "some", "awesome" });// "leet123code", new List<string>() { "leet", "code", "123" });
-            WordBreak.IsValid("aaaaaaa", new List<string>() { "aaaa", "aaa" });
-
+            
             CutRopes.MaxProduct(4);
-            CutRodStick.MaxCost(8, new int[] { 1, 5, 8, 9, 10, 17, 17, 20 });
+            RodCutStick.MaxCost(8, new int[] { 1, 5, 8, 9, 10, 17, 17, 20 });
             
             WaysToClimbStairs.UniquePathCount(new int[] { 1, 2 }, 3);
 

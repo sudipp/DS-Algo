@@ -28,11 +28,13 @@ namespace ConsoleApplication1
         {
             try
             {
-                SortingSearchingLogarithmsExercise.runTest();
+                
 
+                SortingSearchingLogarithmsExercise.runTest();
+                DPExercise.runTest();
                 //DPRecursionBottomUpExercise.runTest();
 
-                DPExercise.runTest();
+
 
                 RecursionExercise.runTest();
 

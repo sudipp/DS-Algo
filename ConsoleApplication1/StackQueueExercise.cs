@@ -1111,7 +1111,7 @@ namespace ConsoleApplication1
         //https://leetcode.com/problems/basic-calculator/
         public int Calculate(string s)
         {
-            return null;
+            return 0;
         }
     }
 
@@ -1121,7 +1121,7 @@ namespace ConsoleApplication1
         //https://leetcode.com/problems/basic-calculator/
         public int Calculate(string s)
         {
-            return null;
+            return 0;
         }
     }
 }
