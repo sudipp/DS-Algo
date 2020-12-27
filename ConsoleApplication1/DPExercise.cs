@@ -14,6 +14,7 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/unique-paths/
             public static int Count(int m, int n)
             {
+                //Permutation problem****
                 //only can traverse down and right direction
 
                 int[][] grid = new int[m][];
@@ -30,11 +31,18 @@ namespace ConsoleApplication1
                         grid[r][c] = grid[r][c - 1] + grid[r - 1][c];
                 
                 return grid[grid.Length - 1][grid[0].Length - 1];
-            }
+            }           
             
+        }
+
+        //64. Minimum Path Sum
+        class MinPathSum
+        {
             //https://leetcode.com/problems/minimum-path-sum/
-            public static int MinPathSum(int[][] grid)
+            public static int GetMinPathSum(int[][] grid)
             {
+                //Permutation problem****
+
                 int[][] dp = new int[grid.Length][];
                 for (int r = 0; r < dp.Length; r++)
                     dp[r] = new int[grid[0].Length];
@@ -59,6 +67,8 @@ namespace ConsoleApplication1
         {
             public static int CountWithObstacle(int[][] grid)
             {
+                //Permutation problem****
+
                 //Memory Optimization **************************
                 //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4891-6-503-0
                 //1:36:44
@@ -429,6 +439,8 @@ namespace ConsoleApplication1
         {
             public static int Calculate(int n)
             {
+                //Permutation problem****
+
                 //Space(O(1)
                 int[] tabulation = new int[3];
                 tabulation[0] = 0;
@@ -567,10 +579,16 @@ namespace ConsoleApplication1
             }
         }
 
-        class PhoneNumberNightMove
+        //935. Knight Dialer
+        class KnightDialer
         {
-            public static long numPhoneNumbers(int startdigit, int phonenumberlength)
+            //https://leetcode.com/problems/knight-dialer/
+            public static long numPhoneNumbers(int phonenumberlength)
             {
+                int MOD = 1000000000 + 7;
+
+                //https://uplevel.interviewkickstart.com/resource/library-video-878   1:10
+
                 //Build the Possible Next numbers selection on a digit
                 List<List<int>> numberWithNightMove = new List<List<int>>();
                 numberWithNightMove.Add(new List<int>(new int[] { 4, 6 }));     //digit 0
@@ -584,55 +602,83 @@ namespace ConsoleApplication1
                 numberWithNightMove.Add(new List<int>(new int[] { 1, 3 }));     //digit 8
                 numberWithNightMove.Add(new List<int>(new int[] { 2, 4 }));     //digit 9
 
-                long[][] tabulation = new long[phonenumberlength + 1][];
+                //10N unique sub problems
+                //So DP table required is N X 10 (0,1...9)
+
+                //Rows - > phone number length
+                //Cols -> 0-9 digits
+
+                /* Columns are Digits [0..9], Rows are Phone number length
+                 __0__1__2__3__4__5__6__7__8__9_  
+                 |1 |1 |1 |1 |1 |1 |1 |1 |1 |1 |     <--- ph num len = 1 (Base case = 1, as ph num len = 1, then its the digit itself, so count is 1) 
+                 -------------------------------
+                 |  |  |  |  |  |  |  |  |  |  |     <--- ph num len = 2
+                 -------------------------------
+                 |  |  |  |  |  |  |  |  |  |  |     <--- ph num len = 3
+                 -------------------------------
+                 */
+
+                int[][] tabulation = new int[n][];
                 for (int r = 0; r < tabulation.Length; r++)
                 {
-                    tabulation[r] = new long[10];
+                    tabulation[r] = new int[10];
                 }
 
                 //for 0 and 1 number length - It is the letter itself
                 //if you are at a NUMBER, then its the number itself ****
-                for (int r = 0; r < 2; r++)
+                for (int r = 0; r < 1; r++)
                 {
-                    for (int c = 0; c < tabulation[0].Length; c++)
+                    for (int d = 0; d < 10; d++)
                     {
-                        tabulation[r][c] = r;
+                        tabulation[r][d] = r + 1;
                     }
                 }
 
-                //for word length = 2 or higher
+                //for word length = 1 or higher
                 /* Recurrance Relation = 
                     f(phoneLength, start) = start = n
                                             Sum( f(phoneLength - 1 , numberWithNightMove[i....n]) )
                                             start = i   
                 */
-                for (int r = 2; r < tabulation.Length; r++)
+                for (int r = 1; r < tabulation.Length; r++)
                 {
-                    for (int c = 0; c < tabulation[0].Length; c++)
+                    for (int d = 0; d < 10; d++)
                     {
-                        long sum = 0;
-                        foreach (int c1 in numberWithNightMove[c])
-                            sum += tabulation[r - 1][c1];
+                        int sum = 0;
+                        foreach (int d1 in numberWithNightMove[d])
+                            sum = (sum + tabulation[r - 1][d1]) % MOD;
 
-                        tabulation[r][c] = sum;
+                        tabulation[r][d] = sum;
                     }
                 }
 
-                return tabulation[phonenumberlength][startdigit];
+                //Count total Phone numbers of size N, it is stored in n-1th row
+                int total = 0;
+                for (int d = 0; d < 10; d++)
+                {
+                    total = (total + tabulation[n - 1][d]) % MOD;
+                }
+                return total;
 
 
-                long[][] memo = new long[phonenumberlength + 1][];
+                int[][] memo = new int[phonenumberlength + 1][];
                 for (int r = 0; r < memo.Length; r++)
                 {
-                    memo[r] = new long[10];
+                    memo[r] = new int[10];
                 }
                 //Recursion - Initially EXPONENTIAL times
                 //with Memoization - time complexity is O(phonenumberlength * startdigit)
-                return Recursion_Helper(phonenumberlength, startdigit, numberWithNightMove, memo);
+                for (int i = 0; i < 10; i++)
+                {
+                    total = Recursion_Helper(phonenumberlength, i, numberWithNightMove, memo) % MOD;
+                }
+                return total;
             }
 
-            private static long Recursion_Helper(int n, int i, List<List<int>> numberWithNightMove, long[][] memo)
+            private static int Recursion_Helper(int n, int i, List<List<int>> numberWithNightMove, int[][] memo)
             {
+                int MOD = 1000000000 + 7;
+                
                 //Recursion - Initially EXPONENTIAL times
                 //with Memoization - time complexity is O(phonenumberlength * startdigit)
 
@@ -644,13 +690,13 @@ namespace ConsoleApplication1
                 if (memo[n][i] != 0)
                     return memo[n][i];
 
-                long totalCount = 0;
+                int totalCount = 0;
                 for (int x = 0; x < numberWithNightMove[i].Count; x++)
                 {
-                    long count = Recursion_Helper(n - 1, numberWithNightMove[i][x], numberWithNightMove, memo);
+                    int count = Recursion_Helper(n - 1, numberWithNightMove[i][x], numberWithNightMove, memo);
                     memo[n - 1][numberWithNightMove[i][x]] = count;
 
-                    totalCount += count;
+                    totalCount = (totalCount + count ) % MOD;
                 }
 
                 return totalCount;
@@ -658,13 +704,15 @@ namespace ConsoleApplication1
 
         }
 
-        //746. Min Cost Climbing Stairs
         //70. Climbing Stairs
         class WaysToClimbStairs
         {
             //https://leetcode.com/problems/climbing-stairs/
             public static long UniquePathCount(int[] steps, int n)
             {
+                //Permutation problem****
+                //f(N) = f(N-1) + f(n-2);
+
                 //sort the steps if not sorted (because f the steps are not sorted, then it would be hard to follow pattern)
                 Array.Sort(steps);
 
@@ -686,20 +734,31 @@ namespace ConsoleApplication1
 
                 return memo[n];
             }
+        }
 
+        //746. Min Cost Climbing Stairs
+        class MinCostClimingStairs
+        {
             //https://leetcode.com/problems/min-cost-climbing-stairs/
             public static long GetMinCost(int[] steps, int[] cost)
             {
+                //Permutation problem****
                 //Optimization problem *****
+                //f(N) = Min(f(N-1), f(n-2)) + cost[n];
 
                 //sort the steps if not sorted (because f the steps are not sorted, then it would be hard to follow pattern)
                 Array.Sort(steps);
 
                 int n = cost.Length;
                 long[] memo = new long[n + 1];
-                memo[0] = 0;
 
-                for (int floor = 1; floor <= n; floor++)
+                //As are are allowed to start from Floor 0 or 1
+
+                //memo[0] = 0;
+                memo[1] = cost[0];
+                memo[2] = Math.Min(memo[1] + cost[1], cost[1]);
+                
+                for (int floor = 3; floor <= n; floor++)
                 {
                     long min = long.MaxValue;
                     for (int s = 0; s < steps.Length; s++)
@@ -716,9 +775,88 @@ namespace ConsoleApplication1
                 }
 
                 //to reach the top, pay Min(last or last - 1) cost
-                return Math.Min(memo[n] , memo[n - 1]);
+                return Math.Min(memo[n], memo[n - 1]);
             }
         }
+
+        //1137. N-th Tribonacci Number
+        class NthTribonacciNumber
+        {
+            //https://leetcode.com/problems/n-th-tribonacci-number/
+            public static int Tribonacci(int n)
+            {
+                int[] memo = new int[4];
+                //T0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn + Tn + 1 + Tn + 2 for n >= 0.
+                memo[0] = 0;
+                if (n >= 1) memo[1] = 1;
+                if (n >= 2) memo[2] = 1;
+
+                for (int i = 3; i <= n; i++)
+                {
+                    memo[i % 4] = memo[(i - 3) % 4] + memo[(i - 2) % 4] + memo[(i - 1) % 4];
+                }
+
+                /*
+                int[] memo = new int[n + 1];
+                //T0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn + Tn + 1 + Tn + 2 for n >= 0.
+                memo[0] = 0;
+                if (n >= 1) memo[1] = 1;
+                if (n >= 2) memo[2] = 1;
+
+                for (int i = 3; i < memo.Length; i++)
+                {
+                    memo[i] = memo[i - 3] + memo[i - 2] + memo[i - 1];
+                }*/
+
+                return memo[n % 4];
+            }
+        }
+
+        //790. Domino and Tromino Tiling
+        class DominoTrominoTiling
+        {
+            //https://leetcode.com/problems/domino-and-tromino-tiling/
+            static public int NumTilings(int N)
+            {
+                //https://uplevel.interviewkickstart.com/resource/library-video-876   2:30:12
+
+                int MOD = 1000000000 + 7;
+
+                /* N=1     N=2
+                //  _      _ _ 
+                // | |    | | |
+                //  -      - - 
+                //2 X 1   2 X 2
+                */
+
+                int[] Fmemo = new int[N + 1];
+                Fmemo[1] = 1;
+                if (N >= 2)
+                    Fmemo[2] = 2;
+
+                int[] Umemo = new int[N + 1];
+                Umemo[1] = 1;
+                if (N >= 2)
+                    Umemo[2] = 2;
+
+                int[] Lmemo = new int[N + 1];
+                Lmemo[1] = 1;
+                if (N >= 2)
+                    Lmemo[2] = 2;
+
+                for (int i = 3; i <= N; i++)
+                {
+                    Fmemo[i] = ((Fmemo[i - 1] + Fmemo[i - 2]) % MOD +
+                                (Lmemo[i - 2] + Umemo[i - 2]) % MOD) % MOD;
+
+                    Lmemo[i] = (Fmemo[i - 1] + Umemo[i - 1]) % MOD;
+                    Umemo[i] = (Fmemo[i - 1] + Lmemo[i - 1]) % MOD;
+                }
+
+                return Fmemo[N];
+            }
+        }
+
 
         //198. House Robber
         //213. House Robber II
@@ -727,12 +865,17 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/house-robber/
             public static int MaxProfit(int[] values)
             {
+                //https://uplevel.interviewkickstart.com/resource/library-video-877    4:05:17
+
                 //Repated Subproblems *****
                 //Using nornal recursion it could be Exponential ****
                 //we have find max profit with each pairs  
-                //Optimal Substurture
+                //Maximization problem - 'COMBINATION' problem - Optimal Substurture
 
-                //here at every Index, we calculate Max profit earned, from profits at previous 2 indicies
+                //At every Index, we calculate Max profit earned, from profits at previous 2 indicies ... How ???
+                //(by robbing nth house or by NOT robbing nth house] - 
+                //Robbing nth House means, he we have to pick the n-2th house's max profit + nth value
+                //Not robbing nth house means, he will have tp pick n-1th house's max profit
                 int[] memo = new int[values.Length + 2];
 
                 //f(n) = Max(f(n-1), f(n-2) + values[n])
@@ -748,13 +891,15 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/house-robber-ii/
             public static int MaxProfit_CircularHome(int[] values)
             {
+                // https://uplevel.interviewkickstart.com/resource/library-video-877   4:30
+
                 //Repated Subproblems *****
                 //Using nornal recursion it could be Exponential ****
                 //we have find max profit with each pairs  
                 //Optimal Substurture
 
                 //*************************
-                //As you can't select first and last together, then compare the max values into 2 phase
+                //As you can't select first and last home together, then compare the max values into 2 phase
                 //Exclude FIRST item and calculate the max profit
                 //Exclude LAST item and calculate the max profit
                 //return Max between 2 profits
@@ -792,12 +937,62 @@ namespace ConsoleApplication1
             }
         }
 
+        //983. Minimum Cost For Tickets
+        class MinimumCostForTickets
+        {
+            //https://leetcode.com/problems/minimum-cost-for-tickets/
+            public static int MincostTickets(int[] days, int[] costs)
+            {
+                //https://uplevel.interviewkickstart.com/resource/library-video-877   4:41
+
+                //Look at last day.. how could i travel??? by 1-day pass, 7day pass or 30 days pass
+                //It is having optimal sub structure
+                int[] memo = new int[days.Length];
+                memo[0] = costs.Min();  //for 1 day travel pick the cheapest price
+
+
+                for (int i = 1; i < days.Length; i++)
+                {
+                    int case1 = 0;
+                    int case2 = 0;
+                    int case3 = 0;
+
+                    //if day i is covered by 1 day pass
+                    case1 = memo[i - 1] + costs[0]; //if day i is covered by 1 day pass
+
+                    //if day i is covered by 7 day pass- then previous 6 days are also covered by it
+                    int j = i - 1;
+                    while (j >= 0 && days[j] >= days[i] - 6)
+                        j--;
+                    if (j >= 0)
+                        case2 = memo[j] + costs[1];
+                    else
+                        case2 = costs[1];
+
+                    //if day i is covered by 30 day pass- then previous 29 days are also covered by it
+                    j = i - 1;
+                    while (j >= 0 && days[j] >= days[i] - 29)
+                        j--;
+                    if (j >= 0)
+                        case3 = memo[j] + costs[2];
+                    else
+                        case3 = costs[2];
+
+                    memo[i] = Math.Min(case1, Math.Min(case2, case3));
+                }
+
+                return memo[memo.Length - 1];
+            }
+        }
+
         //322. Coin Change
         class CoinChange
         {
             //https://leetcode.com/problems/coin-change/
             public static int Min(int[] coins, int amount)
             {
+                //Optimization problem - Comination Problems (order doesnt matter) **************
+
                 //O(N*M)
                 //Space O(N*M)
 
@@ -810,6 +1005,7 @@ namespace ConsoleApplication1
                 5 |[0]  1  1  2  3 [4]
                 */
 
+                //F(n) = Min( f(amount - c1), f(amount - c2), f(amount - c3) + f(amount - ck) ) + 1
 
                 Array.Sort(coins);
 
@@ -841,6 +1037,8 @@ namespace ConsoleApplication1
 
             public static int Min_1DArray(int[] coins, int amount)
             {
+                //https://uplevel.interviewkickstart.com/resource/library-video-877     3:09:17
+
                 //O(N*M)
                 //Space O(N)
 
@@ -930,6 +1128,8 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/triangle/
             public static int MinimumTotal(IList<IList<int>> triangle)
             {
+                //Optimization problem - PATH MEANS 'PERMUTATION'
+
                 //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4891-6-503-0    2:54:00
 
                 //Based on Pascal Triangle ***
@@ -959,8 +1159,8 @@ namespace ConsoleApplication1
                 //set up base cases -- 2 extreme sides
                 for (int r = 1; r < triangle.Count; r++)
                 {
-                    dp[r, 0] = dp[r - 1, 0] + triangle[r][0];
-                    dp[r, r] = dp[r - 1, r - 1] + triangle[r][r];
+                    dp[r, 0] = dp[r - 1, 0] + triangle[r][0]; //--> left extreme - 1 path from Top
+                    dp[r, r] = dp[r - 1, r - 1] + triangle[r][r]; //-->right extreme - 1 path from Top
                 }
 
                 //f(r,c) = Min(f(r-1,c), f(r-1, c-1)) + triangle[r][c]
@@ -1377,12 +1577,14 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            NthTribonacciNumber.Tribonacci(4);
+
             WordBreak.IsValid("aaaaaaa", new List<string>() { "aaaa", "aaa" });
 
 
             IntegerBreak.intBreak(2);
 
-            WaysToClimbStairs.GetMinCost(new int[] { 1, 2 }, new int[] { 1, 100, 1, 1, 1, 100, 1, 1, 100, 1 });
+            MinCostClimingStairs.GetMinCost(new int[] { 1, 2 }, new int[] { 1, 100, 1, 1, 1, 100, 1, 1, 100, 1 });
 
             PaintHome.MinCost(new int[][] { new int[] { 17, 2, 17 }, new int[] { 16, 16, 5 }, new int[] { 14, 3, 19 } } );
 
@@ -1399,9 +1601,9 @@ namespace ConsoleApplication1
             grd[1] = new int[] { 1, 5, 1 };
             grd[2] = new int[] { 4, 2, 1 };
 
-            
+            MinimumCostForTickets.MincostTickets(new int[] { 1, 4, 6, 7, 8, 20 }, new int[]{ 2, 7, 15 });
 
-            UniquePath.MinPathSum(grd);
+            MinPathSum.GetMinPathSum(grd);
             UniquePath.Count(3, 7);
             
             IList<IList<int>> triangle = new List<IList<int>>();
@@ -1433,14 +1635,16 @@ namespace ConsoleApplication1
 
             WaysToClimbStairs.UniquePathCount(new int[] { 32, 28, 2, 14, 21, 35, 10, 29, 39, 15, 8 }, 117);
 
-            //PhoneNumberNightMove.numPhoneNumbers(6, 30);
-            PhoneNumberNightMove.numPhoneNumbers(6, 20);
+            //KnightDialer.numPhoneNumbers(6, 30);
+            KnightDialer.numPhoneNumbers(6, 20);
 
             //Fibonacci.Calculate(6);
             LevenshteinDistanceMinEditDistance.Calculate("kitten", "sitting");
 
             HouseOfRobbers.MaxProfit(new int[] { 2, 1, 3, 5 });
             HouseOfRobbers.MaxProfit_CircularHome(new int[] { 1, 2, 3, 1 });
+
+            
         }
     }
 }

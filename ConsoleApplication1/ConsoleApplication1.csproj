@@ -65,6 +65,7 @@
     <Compile Include="AbstractClass.cs" />
     <Compile Include="ArrayExercise - Copy.cs" />
     <Compile Include="DPExercise.cs" />
+    <Compile Include="Heap.cs" />
     <Compile Include="RecursionExercise.cs" />
     <Compile Include="DPRecursionBottomUpExercise.cs" />
     <Compile Include="StackQueueExercise.cs" />

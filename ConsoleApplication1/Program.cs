@@ -14,13 +14,6 @@ using System.Collections.ObjectModel;
 
 namespace ConsoleApplication1
 {
-    abstract class testAbs
-    {
-        public void test()
-        {
-            
-        }
-    }
     class Program
     {
 
@@ -30,7 +23,7 @@ namespace ConsoleApplication1
             {
                 
 
-                SortingSearchingLogarithmsExercise.runTest();
+                //SortingSearchingLogarithmsExercise.runTest();
                 DPExercise.runTest();
                 //DPRecursionBottomUpExercise.runTest();
 

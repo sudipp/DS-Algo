@@ -9,185 +9,6 @@ namespace ConsoleApplication1
 
     class SortingSearchingLogarithmsExercise
     {
-        public class HeapNode
-        {
-            public int val; // The element to be stored 
-
-            // index of the array from which the element is taken 
-            public int r;
-
-            // index of the next element to be picked from array 
-            public int c;
-
-            public HeapNode(int element, int i, int j)
-            {
-                this.val = element;
-                this.r = i;
-                this.c = j;
-            }
-        }
-
-        public class Heap
-        {
-            HeapNode[] harr; // Array of elements in heap 
-            public bool IsMinHeap { get; private set; }
-            public int Count { get; private set; }
-
-            public void BuildHeap(HeapNode[] a)
-            {
-                for (int x = 0; x < a.Length; x++)
-                    harr[x] = a[x];
-
-                Count = harr.Length;
-
-                // Index of last non-leaf node 
-                int startIdx = (Count / 2) - 1;
-
-                // Perform reverse level order traversal 
-                // from last non-leaf node and heapify 
-                // each node 
-                for (int i = startIdx; i >= 0; i--)
-                {
-                    HeapifyDown(i);
-                }
-            }
-
-            public Heap(int size, bool _isMinHeap)
-            {
-                //??? is it max heap or Minheap
-                this.IsMinHeap = _isMinHeap;
-
-                harr = new HeapNode[size];
-            }
-
-            void HeapifyUp(int i)
-            {
-                // check if node at index i and its parent violates 
-                // the heap property
-                if (i > 0 && IsMinHeap && harr[parent(i)].val > harr[i].val)
-                {
-                    // swap the two if heap property is violated
-                    swap(i, parent(i));
-
-                    // call Heapify-up on the parent
-                    HeapifyUp(parent(i));
-                }
-                else if (i > 0 && !IsMinHeap && harr[parent(i)].val < harr[i].val)
-                {
-                    // swap the two if heap property is violated
-                    swap(i, parent(i));
-
-                    // call Heapify-up on the parent
-                    HeapifyUp(parent(i));
-                }
-            }
-
-            void HeapifyDown(int i)
-            {
-                // get left and right child of node at index i
-                int l = left(i);
-                int r = right(i);
-
-                if (IsMinHeap)
-                {
-                    int smallest = i;
-
-                    // compare A[i] with its left and right child
-                    // and find smallest value
-                    if (l < Count && harr[l].val < harr[i].val)
-                        smallest = l;
-
-                    if (r < Count && harr[r].val < harr[smallest].val)
-                        smallest = r;
-
-                    // swap with child having lesser value and 
-                    // call heapify-down on the child
-                    if (smallest != i)
-                    {
-                        swap(i, smallest);
-                        HeapifyDown(smallest);
-                    }
-                }
-                else //max heap
-                {
-                    int hightest = i;
-
-                    // compare A[i] with its left and right child
-                    // and find smallest value
-                    if (l < Count && harr[l].val > harr[i].val)
-                        hightest = l;
-
-                    if (r < Count && harr[r].val > harr[hightest].val)
-                        hightest = r;
-
-                    // swap with child having lesser value and 
-                    // call heapify-down on the child
-                    if (hightest != i)
-                    {
-                        swap(i, hightest);
-                        HeapifyDown(hightest);
-                    }
-                }
-            }
-
-            // to get index of left child of node at index i 
-            int left(int i) { return (2 * i + 1); }
-
-            // to get index of right child of node at index i 
-            int right(int i) { return (2 * i + 2); }
-
-            int parent(int i) { return (i - 1) / 2; }
-
-            // to get the root 
-            public HeapNode Top()
-            {
-                if (Count == 0)
-                    throw new IndexOutOfRangeException("index is out of range(Heap underflow)");
-
-                return harr[0];
-            }
-
-            // A utility function to swap two min heap nodes 
-            //void swap(List<MinHeapNode> arr, int i, int j)
-            void swap(int i, int j)
-            {
-                HeapNode temp = harr[i];
-                harr[i] = harr[j];
-                harr[j] = temp;
-            }
-
-            public HeapNode Pop()
-            {
-                // if heap has no elements, throw an exception
-                if (Count == 0)
-                    throw new IndexOutOfRangeException("index is out of range(Heap underflow)");
-
-                HeapNode min = harr[0];//.val;
-
-                // replace the root of the heap with the last element of the vector
-                swap(0, Count - 1);
-                Count--;
-
-                // call heapify-down on root node
-                HeapifyDown(0);
-
-                return min;
-            }
-
-            public void Push(HeapNode item)
-            {
-                if (Count >= harr.Length)
-                    throw new IndexOutOfRangeException("index is out of range(Heap underflow)");
-
-                // insert the new element to the end of the array
-                harr[Count] = item;
-                Count++;
-
-                // call heapify-up procedure on last element
-                HeapifyUp(Count - 1);
-            }
-        }
-
         class Ladder
         {
 
@@ -237,46 +58,46 @@ namespace ConsoleApplication1
             {
                 List<string> path = new List<string>();
                 path.Add(startWord);
- 
+
                 //All intermediate paths are stored in queue.
-                Queue<Ladder> queue = new Queue<Ladder>(); 
+                Queue<Ladder> queue = new Queue<Ladder>();
                 queue.Enqueue(new Ladder(path, 1, startWord));
- 
+
                 //We took the startWord in consideration, So remove it from dictionary, otherwise we might pick it again.
                 dictionary.Remove(startWord);
- 
+
                 //Iterate till queue is not empty or endWord is found in Path.
-                while(queue.Count !=0 && !queue.Peek().Equals(endWord))
+                while (queue.Count != 0 && !queue.Peek().Equals(endWord))
                 {
                     Ladder ladder = queue.Dequeue();
- 
-                    if(endWord.Equals(ladder.getLastWord())){
+
+                    if (endWord.Equals(ladder.getLastWord())) {
                         return ladder;
                     }
- 
+
                     IEnumerator<string> i = dictionary.GetEnumerator();
                     while (i.MoveNext()) {
-                        string str =i.Current;
-      
-                        if(differByOne(str, ladder.getLastWord()))
+                        string str = i.Current;
+
+                        if (differByOne(str, ladder.getLastWord()))
                         {
                             List<string> list = new List<string>(ladder.getPath());
                             list.Add(str);
- 
+
                             //If the words differ by one then dump it in Queue for later processsing.
-                            queue.Enqueue(new Ladder(list, ladder.getLength()+1, str));
-       
+                            queue.Enqueue(new Ladder(list, ladder.getLength() + 1, str));
+
                             //Once the word is picked in path, we don't need that word again, So remove it from dictionary.
                             //i.remove();
                             //dictionary.Remove(str);
                         }
                     }
                 }
-    
+
                 //Check is done to see, on what condition above loop break, 
                 //if break because of Queue is empty then we didn't got any path till endWord.
                 //If break because of endWord matched, then we got the Path and return the path from head of Queue.
-                if(queue.Count!=0)
+                if (queue.Count != 0)
                 {
                     return queue.Dequeue();
                 }
@@ -404,7 +225,7 @@ namespace ConsoleApplication1
                 int mid = low + ((high - low) >> 1);
 
                 Console.WriteLine(string.Format("Low {0}, High{1}, Mid{2}", low, high, mid));
-                
+
                 // If mid comes after first word or is the first word
                 if (string.Compare(a[mid], firstWord, StringComparison.Ordinal) >= 0)
                 {
@@ -557,7 +378,7 @@ namespace ConsoleApplication1
             // We found a number that repeats!
             return low;
         }
-        
+
         //347. Top K Frequent Elements
         class TopKFrequentElements
         {
@@ -571,7 +392,7 @@ namespace ConsoleApplication1
 
 
                 //Build a Min Heap....
-                Heap heap = new Heap(k + 1, true);
+                Heap<int> heap = new Heap<int>(k + 1, true);
 
                 // 1. build hash map : character and how often it appears
                 // O(N) time
@@ -581,13 +402,13 @@ namespace ConsoleApplication1
                     if (!count.ContainsKey(nums[i]))
                         count.Add(nums[i], 0);
 
-                    count[nums[i]] ++;
+                    count[nums[i]]++;
                 }
 
                 //O(n Log K) - for N items, with K push/pop operation 
                 foreach (int key in count.Keys)
                 {
-                    heap.Push(new HeapNode(count[key], key, 0));
+                    heap.Push(new HeapNode<int>(count[key], key, 0));
                     if (heap.Count > k)
                     {
                         heap.Pop();
@@ -612,10 +433,10 @@ namespace ConsoleApplication1
             static public int FindKthLrgest(int[] nums, int k)
             {
                 //Create a Min Heap *****
-                Heap heap = new Heap(k + 1, true);
-                for (int i=0; i < nums.Length; i++)
+                Heap<int> heap = new Heap<int>(k + 1, true);
+                for (int i = 0; i < nums.Length; i++)
                 {
-                    heap.Push(new HeapNode(nums[i], 0, 0));
+                    heap.Push(new HeapNode<int>(nums[i], 0, 0));
                     if (heap.Count > k)
                     {
                         heap.Pop();
@@ -724,7 +545,7 @@ namespace ConsoleApplication1
             }
 
         }
-        
+
         //1588. Sum of All Odd Length Subarrays
         class SumofAllOddLengthSubarrays
         {
@@ -816,7 +637,7 @@ namespace ConsoleApplication1
 
                 int winLeft = 0;
                 int winRight = 0;
-                
+
                 while (winLeft < arr.Length && winRight < arr.Length)
                 {
                     //Sliding window -
@@ -826,13 +647,13 @@ namespace ConsoleApplication1
                     //  for Type '2' - find even value at odd index
                     //Swap the value
 
-                    if(winLeft % 2 == 0) //even
+                    if (winLeft % 2 == 0) //even
                     {
                         if (arr[winLeft] % 2 != 0) //found odd value, on Even Index
                         {
                             //expand window to find next EVEN Value at Odd index, so we can swap
                             while (winRight < arr.Length && !(arr[winRight] % 2 == 0 && winRight % 2 != 0))
-                                winRight ++;
+                                winRight++;
 
                             //swap
                             int temp = arr[winRight];
@@ -861,7 +682,7 @@ namespace ConsoleApplication1
                 return arr;
             }
         }
-                
+
         //Leetcode – 23. Merge k Sorted Lists
         class MergeKSortedArray
         {
@@ -880,19 +701,19 @@ namespace ConsoleApplication1
 
                 int[] result = new int[arr.Length * arr[0].Length];
 
-                HeapNode[] hArr = new HeapNode[arr.Length];
+                HeapNode<int>[] hArr = new HeapNode<int>[arr.Length];
                 for (int i = 0; i < arr.GetLength(0); i++)
                 {
-                    hArr[i] = new HeapNode(arr[i][0], i, 0);
+                    hArr[i] = new HeapNode<int>(arr[i][0], i, 0);
                 }
                 //build the min heap
-                Heap heap = new Heap(arr.Length, !descending); //true - MinHeap, False - MaxHeap
+                Heap<int> heap = new Heap<int>(arr.Length, !descending); //true - MinHeap, False - MaxHeap
                 heap.BuildHeap(hArr);
 
                 int r = 0;
                 while (heap.Count > 0)
                 {
-                    HeapNode root = heap.Top();
+                    HeapNode<int> root = heap.Top();
                     result[r++] = root.val;
 
                     heap.Pop();
@@ -1088,7 +909,7 @@ namespace ConsoleApplication1
                         //merge previous profit into total profit
                         totalProfit += profit;
                         //reset previous profit as we find next position to buy
-                        profit = 0; 
+                        profit = 0;
                         //new buy 
                         bestBuyAt = i;
                     }
@@ -1100,9 +921,9 @@ namespace ConsoleApplication1
                 }
 
                 //For any profit we didnt merge into total profit
-                if(profit > 0 )
+                if (profit > 0)
                     totalProfit += profit;
-                
+
                 return totalProfit;
             }
         }
@@ -1144,14 +965,14 @@ namespace ConsoleApplication1
                         maxProfit = Math.Max(maxProfit, prices[bestSellAt] - prices[i]);
                     else //best higher price to sell is available
                         bestSellAt = i; //update sell pointer
-                        
+
                     right[i] = maxProfit;
                 }
 
                 int totalProfit = 0;
                 for (int i = 0; i < prices.Length; i++)
                     totalProfit = Math.Max(totalProfit, left[i] + right[i]);
-                
+
                 return totalProfit;
             }
         }
@@ -1197,7 +1018,7 @@ namespace ConsoleApplication1
                     else //sell when price goes up
                     {
                         //calculate best profit, from the buy position
-                        if(profit < prices[i] - prices[bestBuyAt])
+                        if (profit < prices[i] - prices[bestBuyAt])
                         {
                             profit = prices[i] - prices[bestBuyAt];
                             maxProfitFoundAt = i;
@@ -1222,11 +1043,11 @@ namespace ConsoleApplication1
             public static void Rotate(int[][] matrix)
             {
                 //phase 1 - Swap columns
-                for(int r = 0; r < matrix.Length; r ++)
+                for (int r = 0; r < matrix.Length; r++)
                 {
                     for (int c = 0; c < matrix[0].Length / 2; c++)
                     {
-                        int temp = matrix[r][matrix[0].Length - c -1] ;
+                        int temp = matrix[r][matrix[0].Length - c - 1];
                         matrix[r][matrix[0].Length - c - 1] = matrix[r][c];
                         matrix[r][c] = temp;
                     }
@@ -1246,7 +1067,7 @@ namespace ConsoleApplication1
         }
 
         //81. Search in Rotated Sorted Array II
-        class SearchInRotatedArray { 
+        class SearchInRotatedArray {
             public static bool Search(int[] nums, int target)
             {
                 int l = 0;
@@ -1305,68 +1126,90 @@ namespace ConsoleApplication1
         {
             public static string NearestPalindromic(string n)
             {
-                if (n == "1")
-                    return "0";
-
-
-                int input = int.Parse(n);
-                int left = input - 10;
-                int right = input + 10;
-
-                int leftClosestPalindrome = GetPalindrome(input, left);
-                int rightClosestPalindrome = GetPalindrome(input, right);
-
-                int l = Math.Abs(input - leftClosestPalindrome);  //309 - 282
-                int r = Math.Abs(input - rightClosestPalindrome); //309 - 303
-
-                return (l > r) ? rightClosestPalindrome.ToString() : leftClosestPalindrome.ToString();
-            }
-
-            private static int GetPalindrome(int input, int side)
-            {
-                //289 -> 282/292
-
-                //309
-                string str = side.ToString();
-                string palindrome = "";
-                int mid = str.Length / 2; //1
-
-                if (mid % 2 == 0) //even
+                if (n.Equals("1"))
                 {
-                    int valLeft = int.Parse(str.Substring(0, mid) + Reverse(str.Substring(0, mid)));
-                    int valright = int.Parse(str.Substring(mid + 1, str.Length - mid + 1) + Reverse(str.Substring(mid + 1, str.Length - mid + 1)));
-                    //palindrome += str.Substring(0, mid - 1) + str.Substring(0, mid).Reverse();
-                    return valLeft > valright ? valright : valLeft;
+                    return "0";
+                }
+
+                //just mirror the left side string
+                string a = mirroring(n);
+                long diff1 = long.MaxValue;
+                diff1 = Math.Abs(long.Parse(n) - long.Parse(a));
+                if (diff1 == 0)
+                {
+                    diff1 = long.MaxValue;
+                }
+
+                //if middle index number is 0, keep replace the it with 9 -- trying to reduce the number
+                //n=89->79,n=99->89,n=20->10, n=19,18...10 -> 9*, n=9....2->(i-1)
+                StringBuilder s = new StringBuilder(n);
+                int mid = (s.Length - 1) / 2;
+                while (mid >= 0 && s[mid] == '0')
+                {
+                    s.Replace(s[mid], '9', mid, 1);
+                    mid--;
+                }
+                //if the first value is '1', remove it, and put '9' on next 
+                if (mid == 0 && s[mid] == '1')
+                {
+                    s.Remove(0, 1);
+                    mid = (s.Length - 1) / 2;
+                    s.Replace(s[mid], '9', mid, 1);
+                }
+                else
+                { 
+                    //reduce the value by 1
+                    s.Replace(s[mid], (char)(s[mid] - 1), mid, 1);
+                }
+                string b = mirroring(s.ToString());
+                long diff2 = Math.Abs(long.Parse(n) - long.Parse(b));
+
+                //if middle index number is 9, keep replace the it with 0-- trying to increase the number
+                //n=89->99,n=99->109,n=20->30, n=19,18...10 -> 2*, n=9....2->(i+1)
+                s = new StringBuilder(n);
+                mid = (s.Length - 1) / 2;
+                while (mid >= 0 && s[mid] == '9')
+                {
+                    s.Replace(s[mid], '0', mid, 1);
+                    mid--;
+                }
+
+                if (mid < 0)
+                {
+                    s.Insert(0, "1");
                 }
                 else
                 {
-                    int valLeft = int.Parse(str.Substring(0, mid) 
-                        + str[mid] 
-                        + Reverse(str.Substring(0, mid)));
-                    int valright = int.Parse(str.Substring(mid + 1, str.Length - (mid + 1)) 
-                        + str[mid] 
-                        + Reverse(str.Substring(mid + 1, str.Length - (mid + 1))));
-                    return valLeft > valright ? valright : valLeft;
-                    //palindrome += str.Substring(0, mid - 1) + str[mid] + str.Substring(0, mid - 1).Reverse();
+                    s.Replace(s[mid], (char)(s[mid] + 1), mid, 1);
                 }
+                string c = mirroring(s.ToString());
+                long diff3 = Math.Abs(long.Parse(n) - long.Parse(c));
 
-                return int.Parse(palindrome);
+                if (diff2 <= diff1 && diff2 <= diff3)
+                {
+                    return b;
+                }
+                if (diff1 <= diff3 && diff1 <= diff2)
+                {
+                    return a;
+                }
+                else
+                {
+                    return c;
+                }
             }
 
-            static string Reverse(string str)
+            public static string mirroring(string s)
             {
-                char[] strArr = str.ToCharArray();
+                string x = s.Substring(0, (s.Length) / 2);
+                return x + (s.Length % 2 == 1 ? s[s.Length / 2].ToString() : "") + Reverse(x);
+            }
 
-                int l = 0;
-                int r = str.Length - 1;
-                while(l<r)
-                {
-                    char temp = strArr[l];
-                    strArr[l] = strArr[r];
-                    strArr[r] = temp;
-                }
-
-                return new string(strArr);
+            private static string Reverse(string s)
+            {
+                char[] chars = s.ToCharArray();
+                Array.Reverse(chars);
+                return new string(chars);
             }
         }
 
@@ -1460,6 +1303,75 @@ namespace ConsoleApplication1
 
         }
 
+        //857. Minimum Cost to Hire K Workers
+        class MincostToHireWorkers
+        {
+            //https://leetcode.com/problems/minimum-cost-to-hire-k-workers/
+            public static double GetMincost(int[] quality, int[] wage, int k)
+            {
+                //https://leetcode.com/problems/minimum-cost-to-hire-k-workers/discuss/141768/Detailed-explanation-O(NlogN)
+
+                // The key to the solution is that Kth ratio (wage / quality) can only satisfy workers with a smaller ratio. 
+                // Otherwise, it will break the minimum expectation constraint, since every worker will be sharing the same ratio. 
+                // However, you cannot simply pick the first Kth workers. Since if the sum of the quality is super high, 
+                // then we would rather have a higher ratio but smaller sum of quality. 
+                // Therefore, we are looking for the minimum sum of quality * ratio. Following is how the algorithm works:
+
+                // 1. Create an array that stores the ratio (worker[0]) and quality (worker[1]). 
+                //     We don't care about the min wage expectation anymore, 
+                //     since we are only looking at the workers with a ratio that is smaller than any current ratio, 
+                //     and will always satisfy the minimum constraint.
+                // 2. Sort the array and start from Kth smallest ratio. 
+                //     Otherwise, there won't be enough workers that satisfy with the current ratio (minimum constraint breaks)
+                // 3. Keep increase the current ratio with the next worker and find the smallest sum, since both the sum of quality and ratio impacts the result
+                // 4. Keep removing the largest quality, since we want the smallest sum of quality and the smallest ratio possible
+
+                long MOD = (long)(1000000000 + 7);
+
+                double[][] workers = new double[wage.Length][];
+                for (int i = 0; i < wage.Length; i++)
+                {
+                    workers[i] = new double[2];
+                    workers[i][0] = (double) wage[i] / quality[i];   //ratio
+                    workers[i][1] = (double) quality[i];                     //quality
+                }
+
+                //sort by ratio (ascending)
+                Array.Sort(workers, new AscendingComparer());
+
+                //Create a Max Heap for large quality, Keep removing the largest quality, 
+                //since we want the smallest sum of quality and the smallest ratio possible
+                Heap<double> pq = new Heap<double>(k + 1, false);
+
+                double result = double.MaxValue, qSum = 0;
+                for (int i = 0; i < workers.Length; i++)
+                {                    
+                    qSum += workers[i][1];
+                    pq.Push(new HeapNode<double>(workers[i][1], 0, 0));
+                 
+                    // if we have more than k workers, remove the one with the largest quality
+                    if (pq.Count > k)
+                    {
+                        qSum -= pq.Pop().val;
+                    }
+                    if (pq.Count == k)
+                    {
+                        result = Math.Min(result, qSum * workers[i][0]);
+                    }                    
+                }
+
+                return (int)(result % MOD);
+            }
+
+            class AscendingComparer : IComparer<double[]>
+            {
+                public int Compare(double[] x, double[] y)
+                {
+                    return x[0].CompareTo(y[0]);
+                }
+            }
+        }
+        
         //1383. Maximum Performance of a Team
         class MaximumPerformanceOfATeam
         {
@@ -1469,6 +1381,11 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/maximum-performance-of-a-team/discuss/595185/Faster-than-88-using-PQ-JAVA
             public static int MaxPerfAtmostKEngineers(int n, int[] speed, int[] efficiency, int k)
             {
+                //Time O(NlogN) for sorting
+                //Time O(NlogK) for priority queue
+                //Space O(N)
+
+
                 //The main idea is to sort in descending order of efficiency, and fix an efficiency 
                 //from top to bottom at a time, so that the sum of the corresponding speed is as 
                 //large as possible (that is, the number of people is selected as much as possible), 
@@ -1491,13 +1408,10 @@ namespace ConsoleApplication1
                 }
 
                 //highest to lowest efficiency, since we need instant access to current lowest efficiency while processing performance
-                //Array.Sort(es, 
-                //    new Comparison<int[]>( (i1, i2) => i2[0].CompareTo(i1[0]))
-                //);
                 Array.Sort(es, new DescendingComparer());
-                
-                //Create a Min Heap for slow speed engineers
-                Heap pq = new Heap(k, true);
+
+                //Create a Min Heap for slow speed engineers, so we can remove slow speed engineers
+                Heap<int> pq = new Heap<int>(k, true);
 
                 long perf = 0, speedsum = 0;
                 for (int i = 0; i < es.Length; i++)
@@ -1506,18 +1420,18 @@ namespace ConsoleApplication1
                     {
                         //remove min speed (efficiency won't be affected)
                         //Evict the slowest engineer from out current team
-                        speedsum -= pq.Pop().val; 
+                        speedsum -= pq.Pop().val;
                     }
 
                     //we are hiring a new engineer, either he is replacing someone as in condition above ^ or he's just a newcomer.
                     //out team is still small (< k)
 
                     //Add new/replace existing engineer and new calculate the new speed
-                    pq.Push(new HeapNode(es[i][1], 0,0));
+                    pq.Push(new HeapNode<int>(es[i][1], 0, 0));
 
                     speedsum += es[i][1];
 
-                    perf = Math.Max(perf, speedsum * es[i][0]);                    
+                    perf = Math.Max(perf, speedsum * es[i][0]);
                 }
 
                 return (int)(perf % MOD);
@@ -1532,15 +1446,111 @@ namespace ConsoleApplication1
             }
         }
 
+        //https://www.geeksforgeeks.org/minimum-number-platforms-required-railwaybus-station/
+        class CountMinimumPlatformRequired
+        {
+            class AscendingComparer : IComparer<int[]>
+            {
+                public int Compare(int[] x, int[] y)
+                {
+                    return x[0].CompareTo(y[0]);
+                }
+            }
+            public static int Count(int[] arr, int[] dep, int n)
+            {
+                //Time Complexity: O(nlogn).
+
+                // Sort arrival and departure arrays
+                Array.Sort(arr);
+                Array.Sort(dep);
+
+                // plat_needed indicates number of platforms needed at a time 
+                int plat_needed = 1, result = 1;
+                int i = 1, j = 0;
+
+                // Similar to merge in merge sort to process all events in sorted order 
+                while (i < n && j < n)
+                {
+                    // If next event in sorted order is arrival, increment count of platforms needed 
+                    if (arr[i] <= dep[j])
+                    {
+                        plat_needed++;
+                        i++;
+                    }
+
+                    // Else decrement count of platforms needed 
+                    else if (arr[i] > dep[j])
+                    {
+                        plat_needed--;
+                        j++;
+                    }
+
+                    // Update result if needed 
+                    if (plat_needed > result)
+                        result = plat_needed;
+                }
+
+                return result;
+
+                /*
+                int[][] schedule = new int[n][];
+                for(int k = 0; k <n; k ++)
+                {
+                    schedule[k] = new int[2];
+                    schedule[k][0] = arr[k];
+                    schedule[k][1] = dep[k];
+                }
+
+                Array.Sort(schedule, new AscendingComparer());
+
+                int count_platfrm = 0;
+                int Min_platfrm_required = 0;
+                for (int k = 0; k < n; k++)
+                {
+                    if (k < n - 1)
+                    {
+                        if (schedule[k][1] < schedule[k + 1][0])
+                        {
+                            count_platfrm++;
+                            Min_platfrm_required = Math.Max(Min_platfrm_required, count_platfrm);
+
+                            //train departed... platform free, reduce count
+                            if (count_platfrm > 0)
+                                count_platfrm--;
+                        }
+                        else
+                        {
+                            schedule[k + 1][1] = Math.Max(schedule[k + 1][1], schedule[k][1]);
+                            count_platfrm++;
+                            Min_platfrm_required = Math.Max(Min_platfrm_required, count_platfrm);
+                        }
+                    }
+                    else //for last schedule, reduce platform count
+                    {
+                        if (count_platfrm > 0)
+                            count_platfrm--;
+                    }
+                }
+                
+                return Min_platfrm_required;*/
+
+            }
+        }
 
         public static void runTest()
         {
+            //FindtheClosestPalindrome.NearestPalindromic("14");
+
+            MincostToHireWorkers.GetMincost(new int[] { 10, 20, 5}, new int[]{70,50,30},2);
+
+            //CountMinimumPlatformRequired.Count(new int[] { 900, 940, 950, 1100, 1500, 1800 }, new int[] { 910, 1200, 1120, 1130, 1900, 2000 }, 6);
+
             MaximumPerformanceOfATeam.MaxPerfAtmostKEngineers(6, new int[] { 2, 10, 3, 1, 5, 8 }, new int[] { 5, 4, 3, 9, 7, 2 }, 2);
             
            // MaxValueInSlidingWindow.GetMax(new int[] { 1, 3, -1, -3, 5, 3, 6, 7 }, 3);
             MaxValueInSlidingWindow.GetMax(new int[] { 7157,9172,7262,-9146,3087,5117,4046,7726,-1071,6011,5444,-48,-1385,-7328,3255,1600,586,-5160,-371,-5978,9837,3255,-6137,8587,-3403,9775,260,6016,9797,3371,2395}, 5);
 
-            FindtheClosestPalindrome.NearestPalindromic("123");
+            
 
             SearchInRotatedArray.Search(new int[] { 1, 1, 2, 1, 1,1,1,1,1,1,1,1 }, 2);
 
