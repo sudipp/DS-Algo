@@ -207,5 +207,10 @@ namespace ConsoleApplication1
             // call heapify-up procedure on last element
             HeapifyUp(Count - 1);
         }
+
+        public void Clear()
+        {
+            Count =0;
+        }
     }
 }

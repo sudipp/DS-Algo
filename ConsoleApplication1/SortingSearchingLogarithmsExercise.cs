@@ -828,7 +828,6 @@ namespace ConsoleApplication1
                 }
                 return maxValIndex;
             }
-
         }
 
         class DutchNationalFlag

@@ -215,19 +215,36 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/integer-break/
             public static int intBreak(int n)
             {
+                //(2 ^ n) -1 ways to cut the rod, its exponential problem
+
+                //Atleast break into 2 pieces (can break into more number, but atleast into 2 pieces)
                 //Page 76.....
                 //Almost Same as Cutropes - CutRopes.MaxProduct
-                
+
+                // n=1 = is not a valid case, as the rod must be split ....
+                // n=2 = 1 + 1 = 1 X 1
+                // n=3 = 2 + 1 = 2 X 1
+
+                /*
+                 What could the last piece be?
+                The last possible price could be of length 1,2,3...n
+                let f(n) = max possible product obtained from 1...n
+                In general, f(i) = max possible product obtaineable from rod of length i
+
+                f(i) = max possible product obtaineable from rod of length i
+
+                    cut=n
+                f(i) = 	max { max(cut * f(i-cut), cut * (i-cut) }
+	                cut=1
+                */
+
                 int[] tabulation = new int[n + 1];
                 for (int i = 1; i <= n; i++)
                 {
                     int max = 0;
                     for (int j = 1; j < i; j++) //you cant make j<=i, as we need atleast one cut
                     {
-                        //max = Math.Max(max, Math.Max(i, tabulation[i - j] * j));
-                        //max = Math.Max(max, Math.Max((i > 3 ? (i-1) : i), tabulation[i - j] * j));
-
-                        //multiply cut value 'j' with rest (i-j)
+                        //multiply cut value 'j' with rest (i-j) and tabulation[i - j] and pick the maximum
                         max = Math.Max(max, Math.Max((i - j) * j, tabulation[i - j] * j));
                     }
                     tabulation[i] = max;
@@ -402,36 +419,73 @@ namespace ConsoleApplication1
 
         }
 
-        //1547. Minimum Cost to Cut a Stick
         class RodCutStick
         {
-            //https://leetcode.com/problems/minimum-cost-to-cut-a-stick/
             //https://www.geeksforgeeks.org/cutting-a-rod-dp-13/
-            public static int MaxCost(int n, int[] cuts)
+            public static int MaxCost(int n, int[] prices)
             {
-                //as a lazy manager, i should only think about what the last piece [i], 
-                //when ever subordinates comes back with best price for [i-1], i will use my piece price[i] into it and find the best overall best price
+                //Question :
+                //Suppose you have a rod of length n, and you want to cut up rod and sell the pieces in a way that maximizes the total amount of money you get.
+
+                //Combinatorial Optimization problem (we are optimizing sequence)****
+
+                //2 ^ n ways to cut the rod... so exponential problem with overlapping subproblems
+                //As a lazy manager, i should only think about the "last" piece of rod. You can cut the last piece into 0,1,2...(n-1),n different size ways.
+                //If i cut the last piece for size 0 (don't cut), then i ned to find the max price for rest of rod of size (n)
+                //If i cut the last piece for size 1, then i ned to find the max price for rest of rod of size (n-1)
+                //If i cut the last piece for size 3, then i ned to find the max price for rest of rod of size (n-3)
+                //If i cut the last piece for size 4, then i ned to find the max price for rest of rod of size (n-4)
+                //If i cut the last piece for size n, then i ned to find the max price for rest of rod of size (0)
+
+                //So at size ('rodLen' - for me it is the last piece) of rod, I'm looking for a cut (i iterate through all possible cut), which gives me the Maximum value --> Math.Max(max, memo[rodLen - i] + cuts[i]);
+
+                //There are n different subproblems ****
+
+                //when ever subordinates comes back with best price for [i-1], i use my piece price[i] into it and find the best overall best price
                 //**** Prefix of Optimal Substructure must be Optimal - Its a optimal Substucture*******
+                //https://uplevel.interviewkickstart.com/resource/library-video-878   4:01
                 //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4891-6-503-0     5:35:46
                 /*
                 length | 1   2   3   4   [5]   6   7   [8]
                 --------------------------------------------
-                price  | 1   5   8   9   10  17  17   20 */
+                Prices | 1   5   8   9   10   17  17   20 */
 
                 //Cutting at index 7 for a length of 8, means NOT cutting at all.
                 //cutting at other indices (i) for a length 8, max ( cutval(i) + maxval at (8-i) )
 
+                /*
+                 * f(i) = Max amount of money earned from cutting rod of length i
+                 *  Size of LAST cut (cut= 1,2,3 ..i), 
+	                            cut=i
+                    f(i) = 	max { prices(cut) + f(i-cut) }
+	                            cut=1
+                */
+
+                //Page 74 - Dynamic Programming (Alternative video)
+
                 int[] memo = new int[n + 1];
-                for (int i = 1; i <= n; i++) //[5]/[8]
+                memo[0] = 0;                
+                for (int rodLen = 1; rodLen <= n; rodLen ++) //[5]/[8]
                 {
                     int max = int.MinValue;
-                    for(int j = 1; j <= i; j++)
+                    for(int ctLength = 0; ctLength < rodLen; ctLength++)
                     {
-                        max = Math.Max(max, memo[i-j] + cuts[j - 1]);
+                        max = Math.Max(max, memo[rodLen - ctLength - 1] + prices[ctLength]);
                     }
-                    memo[i] = max;
+                    memo[rodLen] = max;
                 }
-                return memo[n - 1];
+
+                return memo[n];
+            }
+        }
+
+        //1547. Minimum Cost to Cut a Stick
+        class MinimumCosttoCutaStick
+        {
+            //https://leetcode.com/problems/minimum-cost-to-cut-a-stick/
+            public int MinCost(int n, int[] cuts)
+            {
+                return 0;
             }
         }
 
@@ -466,18 +520,63 @@ namespace ConsoleApplication1
         }
 
         //72. Edit Distance
-        class LevenshteinDistanceMinEditDistance
+        class MinEditDistanceOrLevenshteinDistance
         {
             //https://leetcode.com/problems/edit-distance/
             public static int Calculate(string strWord1, string strWord2)
             {
                 //Min edit distance to convert word1 to word2
+                //https://uplevel.interviewkickstart.com/resource/library-video-879    2:30
+                /*
+                Combinatorial explosion (sequences of letters) Optimization (Min number of operation) - 
+                    (N choose K) = (Nc0) + (Nc1) +... (NcN/2)+..+.(NcN) = 2^N is exponential
+                ----------------------------------------------------
+                Pairwise alignment - is an alignment of gaps to positions 0,...M in string1 and 0,..N in string2, 
+                so as to line up each letter in one sequence with either a letter, or a gap in other sequence.
+
+                To create a alignment, we pick a letter from string1, you have 2 choices (1. pick a letter from string2 2. insert a blank). 
+                So for every character from string1 you have 2 choices..   
+
+                choices ->	2 | 2| 2| 2|..|2^N (exponential)
+		                    ------------------
+                string1		c1|c2|c3|c4|..|cN|
+
+                ------------------------------------------------------------------------
+                |h|o|r|s|e|     a	    _	    a	    a
+                |r|o|_|s|_|	    a	    a	    _	    b
+                -----------    match	insert	delete	edit 
+                ========================================================================
+                As a lazy manager, we wil look into the 'i'th character of string1 (we have 3 options - Delete a char, 
+                insert a new char, keep the char (could be same as string2 or may not be)). 
+                What we are looking from prefix( i-1 subordinates) is min edit distance between x0...xi-1 and Y0...Yj-1. 
+                So we can add 'i'th cost into it(if last characters are different), to find the overall minimum. 
+                Depends on what i choose on 'i'th position, the subproblems are different
+
+                [Overlapping subproblems ***** and optimal substurcture]
+                    |
+                ----V----------------
+                |x0,....xm-1| _  | xm
+                |y0.....yn-1| yn | _
+                ---------------------
+                |x0,....xm-1| xm | _
+                |y0.....yn-1| _  | yn
+                ---------------------
+                
+                f(i,j) = edit distance between x0....xi and y0...yj
+                f(i,j) = Min 	{ 	f(i-1, j) + 1 <-deletion
+			                        f(i, j-1) + 1 <-insertion
+			                        f(i-1, j-1) + (xi=yj)? 0: 1
+		                        } 	
+
+                //we have 2 parameters ... so we need 2D matrix... There are i * J unique sub problems
+                so the 2D array with [J][i] diamemsions. We need extra cell to accommodate, the empty space issue (empty string from string1 or string2).
 
                 //O(M*N)
                 //Space - O(M*N)
-                //Space could be O(1) using memo = int[2][2], as we use only last row and last column data
-
-                /*     < -- strWord1 --->
+                //***********************************************************
+                //**********Space could be O(1) using memo = int[2][2], as we use only last row and last column data 
+                //***********************************************************
+                /*     < -- Word1 --->
                 ---------------------------------
                 |   |"" | k | i | t | t | e | n |  
                 | -------------------------------
@@ -499,7 +598,7 @@ namespace ConsoleApplication1
                 --------------------------------
 
                 //prev column is delete char
-                //previous row is insert char
+                //prev row is insert char
                 */
                 int[][] memo = new int[strWord2.Length + 1][];
                 for (int r = 0; r < memo.Length; r++)
@@ -559,7 +658,251 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/longest-common-subsequence/
             public int LongestCommonSubsequence1(string text1, string text2)
             {
-                return 0;
+                //https://uplevel.interviewkickstart.com/resource/library-video-879    3:50
+
+                //combinatorial explosion.... Maximization problem - **we want to maximize the number of matches**
+                /*
+                Substring ---- for string1 of length n = n^2, string2 = n^2... so the total complexity would be n^4
+                ex. [1234], substrings are
+                -----------------------
+                1,12,123,1234
+                2,23,234
+                3,34
+                4
+
+                Subsequence ---for string1 of length n = 2^n(exponential), string2 = 2^n... so the total complexity is 2^n*2^n = 2^2n(still exponential) 
+                - so DP could be used
+                //https://leetcode.com/problems/subsets/
+
+                [1,2,3] : Subsequence or powerset are [],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]
+                
+
+                Subsequence of 2 strings could be seen as alignments problems as below
+                 ------------------------------------------------------------------------
+                |h|o|r|s|e|     a	    _	    a	    a
+                |r|o|_|s|_|	    a	    a	    _	    b
+                -----------    match	insert	delete	edit 
+                ========================================================================
+                As a lazy manager, we wil look into the 'i'th character of text1 (we have 3 options - Delete a char, 
+                insert a new char, keep the char (could be same as text2 or may not be)). 
+                What we are looking from prefix( i-1 subordinates) is Max LCS between x0...xi-1 and Y0...Yj-1. 
+                So we can add 'i'th cost into it(if last characters are SAME), to find the overall Maximum. 
+                Depends on what i choose on 'i'th position, the subproblems are different
+
+                [Overlapping subproblems ***** and optimal substurcture - Prefix of optimal substructure must be optimal]
+                    |       (i-1)th|ith
+                ----V------------  ----
+                |x0,....xm-1| _    | xm
+                |y0.....yn-1| yn   | _
+                -----------------  ----
+                |x0,....xm-1| xm   | _
+                |y0.....yn-1| _    | yn
+                -----------------  ----
+                *************************************
+                Here, we need to find the Max reward when 2 charaters at 'i', 'j' matches in 2 strings
+                Reward  for match = 1
+	                for mismatch = 0
+	                for insertion = 0
+	                for deletion = 0
+
+                Base case 
+                f(i,0) = 0, for all 'i', 0 for mismatch
+                f(0,j) = 0, for all 'j', 0 for mismatch
+                
+                f(i,j) = Length of LCS between x0....xi and y0...yj
+                
+                f(i,j) = Max 	{ 	f(i-1, j) <-deletion
+			                        f(i, j-1) <-insertion
+			                        f(i-1, j-1) + (xi=yj)? 1: 0
+		                        }
+                     < -- text1 --->
+                -----------------------------
+                |   |"" | a | b | c | d | e |  
+                | ---------------------------
+                | ""| 0 | 0 | 0 | 0 | 0 | 0 |   --> delete steps
+                | ---------------------------
+                | a | 0 | 1 | 1 | 1 | 1 | 1 |   
+                | ---------------------------
+                | c | 0 | 1 | 1 | 2 | 2 | 2 |
+                | ---------------------------
+                | e | 0 | 1 | 1 | 2 | 2 | 3 |
+                | ---------------------------
+                */
+
+                //prev column is delete char
+                //prev row is insert char
+
+                int[][] memo = new int[text2.Length + 1][];
+                for (int r = 0; r < memo.Length; r++)
+                {
+                    memo[r] = new int[text1.Length + 1];
+                }
+
+                //for text1="", we need to INSERT only to equal string, so reward is 0, for this mismatch
+                for (int r = 0; r < memo.Length; r++)
+                {
+                    memo[r][0] = 0;
+                }
+                //for text2="", we need to DELETE only to equal string, so reward is 0, for this mismatch
+                for (int c = 0; c < memo[0].Length; c++)
+                {
+                    memo[0][c] = 0;
+                }
+
+                //f(i,j) = Max (  f(i-1,j-1) + 1(match reward), f(i-1, j) + 0(mismatch reward), f(i, j-1) + 0(mismatch reward))
+
+                for (int r = 1; r < memo.Length; r++)
+                {
+                    for (int c = 1; c < memo[0].Length; c++)
+                    {
+                        char chWrd1 = text1[c - 1];
+                        char chWrd2 = text2[r - 1];
+
+                        if (chWrd1 == chWrd2)
+                        {
+                            //if chacraters are same - NO operation required (get the diagonal value only)
+                            //add '1' reward for the match
+                            memo[r][c] = memo[r - 1][c - 1] + 1; //1 reward for match;
+                        }
+                        else
+                        {
+                            //if we update to eqalize, we came from previous diagonal character
+                            int updateCharVal = memo[r - 1][c - 1]; //get the diagonal value
+
+                            //if we delete 'chWrd1' to eqalize, we land up on previous character column 
+                            int deleteCharVal = memo[r][c - 1]; //get the previous column value
+
+                            //if we insert 'chWrd1' to eqalize, we move from previous character row
+                            int insertCharVal = memo[r - 1][c]; //get the previous row value
+
+                            //we have 3 choices, pick the Minimum cost of operation. 
+                            memo[r][c] = Math.Max(updateCharVal, Math.Max(deleteCharVal, insertCharVal)) + 0; //0 reward for mismatch;
+                        }
+                    }
+                }
+
+                return memo[memo.Length - 1][memo[0].Length - 1];
+
+                /*int[,] memo1 = new int[text1.Length, text2.Length];
+                for (int x = 0; x < text1.Length; x++)
+                    for (int y = 0; y < text2.Length; y++)
+                        memo1[x, y] = -1;
+
+                //RECURSION (Top down), start from FIRST character matcghing
+                return LCS_Recursion_StartFrom1stChar(memo1, text1, text2, 0, 0);
+                */
+            }
+
+            private int LCS_Recursion_StartFrom1stChar(int[,] memo, string text1, string text2, int text1Index, int text2Index)
+            {
+                if (text1Index == text1.Length || text2Index == text2.Length)
+                    return 0;
+
+                //if already processed, Memoization to save overlapping subproblems
+                if (memo[text1Index, text2Index] != -1)
+                    return memo[text1Index, text2Index];
+
+                int result = 0;
+                if (text1[text1Index] == text2[text2Index]) //if the last character match
+                {
+                    result = 1 + LCS_Recursion_StartFrom1stChar(memo, text1, text2, text1Index + 1, text2Index + 1);
+                }
+                else //if the last character doesn't match
+                {
+                    int resultText1 = LCS_Recursion_StartFrom1stChar(memo, text1, text2, text1Index + 1, text2Index);
+                    int resultText2 = LCS_Recursion_StartFrom1stChar(memo, text1, text2, text1Index, text2Index + 1);
+
+                    result = Math.Max(resultText1, resultText2);
+                }
+
+                //Memoization to save overlapping subproblems
+                memo[text1Index, text2Index] = result;
+
+                return result;
+            }
+        }
+
+        //583. Delete Operation for Two Strings
+        class DeleteOperationForTwoStrings
+        {
+            //https://leetcode.com/problems/delete-operation-for-two-strings/
+            public static int MinDistance(string word1, string word2)
+            {
+                //https://uplevel.interviewkickstart.com/resource/library-video-879    4:25
+
+                //Minimize deletion opeartion in both strings.... *****************
+                //in our case its to minimize both insertion and deletion operation... how ??
+                //insertion in one string is same as deletion in other string and deletion in one string is same as insertion in other string.. 
+                //so we need to minimize insertion too....
+
+                //In "MinEditDistance" problem, we found the Mininum of insertion/deletion/edition operation....
+                //here we want to we found the Mininum of insertion/deletion... how we can stop the edition operation??? 
+                //One way - increase Edition operation value to higher (3 or 4... 10), so it wont be picked by the Min function
+                //2nd way - to ignore edition values (i.e value of word1[i] != wprd2[j]) in Min function
+                /*
+                f(i, j) = Min    {
+                                    f(i - 1, j) < -deletion
+ 
+                                    f(i, j - 1) < -insertion
+ 
+                                    f(i - 1, j - 1) + 3
+ 
+                                 }
+                //prev column is delete char
+                //prev row is insert char
+                */
+                int[][] memo = new int[word2.Length + 1][];
+                for (int r = 0; r < memo.Length; r++)
+                {
+                    memo[r] = new int[word1.Length + 1];
+                }
+
+                //for str1="", we need to INSERT only to equal string
+                for (int r = 0; r < memo.Length; r++)
+                {
+                    memo[r][0] = r;
+                }
+                //for str2="", we need to DELETE only to equal string
+                for (int c = 0; c < memo[0].Length; c++)
+                {
+                    memo[0][c] = c;
+                }
+
+                //f(i,j) = Min (  f(i-1,j-1) + 3(update cost), f(i-1, j) + 1(mismatch cost), f(i, j-1) + 1(mismatch cost))
+                for (int r = 1; r < memo.Length; r++)
+                {
+                    for (int c = 1; c < memo[0].Length; c++)
+                    {
+                        char chWrd1 = word1[c - 1];
+                        char chWrd2 = word2[r - 1];
+
+                        if (chWrd1 == chWrd2)
+                        {
+                            //if chacraters are same - NO operation required (get the diagonal value only)
+                            memo[r][c] = memo[r - 1][c - 1];
+                        }
+                        else
+                        {
+                            //if we update to eqalize, we came from previous diagonal character
+                            int updateCharVal = memo[r - 1][c - 1]; //get the diagonal value
+
+                            //if we delete 'chWrd1' to eqalize, we land up on previous character column 
+                            int deleteCharVal = memo[r][c - 1]; //get the previous column value
+
+                            //if we insert 'chWrd1' to eqalize, we move from previous character row
+                            int insertCharVal = memo[r - 1][c]; //get the previous row value
+
+                            //*********Way1 - we have 2 choices, pick the Minimum cost of operation.  
+                            memo[r][c] = Math.Min(deleteCharVal, insertCharVal) + 1; //1 for insert and delete operation, Ignoring edition opearation.
+
+                            //*********Way2 - we have 3 choices, pick the Minimum cost of operation. 
+                            //memo[r][c] = Math.Min(updateCharVal + 3, Math.Min(deleteCharVal, insertCharVal) + 1); //1 for insert and delete operation, 3 for update operation (3 or higher to ensure that this value wont be picked by Min function..
+
+                        }
+                    }
+                }
+
+                return memo[memo.Length - 1][memo[0].Length - 1];
             }
         }
 
@@ -567,13 +910,127 @@ namespace ConsoleApplication1
         class ShortestCommonSupersequence
         {
             //https://leetcode.com/problems/shortest-common-supersequence/
+            public static string MinCommonSupersequence(string str1, string str2)
+            {
+                //https://uplevel.interviewkickstart.com/resource/library-video-879   4:55
+                /*Given two strings str1 and str2, return the shortest string that has both str1 and str2 as subsequences.  
+                If multiple answers exist, you may return any of them.
+
+                (A string S is a subsequence of string T if deleting some number of characters from T (possibly 0, and the 
+                characters are chosen anywhere from T) results in the string S.)
+
+
+                //the idea here is to Get Longest Common Subsequence bewteen 2 strings... then build a trace tree...
+                */
+                //prev column is delete char
+                //prev row is insert char
+
+                int[][] memo = new int[str2.Length + 1][];
+                for (int r = 0; r < memo.Length; r++)
+                {
+                    memo[r] = new int[str1.Length + 1];
+                }
+
+                //for text1="", we need to INSERT only to equal string, so reward is 0, for this mismatch
+                for (int r = 0; r < memo.Length; r++)
+                {
+                    memo[r][0] = 0;
+                }
+                //for text2="", we need to DELETE only to equal string, so reward is 0, for this mismatch
+                for (int c = 0; c < memo[0].Length; c++)
+                {
+                    memo[0][c] = 0;
+                }
+
+                //f(i,j) = Max (  f(i-1,j-1) + 1(match reward), f(i-1, j) + 0(mismatch reward), f(i, j-1) + 0(mismatch reward))
+
+                for (int r = 1; r < memo.Length; r++)
+                {
+                    for (int c = 1; c < memo[0].Length; c++)
+                    {
+                        char chWrd1 = str1[c - 1];
+                        char chWrd2 = str2[r - 1];
+
+                        if (chWrd1 == chWrd2)
+                        {
+                            //if chacraters are same - NO operation required (get the diagonal value only)
+                            //add '1' reward for the match
+                            memo[r][c] = memo[r - 1][c - 1] + 1; //1 reward for match;
+                        }
+                        else
+                        {
+                            //if we update to eqalize, we came from previous diagonal character
+                            int updateCharVal = memo[r - 1][c - 1]; //get the diagonal value
+
+                            //if we delete 'chWrd1' to eqalize, we land up on previous character column 
+                            int deleteCharVal = memo[r][c - 1]; //get the previous column value
+
+                            //if we insert 'chWrd1' to eqalize, we move from previous character row
+                            int insertCharVal = memo[r - 1][c]; //get the previous row value
+
+                            //we have 3 choices, pick the Minimum cost of operation. 
+                            memo[r][c] = Math.Max(updateCharVal, Math.Max(deleteCharVal, insertCharVal)) + 0; //0 reward for mismatch;
+                        }
+                    }
+                }
+
+                //https://uplevel.interviewkickstart.com/resource/library-video-879   5:22
+                //Now do a trace back
+                IList<char> result = new List<char>();
+                int row = str2.Length;
+                int col = str1.Length;
+
+                while (row != 0 && col != 0)
+                {
+                    //check where the value in Memo[row][col] came from
+                    if (memo[row][col] == memo[row - 1][col])
+                    {
+                        result.Add(str2[row - 1]);
+                        row--;
+                    }
+                    else if (memo[row][col] == memo[row][col - 1])
+                    {
+                        result.Add(str1[col - 1]);
+                        col--;
+                    }
+                    else //go diagonal
+                    {
+                        result.Add(str1[col - 1]);  // or result.Add(str2[row - 1]); 
+                        row--;
+                        col--;
+                    }
+                }
+
+                while (row != 0)
+                {
+                    result.Add(str2[row - 1]);
+                    row--;
+                }
+                while (col != 0)
+                {
+                    result.Add(str1[col - 1]);
+                    col--;
+                }
+
+                return new string(result.Reverse().ToArray());
+            }
+        }
+
+        //91. Decode Ways
+        public class DecodeWays
+        {
+            //https://leetcode.com/problems/decode-ways/
+            public static int NumDecodings(string s)
+            {
+                return 0;
+            }
         }
 
         //516. Longest Palindromic Subsequence
         class LongestPalindromicSubsequence
         {
             //https://leetcode.com/problems/longest-palindromic-subsequence/
-            public int LongestCommonSubsequence1(string text1, string text2)
+            public int GetLongestPalindromicSubsequence(string text1, string text2)
             {
                 return 0;
             }
@@ -618,7 +1075,7 @@ namespace ConsoleApplication1
                  -------------------------------
                  */
 
-                int[][] tabulation = new int[n][];
+                int[][] tabulation = new int[phonenumberlength][];
                 for (int r = 0; r < tabulation.Length; r++)
                 {
                     tabulation[r] = new int[10];
@@ -636,17 +1093,23 @@ namespace ConsoleApplication1
 
                 //for word length = 1 or higher
                 /* Recurrance Relation = 
-                    f(phoneLength, start) = start = n
-                                            Sum( f(phoneLength - 1 , numberWithNightMove[i....n]) )
-                                            start = i   
-                */
+                    f(phoneLength, start) = phoneLength = n
+                                            Sum( f(phoneLength - 1, numberWithNightMove[0,1,2,...8,9]) )
+                                            phoneLength = 1   
+                
+                 As a lazy manager, I will look into the digit that i can put on 'i'th position. 
+                 The last digit could be 0,1...9 depends on weather the previous digit (of previous phone_number_length) 
+                 was a 4 or 6, a 6 or 8 and so on. **********************                 
+                 */
+
                 for (int r = 1; r < tabulation.Length; r++)
                 {
                     for (int d = 0; d < 10; d++)
                     {
                         int sum = 0;
                         foreach (int d1 in numberWithNightMove[d])
-                            sum = (sum + tabulation[r - 1][d1]) % MOD;
+                            //total numbers for new 'phone length' = sum of all previous digits from 'prev length's (digits those conform to knights move)
+                            sum = (sum + tabulation[r - 1][d1]) % MOD; 
 
                         tabulation[r][d] = sum;
                     }
@@ -656,7 +1119,7 @@ namespace ConsoleApplication1
                 int total = 0;
                 for (int d = 0; d < 10; d++)
                 {
-                    total = (total + tabulation[n - 1][d]) % MOD;
+                    total = (total + tabulation[phonenumberlength - 1][d]) % MOD;
                 }
                 return total;
 
@@ -702,6 +1165,234 @@ namespace ConsoleApplication1
                 return totalCount;
             }
 
+        }
+
+        //276. Paint Fence
+        class PaintFence
+        {
+            //https://leetcode.com/problems/paint-fence/
+            public static int NumWays(int n, int k)
+            {
+                if (n == 0)
+                    return 0;
+
+                //https://uplevel.interviewkickstart.com/resource/library-video-878   2:39
+
+                //Constraint - "No more than two adjacent fence" posts have the same color.
+
+                //Counting problem... with Recursion its Exponential and also overlapping subporblems...
+
+                //For the lazy manageer, The last color could be any of the k colors (if the previous two colors were different) 
+                //or k-1 colors (if the previous two colors were the same)
+
+                //If I need to know not just the total number of ways to color the previous n-1 fence posts, 
+                //but also how many of them had the last two fences of the same color (or different color).... 
+                //that means every worker needs to calculate the number of ways to color the (prefix) fence posts upto post i, 
+                //such that the last fences were of the same color (or different color).
+                
+                /*
+                 *  total(i) = same(i) + different(i);
+                    same(i) = different(i - 1);
+                    different(i) = total(i - 1) * (k - 1);
+                */
+
+                //There are total N sub problems
+                int[] same = new int[n];
+                int[] diff = new int[n];
+                int[] total = new int[n];
+
+                //Base cases
+                same[0] = 0;  //(First post), fence no prev post to color with the same color. This is like a domino 
+                diff[0] = k;  //(First post), so we can choose from k colors 
+                total[0] = same[0] + diff[0];
+
+                for (int i = 1; i < n; i++)
+                {
+                    same[i] = diff[i - 1]; //we can use prev different colors only
+                    diff[i] = total[i - 1] * (k - 1);
+                    total[i] = same[i] + diff[i];
+                }
+
+                return total[n - 1];
+            }
+        }
+
+        //256. Paint House
+        class PaintHome
+        {
+            //https://leetcode.com/problems/paint-house/
+            public static int MinCost(int[][] costs)
+            {
+                //https://uplevel.interviewkickstart.com/resource/library-video-878   3:30
+                //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4891-6-503-0 [6:02:27]
+
+                //Constraint - no two adjacent houses have the same color.
+
+                //As a manager at nth position (we cant pick any cheap color. We have to a pick color that is NOT picked by the previous neighbour - we cant pick previous neighbour color), 
+                //we need the following info from previous ('n-1') neighbour and add 'color cost' for red, green and blue for ith position
+
+                //Min cost of painting n-1 houses ending with 'R' color
+                //Min cost of painting n-1 houses ending with 'G' color
+                //Min cost of painting n-1 houses ending with 'B' color
+
+                //f(i) = number of way to color (n-1) houses, so that 'i'th house is red
+                //f(i) = number of way to color (n-1) houses, so that 'i'th house is blue
+                //f(i) = number of way to color (n-1) houses, so that 'i'th house is green
+
+                //https://uplevel.interviewkickstart.com/resource/library-video-879   50:00
+                //If I need to know NOT just the best way to color n - 1 houses, 
+                //but the best way to color n-1 homes, so that the rightmost house could be green (or red, or blue), 
+                //so, every worker must compute these 3 informations and pass it on to the immediate manager. 
+                //If i need to color 'i'th house 'red', the predecessor's house color cannt be red.  
+                //So this information needs to be split into 3 colors, so i use the previous appropriate color count to color ith house and pass it to my manager.
+
+                if (costs.Length == 0)
+                    return 0;
+
+                //int[,] memo = new int[3, costs.Length];   //3 color, number of houses
+
+                int[] red = new int[costs.Length];   //min cost of painting n-1 house with red color
+                int[] green = new int[costs.Length];   //min cost of painting n-1 house with green color
+                int[] blue = new int[costs.Length];   //min cost of painting n-1 house with blue color
+                
+
+                //Base case
+                //red
+                //memo[0, 0] = costs[0][0];
+                red[0] = costs[0][0];
+
+                //blue
+                //memo[1, 0] = costs[0][1];
+                blue[0]= costs[0][1];
+
+                //green
+                //memo[2, 0] = costs[0][2];
+                green[0] = costs[0][2];
+
+                for (int i = 1; i < costs.Length; i++)
+                {
+                    //red
+                    red[i] = costs[i][0] + Math.Min(green[i - 1], blue[i - 1]);
+
+                    //blue
+                    blue[i] = costs[i][1] + Math.Min(red[i - 1], green[i - 1]);
+
+                    //green
+                    green[i] = costs[i][2] + Math.Min(red[i - 1], blue[i - 1]);
+                }
+
+                //last house
+                return Math.Min(red[costs.Length - 1], Math.Min(green[costs.Length - 1],
+                        blue[costs.Length - 1]));
+            }
+        }
+
+        //265. Paint House II
+        class PaintHomeII
+        {
+            //https://leetcode.com/problems/paint-house-ii/
+            public static int MinCostII(int[][] costs)
+            {
+                if (costs.Length == 0)
+                    return 0;
+
+                int[,] memo = new int[costs.Length, costs[0].Length];   //number_of_houses X colors
+
+                //total (n*K) cells
+                //complexity - (nk * kLogK) with heap, to find the Minimum amount all columns
+                //complexity - (n * K). For Each row once only, traverse all columns and find the min and 2nd min O(k). 
+                //So the total runtime for n*K cells is O(n*K), O(1) for finding min of each cell.
+
+                /*
+                f(i, c) = min cost to paint houses(0,1...i - 1,i) with the last house colored with 'c'
+
+                f(i, c) =   min over
+                            all colors  { f(i - 1, k)}
+                            k != c
+                */
+                //Base case
+                //for coloring the first home....
+                for (int c = 0; c < memo.GetLength(1); c++)
+                {
+                    memo[0, c] = costs[0][c];
+                }
+
+                //heap - k log k
+                //Heap<int> heap = new Heap<int>(memo.GetLength(1), true);
+
+                int minVal = 0;
+                int secondMinVal = 0;
+                for (int r = 1; r < memo.GetLength(0); r++)
+                {
+                    //O(K) to find the min and 2nd min
+                    minVal = int.MaxValue;
+                    secondMinVal = int.MaxValue;
+                    for (int c = 0; c < memo.GetLength(1); c++)
+                    {
+                        if(memo[r - 1, c] < minVal)
+                        {
+                            secondMinVal = minVal;
+                            minVal = memo[r - 1, c];
+                        }
+                        else if (memo[r - 1, c] < secondMinVal)
+                        {
+                            secondMinVal = memo[r - 1, c];
+                        }
+                        //heap.Push(new HeapNode<int>(memo[r - 1, c]));
+                    }
+
+                    for (int c = 0; c < memo.GetLength(1); c++)
+                    {
+                        int min = minVal;
+                        if(memo[r - 1, c] == minVal)
+                        {
+                            min = secondMinVal;
+                        }
+
+                        /*
+                        //int min = 0;
+                        if (heap.Top().val == memo[r - 1, c])
+                        {
+                            int poppedVal = heap.Pop().val;
+                            if (heap.Count > 0)
+                                min = heap.Top().val;
+                            else
+                                min = poppedVal;
+                            heap.Push(new HeapNode<int>(poppedVal));
+                        }
+                        else
+                        {
+                            min = heap.Top().val;
+                        }*/
+
+                        memo[r, c] = costs[r][c] + min;
+                    }
+
+                    //heap.Clear();
+                }
+
+                int lastRow = memo.GetLength(0) - 1;
+                if (lastRow < 0)
+                    lastRow = 0;
+
+                minVal = memo[lastRow, 0];
+                for (int c = 1; c < memo.GetLength(1); c++)
+                {
+                    if (memo[lastRow, c] < minVal)
+                    {
+                        minVal = memo[lastRow, c];
+                    }
+                }
+                return minVal;
+
+                //heap.Clear();
+                //for (int c = 0; c < memo.GetLength(1); c++)
+                //{
+                //    heap.Push(new HeapNode<int>(memo[lastRow, c]));
+                //}
+                //last row is the last home
+                //return heap.Top().val;
+            }
         }
 
         //70. Climbing Stairs
@@ -991,7 +1682,9 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/coin-change/
             public static int Min(int[] coins, int amount)
             {
-                //Optimization problem - Comination Problems (order doesnt matter) **************
+                //Optimization problem - Comination Problems (order doesn't matter) **************
+                //As a lazy manager, we need to findf, Minimum coins needs to make Amount[i],
+                //Optimal Substructure is maintained - at Amount[i], we rely on previous optimized values 
 
                 //O(N*M)
                 //Space O(N*M)
@@ -1039,6 +1732,15 @@ namespace ConsoleApplication1
             {
                 //https://uplevel.interviewkickstart.com/resource/library-video-877     3:09:17
 
+                //Optimization problem - Comination Problems (order doesn't matter) **************
+                //As a lazy manager, we need to find, Minimum coins needs to make Amount[i],
+                //Optimal Substructure is maintained - at Amount[i], we rely on previous optimized values 
+
+                // Amt -> 1...... n
+                // ----------------------------------
+                // |1 |2 |..|..|..|  |  |n-2|n-1|*N*|
+                // ----------------------------------
+
                 //O(N*M)
                 //Space O(N)
 
@@ -1064,6 +1766,117 @@ namespace ConsoleApplication1
                 }
 
                 return tab[tab.Length - 1];
+            }
+        }
+
+        //518. Coin Change 2
+        class CoinChangeII
+        {
+            //https://leetcode.com/problems/coin-change-2/
+            public int Change(int amount, int[] coins)
+            {
+                //Comination Problems (order doesn't matter) **************
+                //As a lazy manager, we need to find, total coins needs to make Amount[i],
+
+                // Amt array columns means amount value (1...... n.). This array will hold number of coins to make amount[i]
+                // ----------------------------------
+                // |1 |2 |..|..|..|  |  |n-2|n-1|*N*|
+                // ----------------------------------
+
+                //O(N*M)
+                //Space O(N)
+
+                Array.Sort(coins);
+
+                //Basicaly Its a Cominatorial (enumeration) problems repeatATION ALLOWED.... SO its O(m^n) - exponential
+                int[] tab = new int[amount + 1];
+
+                //base case - we have only 1 way to make '0' amount - i.e doing nothing
+                tab[0] = 1;
+
+                for (int r = 0; r < coins.Length; r++)  //coins
+                {
+                    for (int amt = 1; amt < tab.Length; amt++) //amount
+                    {
+                        if (amt - coins[r] >= 0) //this amt count be made (+ve val) with this coin, 
+                        {
+                            //Sum of exclude and include current coin
+                            tab[amt] += tab[amt - coins[r]];
+                        }
+                    }
+                }
+
+                return tab[tab.Length - 1];
+            }
+
+            public int CoinChange_DP(int amount, int[] coins)
+            {
+                /*  Amount -->>
+                    0  1  2  3  4  5
+                   =================
+                0 |[1]  0  0  0  0  0
+                1 |[1]  1  1  1  1  1 
+                2 |[1]  1  1  2  2  3
+                5 |[1]  1  1  2  3 [4]
+                */
+
+                //O(N^2)
+                int[][] dp = new int[coins.Length + 1][];
+                for (int x = 0; x < dp.Length; x++)
+                {
+                    dp[x] = new int[amount + 1];
+                }
+
+                //we have only 1 way to make '0' amount - i.e doing nothing
+                for (int i = 0; i <= coins.Length; i++)
+                    dp[i][0] = 1;
+
+
+                for (int i = 1; i <= coins.Length; i++)
+                {
+                    for (int j = 1; j <= amount; j++)
+                    {
+                        //exclude current coin
+                        int countWithOutCoin = dp[i - 1][j]; //exclude current coin, the value is previous coin row
+
+                        //include current coin, the total amount is reduced by current coin
+                        int remainAmt = j - coins[i - 1];
+                        int countWithCoin = remainAmt >= 0 ? dp[i][remainAmt] : 0;
+
+                        //total
+                        dp[i][j] = countWithCoin + countWithOutCoin;
+                    }
+                }
+
+                return dp[coins.Length][amount];
+            }
+
+            public void CoinChange_Recursion(int amount, int[] coins, int index, IList<int> demomination, IList<IList<int>> coinList)
+            {
+                //Same as find all SubSet of a set  problems (power set) -but only the sum of all should be = amount
+                //O(N ^ maxDepth) - N = coin count, maxDepth = number of smallest coin required to reach 'amount'
+                //Recursion with backtracking **************
+                //https://leetcode.com/problems/subsets/solution/ (find all subsets - powerset)
+                //This will do Timeout *****
+
+                if (amount == 0)
+                {
+                    coinList.Add(new List<int>(demomination));
+                    return;
+                }
+                else if (amount < 0 || index >= coins.Length)
+                    return;
+
+                //include a coin
+                demomination.Add(coins[index]);
+                CoinChange_Recursion(amount - coins[index], coins, index, demomination, coinList);
+
+                //remove the last coin and try next coins on the list
+                demomination.RemoveAt(demomination.Count - 1);
+
+                //pick the next coin
+                //index++;
+                CoinChange_Recursion(amount, coins, index + 1, demomination, coinList);
             }
         }
 
@@ -1534,49 +2347,23 @@ namespace ConsoleApplication1
                 return 0;
             }
         }
-
-        //256. Paint House
-        class PaintHome
-        {
-            //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4891-6-503-0 [6:02:27]
-            public static int MinCost(int[][] costs)
-            {
-                if (costs.Length == 0)
-                    return 0;
-
-                int[,] memo = new int[3,costs.Length];   //3 color, number of houses
-
-                //Base case
-                //red
-                memo[0, 0] = costs[0][0];
-
-                //blue
-                memo[1, 0] = costs[0][1];
-
-                //green
-                memo[2, 0] = costs[0][2];
-
-                for (int i = 1; i < memo.GetLength(1); i++)
-                {
-                    //red
-                    memo[0, i] = costs[i][0] + Math.Min(memo[1, i - 1], memo[2, i - 1]);
-                    
-                    //blue
-                    memo[1, i] = costs[i][1] + Math.Min(memo[0, i - 1], memo[2, i - 1]);
-
-                    //green
-                    memo[2, i] = costs[i][2] + Math.Min(memo[0, i - 1], memo[1, i - 1]);
-                }
-
-                //last house
-                return Math.Min(memo[0, memo.GetLength(1) - 1], Math.Min(memo[1, memo.GetLength(1) - 1], 
-                        memo[2, memo.GetLength(1) - 1]));
-            }
-        }
-
+        
 
         public static void runTest()
         {
+            DeleteOperationForTwoStrings.MinDistance("sea", "eat");
+            //[[20,19,11,13,12,16,16,17,15,9,5,18],[3,8,15,17,19,8,18,3,11,6,7,12],[15,4,11,1,18,2,10,9,3,6,4,15]]
+
+            int[][] arr = new int[2][];
+            //arr[0] = new int[12] { 20,19,11,13,12,16,16,17,15,9,5,18 };
+            //arr[1] = new int[12] { 3,8,15,17,19,8,18,3,11,6,7,12 };
+            //arr[2] = new int[12] { 15,4,11,1,18,2,10,9,3,6,4,15 };
+
+            arr[0] = new int[3] { 1, 5, 3 };
+            arr[1] = new int[3] { 2, 9, 4 };
+
+            PaintHomeII.MinCostII(arr);
+
             NthTribonacciNumber.Tribonacci(4);
 
             WordBreak.IsValid("aaaaaaa", new List<string>() { "aaaa", "aaa" });
@@ -1636,10 +2423,10 @@ namespace ConsoleApplication1
             WaysToClimbStairs.UniquePathCount(new int[] { 32, 28, 2, 14, 21, 35, 10, 29, 39, 15, 8 }, 117);
 
             //KnightDialer.numPhoneNumbers(6, 30);
-            KnightDialer.numPhoneNumbers(6, 20);
+            KnightDialer.numPhoneNumbers(20);// (6, 20);
 
             //Fibonacci.Calculate(6);
-            LevenshteinDistanceMinEditDistance.Calculate("kitten", "sitting");
+            MinEditDistanceOrLevenshteinDistance.Calculate("kitten", "sitting");
 
             HouseOfRobbers.MaxProfit(new int[] { 2, 1, 3, 5 });
             HouseOfRobbers.MaxProfit_CircularHome(new int[] { 1, 2, 3, 1 });
