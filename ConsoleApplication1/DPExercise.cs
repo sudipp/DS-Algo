@@ -8,6 +8,183 @@ namespace ConsoleApplication1
 {
     class DPExercise
     {
+        //303. Range Sum Query - Immutable
+        class RangeSumQuery
+        {
+            //https://leetcode.com/problems/range-sum-query-immutable/
+            private int[] numArray;
+            public RangeSumQuery(int[] nums)
+            {
+                // will store cumulative sum....    
+                numArray = new int[nums.Length + 1];
+
+                for (int r = 0; r < nums.Length; r++)
+                {
+                    numArray[r + 1] = numArray[r] + nums[r];
+                }
+            }
+
+            public int SumRange(int i, int j)
+            {
+                //Cum sum till J is at [j + 1]
+                //Cum sum till i-1 is at [i], so answer is simple - cumsum([j+1]) - cumsum[i] 
+
+                return numArray[j + 1] - numArray[i];
+            }
+        }
+
+        //304. Range Sum Query 2D - Immutable
+        class RangeSumQueryMatrix
+        {
+
+            private int[][] memo;
+            public RangeSumQueryMatrix(int[][] matrix)
+            {
+                if (matrix.Length == 0)
+                    return;
+                if (matrix[0].Length == 0)
+                    return;
+
+                memo = new int[matrix.Length + 1][];
+                for (int r = 0; r <= matrix.Length; r++)
+                {
+                    memo[r] = new int[matrix[0].Length + 1];
+                }
+
+                //Base case - memo[0][0,1...n] = 0
+
+                int carry = 0;
+                for (int r = 1; r <= matrix.Length; r++)
+                {
+                    //push carry on the left most cell
+                    memo[r][0] = carry;
+
+                    for (int c = 1; c <= matrix[0].Length; c++)
+                    {
+                        memo[r][c] = memo[r][c - 1] + matrix[r - 1][c - 1];
+                        carry = memo[r][c];
+                    }
+                }
+            }
+
+            public int SumRegion(int row1, int col1, int row2, int col2)
+            {
+                int sum = 0;
+                int penUltimateStartRowCol2 = memo[row1][col2 + 1];
+                int prevCell = 0;
+                int endRangeCell = 0;
+                for (int r = row1; r <= row2; r++)
+                {
+                    prevCell = memo[r + 1][col1]; //value on start range's the previous cell
+                    endRangeCell = memo[r + 1][col2 + 1]; //Value on the range end cell
+
+                    sum += (endRangeCell - penUltimateStartRowCol2) - 
+                        (prevCell - penUltimateStartRowCol2);
+                }
+
+                return sum;
+            }
+        }
+
+        //1025. Divisor Game
+        class DivisorGame
+        {
+            //https://leetcode.com/problems/divisor-game/
+            public static bool WillWin(int N)
+            {
+                /*
+                If N is even, can win.
+                If N is odd, will lose.
+
+                Recursive Prove （Top-down)
+                -------------------------------
+                If N is even.
+                We can choose x = 1.
+                The opponent will get N - 1, which is a odd.
+                Reduce to the case odd and he will lose.
+
+                If N is odd,
+                2.1 If N = 1, lose directly.
+                2.2 We have to choose an odd x.
+                The opponent will get N - x, which is a even.
+                Reduce to the case even and he will win.
+
+                So the N will change odd and even alternatively until N = 1.
+
+                Mathematical Induction Prove （Bottom-up)
+                -----------------------------------------
+                N = 1, lose directly
+                N = 2, will win choosing x = 1.
+                N = 3, must lose choosing x = 1.
+                N = 4, will win choosing x = 1.
+                ....
+
+                For N <= n, we have find that:
+                If N is even, can win.
+                If N is odd, will lose.
+
+                For the case N = n + 1
+                If N is even, we can win choosing x = 1,
+                give the opponent an odd number N - 1 = n,
+                force him to lose,
+                because we have found that all odd N <= n will lose.
+
+                If N is odd, there is no even x that N % x == 0.
+                As a result, we give the opponent a even number N - x,
+                and the opponent can win,
+                because we have found that all even N <= n can win.
+
+                Now we prove that, for all N <= n,
+                If N is even, can win.
+                If N is odd, will lose.
+
+                */
+
+                //return (N % 2 == 0);
+
+                bool?[] memo = new bool?[N + 1];
+                bool res = helper(N, memo);
+                return res;
+
+                /*
+                bool[] dp = new bool[N + 1];
+                for (int i = 2; i <= N; i++)
+                {
+                    for (int j = 1; j / 2 <= i; j++)
+                    {
+                        //dp[i-j] == false, checks if the opponent loses with 'i-j'
+                        if (i % j == 0 && !dp[i - j])
+                            dp[i] = true;
+                    }
+                }
+                return dp[N];*/
+            }
+
+            private static bool helper(int n, bool?[] dp)
+            {
+                //base case
+                if (n == 1) //who ever get 1, loses it 
+                    return false;
+
+                if (dp[n].HasValue)
+                    return dp[n].Value;
+
+                dp[n] = false;
+                for (int x = 1; x * x <= n; x++)
+                {
+                    if (n % x == 0)
+                    {
+                        if (!helper(n - x, dp))
+                        {
+                            dp[n] = true;
+                            break;
+                        }
+                    }
+                }
+                return dp[n].Value;
+            }
+        }
+
         //62. Unique Paths
         class UniquePath
         {
@@ -1022,7 +1199,456 @@ namespace ConsoleApplication1
             //https://leetcode.com/problems/decode-ways/
             public static int NumDecodings(string s)
             {
+                //https://uplevel.interviewkickstart.com/resource/library-video-880   20:00
+                //Permutational explosion -- Exponential
+                //111111 - > we can take 1 or 11, and cover the whole string... Its like fibo series or stair case prob f(n) = f(n-1) + f(n-2)
+
+                /*
+                let f(n) = total number of #valid decoding of a string of length n
+                look at the last digit. where could it have cme from?
+                either it came by itself from some letter. But for that to happen, then digit shouldn;t be 0.
+                Or it (along with the previous digit) came from a letter. For that to happen, the previous digit 
+                should be 1 or 2 and this digit be from 0 to 6
+
+                f(n) = count of #valid decoding of a string of length n
+
+                f(n) =	f(n-1) [if last digit s[n-1] != 0]
+	                        +
+	                    f(n-2) [if penultimate digit / s[n-2] = '1'
+			                        or
+		                        penultimate digit / s[n-2] = '2' and s[n-1] is {1,2,3,4,5,6}
+                */
+
+                int[] memo = new int[s.Length + 1];
+
+                //base case
+                memo[0] = 1;
+                //if first digit is 0, then its a invalid string...
+                if (s[0] == '0')
+                    memo[1] = 0;
+                else
+                    memo[1] = 1;
+
+                for (int i = 2; i < memo.Length; i++)
+                {
+                    if (s[i - 1] != '0')
+                        memo[i] += memo[i - 1];
+
+                    if (s[i - 2] == '1' || (s[i - 2] == '2' && s[i - 1] >= 48 && s[i - 1] <= 54))  //from 0 to 6
+                        memo[i] += memo[i - 2];
+                }
+
+                return memo[memo.Length - 1];
+            }
+        }
+
+        //639. Decode Ways II
+        public class DecodeWaysII
+        {
+            //https://leetcode.com/problems/decode-ways/
+            public static int NumDecodings(string s)
+            {
                 return 0;
+            }
+        }
+
+        //97. Interleaving String
+        public class InterleavingString
+        {
+            //https://leetcode.com/problems/interleaving-string/
+            public bool IsInterleave(string s1, string s2, string s3)
+            {
+                // https://uplevel.interviewkickstart.com/resource/library-video-880 1:15
+
+                //interleaving has coninatorial explosion....
+                //number of ways to generate interleaving is Exponential... I can pick 1st char from 1st string, then 2nd char from (2nd string or 1st string) and so on.
+
+                /*
+                  s1 = "adfhij" s2 = "bcegk", s3 ="abcdefghijk"
+                    a _ _ d _ f _ h i j _
+                    _ b c _ e _ g _ _ _ k
+
+                Interleaving has coninatorial explosion....Number of ways to generate interleaving is Exponential... 
+                I can pick 1st char from 1st string, then 2nd char from (2nd string or 1st string) and so on.
+
+                In interleaving, we only can think of string alignment problems with only insertions and deletions (no matches/mismatches). 
+                I look at the last alignment (a,_) or (_, a) pair to make decision.
+
+                As a lazy manager, i see the last character/alignment of final interleaving string
+                1. and find it matches only S1[i-1]
+                2. and find it matches only S2[j-1]
+                3. and find it matches both S1[i-1] and S2[j-1]
+
+                *** if it matches the last character of s1, I will hire someone to find if (s3 - last char) could be interleaving of (s1 - lastchar) and s2
+                *** if it matches the last character of s2, I will hire someone to find if (s3 - last char) could be interleaving of (s2 - lastchar) and s1
+
+                if either of them come back with TRUE, my answer would be TRUE otehrwise FALSE.
+
+                f(i,j) = 	f(i-1, j)	if (s3[i+j] == s1[i])
+		                    or
+		                    f(i, j-1) 	if (s3[i+j] == s2[j])
+
+                          d b b c a
+                        0|1|2|3|4|5
+                       -------------
+                      0|T|f|f|f|f|f|
+                       -------------
+                    a 1|T| | | | | |
+                       -------------
+                    a 2|T| | | | | |
+                       -------------
+                    b 3|f| | | | | |
+                       -------------
+                    c 4|f| | | | | |
+                       -------------
+                    c 5|f| | | | | |
+                       -------------
+                */
+
+                if (s1.Length + s2.Length != s3.Length)
+                    return false;
+
+                //There are M * N unique sub problems  
+                bool[,] memo = new bool[s1.Length + 1, s2.Length + 1];
+
+                //base case
+                //for for s1 ="" and s2 == "", interleaving possible
+                memo[0, 0] = true;
+                //for s1 ="" and s2 != ""
+                for (int c = 1; c <= s2.Length; c++)
+                {
+                    memo[0, c] = memo[0, c - 1] && s2[c - 1] == s3[c - 1];
+                }
+                //for s1 != "" and s2 == ""
+                for (int r = 1; r <= s1.Length; r++)
+                {
+                    memo[r, 0] = memo[r - 1, 0] && s1[r - 1] == s3[r - 1];
+                }
+
+                for (int r = 1; r <= s1.Length; r++)
+                {
+                    for (int c = 1; c <= s2.Length; c++)
+                    {
+                        //if last char of s3 matches the last character of s1, I will hire someone to find if (s3 - last char) could be interleaving of(s1 -lastchar) and s2
+                        //if last char of s3 matches the last character of s2, I will hire someone to find if (s3 - last char) could be interleaving of(s2 -lastchar) and s1
+
+                        memo[r, c] = (memo[r - 1, c] && s1[r - 1] == s3[r + c - 1]) //if last char of s1 matches with last char of s3
+                            ||
+                            (memo[r, c - 1] && s2[c - 1] == s3[r + c - 1]); //if last char of s2 matches with last char of s3
+                    }
+                }
+
+                return memo[memo.GetLength(0) - 1, memo.GetLength(1) - 1];
+            }
+        }
+        
+        //416. Partition Equal Subset Sum
+        class PartitionEqualSubsetSum
+        {
+            //https://leetcode.com/problems/partition-equal-subset-sum/
+            public static bool CanPartition(int[] nums)
+            {
+                //equalSubSetSumPartition_Recursion
+
+                //decision problem...
+                //Exponential number (2^N) of subsets... and overlapping subproblems...
+                //https://uplevel.interviewkickstart.com/resource/library-video-880    3:19:13
+
+                /*
+                # Here, each element can be included or excluded from the subset
+                # As a lazy manager, I will make the decision only for the last number in the subset
+                #If I include the last number, then I want to know from my reports whether they could find a subset from the previous n-1
+                                adding up to k - the last number .
+                #If I exclude the last number, then I want to know from my reports whether they could find a subset from the previous n-1
+                adding up to k.
+                #If either of these reports came back with a yes answer, then my own answer would be a yes.
+                #f(n,k) =True if there exists a subset among the first n numbers adding up to k, False otherwise
+                #f(n,k) = f(n -1,k - value of nth number) or f(n -1, k)
+                
+                Base cases: f(0,0) =True
+                    f(i,0) True because we can exclude all i elements to get a subset sum of 0
+                    f(0,k) = False because we cannot get a non-zero subset sum by including 0 elements
+                */
+
+                int total = 0;
+                foreach (int item in nums)
+                    total += item;
+
+                if (total % 2 != 0)
+                    return false;
+
+                int k = total / 2;
+
+                //Build a table with (n+l)(k+l) elements
+                bool[,] memo = new bool[nums.Length + 1, k + 1];
+
+                //Base case
+                memo[0, 0] = true;
+                for (int n = 1; n <= nums.Length; n++)
+                {
+                    //we can make 0 with any set - by excluding all of them
+                    memo[n, 0] = true; //because we can exclude all i elements to get a subset sum of 0
+                }
+                for (int amt = 1; amt <= k; amt++)
+                {
+                    //we cannot make any amount with empty set
+                    memo[0, amt] = false; //because we cannot get a non-zero subset sum by including 0 elements
+                }
+
+                //Do a full traversal of the dependency DAG table now
+                for (int n = 1; n <= nums.Length; n++)
+                {
+                    for (int target = 1; target <= k; target++)
+                    {
+                        // table[numindex][target] = True if the first numindex numbers can form a subset adding up to target
+                        // table[numindex][target] = table[numindex- l][target] or table[numindex- l][target - nums[numindex-1]]
+                        if (target >= nums[n - 1])
+                        {
+                            memo[n, target] = memo[n - 1, target] //exclude
+                                || memo[n - 1, target - nums[n - 1]];  //include
+                        }
+                        else
+                        {
+                            memo[n, target] = memo[n - 1, target];
+                        }
+                    }
+                }
+
+                return memo[nums.Length, k];
+
+                //Below recursive code also works.....
+                //************* If K is too big, then it make sense to do memoization to get the better runtime....
+                //if case of DP, you have to fill up all rows......
+
+                //Build a table with (n+l)(k+l) elements
+                bool?[,] memo1 = new bool?[nums.Length + 1, k + 1];
+
+                //Base case
+                memo1[0, 0] = true;
+                for (int n = 1; n <= nums.Length; n++)
+                {
+                    //we can make 0 with any set - by excluding all of them
+                    memo1[n, 0] = true; //because we can exclude all i elements to get a subset sum of 0
+                }
+                for (int amt = 1; amt <= k; amt++)
+                {
+                    //we cannot make any amount with empty set
+                    memo1[0, amt] = false; //because we cannot get a non-zero subset sum by including 0 elements
+                }
+                bool b = helper(nums, nums.Length - 1, k, memo1);
+                return b;
+            }
+
+            private static bool helper(int[] nums, int numindex, int target, bool?[,] memo)
+            {
+                if(memo[numindex, target].HasValue)
+                {
+                    return memo[numindex, target].Value;
+                }
+
+                if (target >= nums[numindex - 1])
+                {
+                    memo[numindex, target] = helper(nums, numindex - 1, target, memo) //exclude
+                        || helper(nums, numindex - 1, target - nums[numindex - 1], memo);  //include
+                }
+                else
+                {
+                    memo[numindex, target] = helper(nums, numindex - 1, target, memo);
+                }
+
+                return memo[numindex, target].Value;
+            }
+
+            public static List<bool> equalSubSetSumPartition_Recursion(List<int> s)
+            {
+                int total = 0;
+                foreach (int item in s)
+                    total += item;
+
+                if (total % 2 != 0)
+                    return new List<bool>();
+
+                bool[] result = new bool[s.Count];
+                List<List<int>> resultItems = new List<List<int>>();
+                List<int> slate = new List<int>();
+
+                Dictionary<string, List<List<int>>> memo = new Dictionary<string, List<List<int>>>();
+
+                if (DFS(s, 0, total / 2, 0, slate, result, resultItems, memo))
+                    return result.ToList();
+                else
+                    return new List<bool>();
+            }
+
+            private static bool DFS(List<int> s, int index, int target, int amt, List<int> slate, 
+                bool[] result, 
+                List<List<int>> resultItems, 
+                Dictionary<string, List<List<int>>> memo)
+            {
+                string key = "Sum:" + amt + "_Index:" + index;
+
+                //atleast you need 1 item in each groups (after splitting into 2 groups)
+                if (amt == target && slate.Count > 0 && slate.Count < s.Count)
+                {
+                    List<int> items = new List<int>();
+                    foreach (int sIndex in slate)
+                    {
+                        items.Add(s[sIndex]);
+                        result[sIndex] = true;
+                    }
+                    resultItems.Add(items);
+                    return true;
+                }
+
+                if (index == s.Count)// || amt > target)
+                    return false;
+                else
+                {
+                    //if key found, update amt and check with target
+                    if (memo.ContainsKey(key))
+                    {
+                        int tempAmt = amt;
+                        foreach (var exIncludeIndicies in memo[key])
+                        {
+                            //increase amount
+                            foreach (var idx in exIncludeIndicies)
+                                tempAmt += s[idx];
+
+                            //if calculated amout is equal to target
+                            if (tempAmt == target && exIncludeIndicies.Count > 0 && exIncludeIndicies.Count < s.Count)
+                            {
+                                List<int> items = new List<int>();
+                                foreach (int sIndex in exIncludeIndicies)
+                                {
+                                    items.Add(s[sIndex]);
+                                    result[sIndex] = true;
+                                }
+                                foreach (int sIndex in slate)
+                                {
+                                    items.Add(s[sIndex]);
+                                    result[sIndex] = true;
+                                }
+
+                                resultItems.Add(items);
+                                return true;
+                            }
+                            tempAmt = amt;
+                        }
+                        return false;
+                    }
+
+
+                    //exclude
+                    if (DFS(s, index + 1, target, amt, slate, result, resultItems, memo))
+                        return true;
+
+                    if (!memo.ContainsKey(key))
+                        memo.Add(key, new List<List<int>>());
+                    memo[key].Add(new List<int>(slate));
+
+                    //include
+                    //slate.Add(s[index]);
+                    slate.Add(index);
+                    if (DFS(s, index + 1, target, amt + s[index], slate, result, resultItems, memo))
+                        return true;
+
+                    if (!memo.ContainsKey(key))
+                        memo.Add(key, new List<List<int>>());
+                    memo[key].Add(new List<int>(slate));
+
+                    slate.RemoveAt(slate.Count - 1);
+                }
+
+                return false;
+            }
+        }
+        //698. Partition to K Equal Sum Subsets
+        class partitionToKequalSumSubsets
+        {
+            //https://leetcode.com/problems/partition-to-k-equal-sum-subsets/
+            public bool CanPartitionKSubsets(int[] nums, int k1)
+            {
+                return false;
+            }
+        }
+
+        //1477. Find Two Non-overlapping Sub-arrays Each With Target Sum
+        public class FindTwoNonoverlappingSubArraysEachWithTargetSum
+        {
+            //https://leetcode.com/problems/find-two-non-overlapping-sub-arrays-each-with-target-sum/
+            public static int MinSumOfLengths(int[] arr, int target)
+            {
+                //O(N), Space O(N)
+
+                int[] prefix = new int[arr.Length + 1]; //prefix[i] is the minimum length of sub-array ends before i and has sum = k,
+                int[] suffix = new int[arr.Length + 1]; //suffix[i] is the minimum length of sub-array starting at or after i and has sum = k.
+
+                //Base case - 
+                prefix[0] = 0;
+                suffix[suffix.Length - 1] = 0;
+
+                int start = 1;
+                int currSum = 0;
+                for (int i = start; i < arr.Length; i++)
+                {
+                    currSum += arr[i - 1];
+
+                    //sliding widnow - shrinks from left side, if currSum > target
+                    while (currSum > target)
+                    {
+                        currSum -= arr[start - 1];
+                        start += 1;
+                    }
+
+                    if (currSum == target)
+                    {
+                        //i - start + 1 --> this is the range that makes sum = target
+                        prefix[i] = (prefix[i - 1] > 0) ? Math.Min(i - start + 1, prefix[i - 1]) : i - start + 1;
+                    }
+                    else
+                    {
+                        //Pick the previous Min value
+                        prefix[i] = prefix[i - 1];
+                    }
+                }
+
+                //sliding widnow - shrinks from right side, if currSum > target
+                currSum = 0;
+                start = suffix.Length - 2;
+                for (int i = start; i >= 0 ; i--)
+                {   
+                    while (currSum > target)
+                    {
+                        currSum -= arr[start];
+                        start -= 1;
+                    }
+
+                    if (currSum == target)
+                    {
+                        //start - i --> this is the range that makes sum = target
+                        suffix[i] = (suffix[i + 1] > 0) ? Math.Min(start - i, suffix[i + 1]) : start - i;
+                    }
+                    else
+                    {
+                        //Pick the previous Min value, But as we are sliding width from right to left... our previous value exist on right side
+                        suffix[i] = suffix[i + 1]; 
+                    }
+
+                    //This is the suffix sum... So We are not including the current element first... 
+                    currSum += arr[i];
+                }
+
+                //Working with the idea that a non overlapping subarray lies to right and left of an index, 
+                //so we select minimum subarray from the two halves of the array.  
+                int minComb = int.MaxValue;
+                for (int i = 1; i < suffix.Length; i++)
+                {
+                    if (prefix[i] == 0 || suffix[i - 1] == 0)
+                        continue;
+
+                    minComb = Math.Min(minComb, prefix[i] + suffix[i - 1]);
+                }
+                return (minComb == int.MaxValue) ? -1 : minComb;
             }
         }
 
@@ -2093,264 +2719,203 @@ namespace ConsoleApplication1
             }
         }
 
-        class test
-        {
-            public static List<bool> equalSubSetSumPartition(List<int> s)
-            {
-                int total = 0;
-                int minRange = 0;
-                int maxRange = 0;
-                foreach (int item in s)
-                {
-                    total += item;
-                    if (item < 0) minRange += item;
-                    if (item >= 0) maxRange += item;
-                }
-
-                if (total % 2 != 0)
-                    return new List<bool>();
-
-                int half = total / 2;
-                int sumRange = maxRange - minRange + 1;
-                bool[] result = new bool[s.Count];
-                bool[][] memo = new bool[s.Count + 1][];
-                for (int r = 0; r < memo.Length; r++)
-                    memo[r] = new bool[sumRange + 1];
-
-                //// if 0 items in the list and sum is non-zero
-                //for (int c = 1; c <= half; c++)
-                //    memo[0][c] = false;
-
-                // if sum is zero
-                //for (int r = 0; r <= s.Count; r++)
-                //    memo[r][0] = true;
-
-
-                //for (int c = 0; c < sumRange; c++)
-                //{
-                //    if(minRange + c == 0) //for SUM == 0
-                //        memo[0][c] = true;
-                //}
-
-                /*
-                bool[,] dp = new bool[s.Count, maxRange - minRange + 1];
-                for (int i = 0; i < dp.GetLength(0); i++)
-                {
-                    for (int j = 0; j < dp.GetLength(1); j++)
-                    {
-                        //Console.Error.WriteLine($"{i}, {j}");
-                        int sum = minRange + j;
-
-                        if (s[i] == sum)
-                        {
-                            dp[i, j] = true;
-                        }
-                        else if (i > 0)
-                        {
-                            if (dp[i - 1, j])
-                            {
-                                dp[i, j] = true;
-                            }
-                            else if ((sum - s[i]) >= minRange && (sum - s[i]) <= maxRange)
-                            {
-                                if (dp[i - 1, sum - s[i] - minRange])
-                                {
-                                    dp[i, j] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                int halfColIndex = Math.Abs(minRange) + half;
-                for (int r = 0; r < dp.GetLength(0); r++)
-                {
-                    string str = "";
-                    for (int c = 0; c < dp.GetLength(1); c++)
-                    {
-                        str += (dp[r, c] ? "T" : "F") + ",";
-                    }
-
-                    Console.WriteLine(s[r] + ":" + str);// + dp[r,halfColIndex]);
-                }*/
-
-
-                int zezoSumColumnIndex = Math.Abs(minRange);
-                memo[0][zezoSumColumnIndex] = true;  //for empty set{}, we can make 0 sum
-
-                // if sum is zero
-                for (int r = 1; r <= s.Count; r++)
-                    memo[r][zezoSumColumnIndex] = true;
-
-                // do for ith item
-                for (int r = 1; r < s.Count; r++)
-                {
-                    // consider all sum from 1 to sum
-                    for (int c = 0; c < sumRange; c++)
-                    {
-                        int sumColumn = minRange + c;
-
-                        /*if (s[r] == sum)
-                        {
-                            //exclude the item (get data from previous row)
-                            memo[r][c] = true;
-                        }
-                        else */
-
-                        if (s[r - 1] > sumColumn)
-                        {
-                            //exclude the item (get data from previous row)
-                            memo[r][c] = memo[r - 1][c];
-                        }
-                        else
-                        {
-                            // find subset with sum j by excluding or including the ith item
-                            memo[r][c] = memo[r - 1][c] || (memo[r - 1][sumColumn - s[r - 1]]);// [c - s[r - 1]]);
-                        }
-
-
-
-                        /*
-                        // don't include ith element if j-arr[i-1] is negative
-                        if (s[r - 1] > c)
-                            memo[r][c] = memo[r - 1][c];
-                        else
-                        {
-                            // find subset with sum j by excluding or including the ith item
-                            memo[r][c] = memo[r - 1][c] || (c - s[r - 1] >= 0 && c - s[r - 1] < half && memo[r - 1][c - s[r - 1]]);
-                        }*/
-                    }
-                }
-
-                int halfColIndex = Math.Abs(minRange) + half;
-                for (int r = 0; r < memo.Length; r++)
-                {
-                    string str = "";
-                    for (int c = 0; c < memo[0].Length; c++)
-                    {
-                        str += (memo[r][c] ? "T" : "F") + ",";
-                    }
-
-                    Console.WriteLine(":" + str);// + dp[r,halfColIndex]);
-                }
-
-                return result.ToList();
-            }
-
-            public static List<bool> equalSubSetSumPartition_Recursion(List<int> s)
-            {
-                int total = 0;
-                foreach (int item in s)
-                    total += item;
-
-                if (total % 2 != 0)
-                    return new List<bool>();
-
-                bool[] result = new bool[s.Count];
-                List<List<int>> resultItems = new List<List<int>>();
-                List<int> slate = new List<int>();
-
-                Dictionary<string, List<List<int>>> memo = new Dictionary<string, List<List<int>>>();
-
-                if (DFS(s, 0, total / 2, 0, slate, result, resultItems, memo))
-                    return result.ToList();
-                else
-                    return new List<bool>();
-            }
-
-            private static bool DFS(List<int> s, int index, int target, int amt, List<int> slate, bool[] result, List<List<int>> resultItems, Dictionary<string, List<List<int>>> memo)
-            {
-                string key = "Sum:" + amt + "_Index:" + index;
-
-                //atleast you need 1 item in each groups (after splitting into 2 groups)
-                if (amt == target && slate.Count > 0 && slate.Count < s.Count)
-                {
-                    List<int> items = new List<int>();
-                    foreach (int sIndex in slate)
-                    {
-                        items.Add(s[sIndex]);
-                        result[sIndex] = true;
-                    }
-                    resultItems.Add(items);
-                    return true;
-                }
-
-                if (index == s.Count)// || amt > target)
-                    return false;
-                else
-                {
-                    //if key found, update amt and check with target
-                    if (memo.ContainsKey(key))
-                    {
-                        int tempAmt = amt;
-                        foreach (var exIncludeIndicies in memo[key])
-                        {
-                            //increase amount
-                            foreach (var idx in exIncludeIndicies)
-                                tempAmt += s[idx];
-
-                            //if calculated amout is equal to target
-                            if (tempAmt == target && exIncludeIndicies.Count > 0 && exIncludeIndicies.Count < s.Count)
-                            {
-                                List<int> items = new List<int>();
-                                foreach (int sIndex in exIncludeIndicies)
-                                {
-                                    items.Add(s[sIndex]);
-                                    result[sIndex] = true;
-                                }
-                                foreach (int sIndex in slate)
-                                {
-                                    items.Add(s[sIndex]);
-                                    result[sIndex] = true;
-                                }
-
-                                resultItems.Add(items);
-                                return true;
-                            }
-                            tempAmt = amt;
-                        }
-                        return false;
-                    }
-
-
-                    //exclude
-                    if (DFS(s, index + 1, target, amt, slate, result, resultItems, memo))
-                        return true;
-
-                    if (!memo.ContainsKey(key))
-                        memo.Add(key, new List<List<int>>());
-                    memo[key].Add(new List<int>(slate));
-
-                    //include
-                    //slate.Add(s[index]);
-                    slate.Add(index);
-                    if (DFS(s, index + 1, target, amt + s[index], slate, result, resultItems, memo))
-                        return true;
-
-                    if (!memo.ContainsKey(key))
-                        memo.Add(key, new List<List<int>>());
-                    memo[key].Add(new List<int>(slate));
-
-                    slate.RemoveAt(slate.Count - 1);
-                }
-
-                return false;
-            }
-        }
-
-
         class KnapSack
         {
             public static int Solve()
             {
+                
+
+                //https://uplevel.interviewkickstart.com/resource/library-video-880  4:15
+
+                //Most ofKnapsack problems would be solved with DP and with 2D array. ******
+
                 return 0;
             }
         }
         
+        //53. Maximum Subarray
+        class MaximumSubarraySum
+        {
+            //https://leetcode.com/problems/partition-to-k-equal-sum-subsets/solution/
+            public static int MaxSubArraySum(int[] nums)
+            {
+                //f(i) = max sum endging at i
+                //f(i) = max(f(i - 1) + num[i], num[i])
+
+                //Kadane Algo....
+
+                int[] dp = new int[nums.Length + 1];
+                dp[0] = 0;
+
+                int max = int.MinValue;
+                for (int j = 1; j <= nums.Length; j++)
+                {
+                    dp[j] = Math.Max(dp[j - 1] + nums[j - 1], nums[j - 1]);
+                    max = Math.Max(max, dp[j]);
+                }
+                return max;
+
+                /*
+
+                // stores maximum sum sub-array found so far
+                int maxSumSofar = nums[0];
+
+                // stores maximum sum of sub-array ending at current position
+                int maxEndingHere = nums[0];
+
+                for (int i = 1; i < nums.Length; i++) {
+
+                    maxEndingHere = Math.Max(maxEndingHere + nums[i], nums[i]);
+                    maxSumSofar = Math.Max(maxSumSofar, maxEndingHere);            
+                }
+                return maxSumSofar;
+
+                */
+            }
+        }
+
+        //152. Maximum Product Subarray
+        class MaxProductSubarray
+        {
+            public static int MaxProduct(int[] nums)
+            {
+                //f(i) = max & min product endging at i
+
+                /*
+                f(i, max) =  max{ 
+                                    num[i] 
+                                        or 
+                                    f(i - 1, max) * num[i]
+                                        or 
+                                    f(i - 1, min) * num[i]
+                                } 
+                f(i, min) =  min{ 
+                                    num[i] 
+                                        or 
+                                    f(i - 1, max) * num[i]
+                                        or 
+                                    f(i - 1, min) * num[i]
+                                } 
+
+                //further memory optimization could be done with 2 variables only **** 1 for Max product at i-1 and other for min product at i-1, 
+                */
+                if (nums.Length == 0)
+                    return 0;
+
+                //we need to 2 columns
+                //first column will hold Max product at i
+                //2nd column will hold min product at i
+
+                int[,] dp = new int[nums.Length, 2];
+                dp[0, 0] = nums[0]; //max product
+                dp[0, 1] = nums[0]; //min product
+
+                int max = nums[0];
+                for (int j = 1; j < nums.Length; j++)
+                {
+                    int maxMul = dp[j - 1, 0] * nums[j];
+                    int minMul = dp[j - 1, 1] * nums[j];
+
+                    dp[j, 0] = Math.Max(Math.Max(maxMul, minMul), nums[j]);
+                    dp[j, 1] = Math.Min(Math.Min(maxMul, minMul), nums[j]);
+
+                    max = Math.Max(max, dp[j, 0]);
+                }
+                return max;
+            }
+        }
+
+        //1105. Filling Bookcase Shelves
+        class FillingBookcaseShelves
+        {
+            //https://leetcode.com/problems/filling-bookcase-shelves/
+            public static int MinHeightShelves(int[][] books, int shelf_width)
+            {
+                int n = books.Length;
+
+                /*
+                The key idea of this algorithm goes as follows
+
+                1) Start placing books one by one, always use a new shelve to begin with
+                2) After you stored the new height value at this position in your dp array, start looking back at previous books one by one, and see while the width permits, how many books you can fit on this new level.
+                3) Check to see if bringing said books down reduced the overall height, if it did, update the new loest height value at your dp array.
+                4) return the last element of your dp array
+                */
+
+                // f(i): min height for books[0] ~ books[i]
+                /*
+                    f(i) = Min {
+                                f(i - 1) + Height(i),
+
+                                f(i - j) +  sum_bookwidth = shelf_width
+                                                Max(Height(i), height(i - 1) ... height(i-j)),
+                                            sum_bookwidth = 0
+                            }
+                */
+                int[] dp = new int[n + 1];
+                dp[0] = 0; //1 for height
+
+                for (int i = 1; i <= n; i++)
+                {
+                    int curWidth = books[i - 1][0]; //width
+                    int curHeight = books[i - 1][1]; //height
+
+                    //Always use a new shelve to begin with, so calculate the 'New Height'
+                    dp[i] = dp[i - 1] + curHeight;
+
+                    //Start looking back at previous books one by one, and see while the width permits, how many books you can fit on this new level.  
+                    for (int r = i - 1; r > 0; r--)
+                    {
+                        curWidth += books[r - 1][0];
+
+                        if (curWidth > shelf_width)
+                        {
+                            break;
+                        }
+
+                        //pick the Max height amount previous books and new book
+                        curHeight = Math.Max(books[r - 1][1], curHeight);
+
+                        //Check to see if bringing said books down reduced the overall height, if it did, update the new lowest height value at dp array.               
+                        dp[i] = Math.Min(dp[i], dp[r - 1] + curHeight); //adding dp[r - 1] means, this is where we will break, previous books and bring them with new book to new selve, so updating Min height of selve.
+                    }
+                }
+
+                return dp[n];
+            }
+        }
 
         public static void runTest()
         {
+            FindTwoNonoverlappingSubArraysEachWithTargetSum.MinSumOfLengths(new int[] {  3, 1, 1, 1, 5, 1, 2, 1 }, 3);
+
+            DivisorGame.WillWin(123);
+
+            int[][] mt1 = new int[5][];
+            mt1[0] = new int[5] { 3, 0, 1, 4, 2};
+            mt1[1] = new int[5] { 5, 6, 3, 2, 1 };
+            mt1[2] = new int[5] { 1,2,0,1,5 };
+            mt1[3] = new int[5] { 4,1,0,1,7 };
+            mt1[4] = new int[5] { 1,0,3,0,5 };
+
+            //[[[[3,0,1,4,2],[5,6,3,2,1],[1,2,0,1,5],[4,1,0,1,7],[1,0,3,0,5]]],[2,1,4,3],[1,1,2,2],[1,2,2,4]]
+
+            RangeSumQueryMatrix m1 = new RangeSumQueryMatrix(mt1);
+            m1.SumRegion(2, 1, 4, 3);// 1, 0, 1, 0);
+
+            int[][] books = new int[3][];
+            books[0] = new int[2] { 1, 3 };
+            books[1] = new int[2] { 2, 4 };
+            books[2] = new int[2] { 3, 2 };
+            FillingBookcaseShelves.MinHeightShelves(books,4);
+
+            RangeSumQuery s = new RangeSumQuery(new int[] { -2, 0, 3, -5, 2, -1 });
+            s.SumRange(2, 5);
+
+            PartitionEqualSubsetSum.CanPartition(new int[] { 3, 3, 3, 4, 5 });
+            PartitionEqualSubsetSum.equalSubSetSumPartition_Recursion(new List<int>(new int[] { 3, 3, 3, 4, 5 }));
+            DecodeWays.NumDecodings("226");
+
             DeleteOperationForTwoStrings.MinDistance("sea", "eat");
             //[[20,19,11,13,12,16,16,17,15,9,5,18],[3,8,15,17,19,8,18,3,11,6,7,12],[15,4,11,1,18,2,10,9,3,6,4,15]]
 
@@ -2412,12 +2977,12 @@ namespace ConsoleApplication1
 
             CoinChange.Min_1DArray(new int[] { 1, 5, 7 }, 9);
 
-            test.equalSubSetSumPartition(new List<int>(new int[] { 12, 8, 0, -2, -3, 3, 2 })); // 7, 3,2,5,1 }));
+            PartitionEqualSubsetSum.equalSubSetSumPartition_Recursion(new List<int>(new int[] { 12, 8, 0, -2, -3, 3, 2 })); // 7, 3,2,5,1 }));
 
-            test.equalSubSetSumPartition_Recursion(new List<int>(new int[] { 26,22,27,22,1,-4,18,0,3,2,9,14,-16,29,1,-4,0,29,32,8,-29,-29,3,-30,32,17,-20,-31,25,0,16,0,4,16,30,20,15,22,-6,10,-9,12,31,-16,-2,-29,13,-9,-5,6,21,92,9,-32,-21,19,-3,24,0,-3,0,0,-13,-14,-5,0,6,28,6,-17,-2,3,22,3,23,-5,-16,24,0,12,22,3,0,2,0,-26,21,0,48,17,13,32,29,-30,3,5,-14,-16,13,57 }));
+            PartitionEqualSubsetSum.equalSubSetSumPartition_Recursion(new List<int>(new int[] { 26,22,27,22,1,-4,18,0,3,2,9,14,-16,29,1,-4,0,29,32,8,-29,-29,3,-30,32,17,-20,-31,25,0,16,0,4,16,30,20,15,22,-6,10,-9,12,31,-16,-2,-29,13,-9,-5,6,21,92,9,-32,-21,19,-3,24,0,-3,0,0,-13,-14,-5,0,6,28,6,-17,-2,3,22,3,23,-5,-16,24,0,12,22,3,0,2,0,-26,21,0,48,17,13,32,29,-30,3,5,-14,-16,13,57 }));
 
 
-            test.equalSubSetSumPartition_Recursion(new List<int>(new int[] { 12, 8,0,-2,-3,3,2 } ));
+            PartitionEqualSubsetSum.equalSubSetSumPartition_Recursion(new List<int>(new int[] { 12, 8,0,-2,-3,3,2 } ));
 
 
             WaysToClimbStairs.UniquePathCount(new int[] { 32, 28, 2, 14, 21, 35, 10, 29, 39, 15, 8 }, 117);
