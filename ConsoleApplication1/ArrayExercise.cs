@@ -7,7 +7,224 @@ namespace ConsoleApplication1
 {
     public class ArrayExercise
     {
-        
+        //523. Continuous Subarray Sum
+        class ContinuousSubarraySumMultiplesOfK
+        {
+            //https://leetcode.com/problems/continuous-subarray-sum/
+            public static bool CheckSubarraySum(int[] nums, int k)
+            {
+                //Given a list of non - negative numbers and a target integer k, write a function to check if the array 
+                //has a continuous subarray of size at least 2 that sums up to a multiple of k, that is, sums up to n*k where n is also an integer.
+
+                Dictionary<int, int> seen = new Dictionary<int, int>();
+                //Base case
+                seen.Add(0, -1); //-1 to avoid 
+
+                int cur = 0;
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    cur += nums[i];
+
+                    if (k != 0)
+                        cur %= k;
+
+                    if (seen.ContainsKey(cur))
+                    {
+                        if (i - seen[cur] > 1) //atleast size of subarray is 2 
+                            return true;
+                    }
+                    else
+                        seen.Add(cur, i);
+                }
+
+                return false;
+            }
+        }
+
+        //560. Subarray Sum Equals K
+        class CountSubarraySumEqualsK
+        {
+            //https://leetcode.com/problems/subarray-sum-equals-k/submissions/
+            public static int CountSubarraySum(int[] nums, int k)
+            {
+                //O(N), Space O(N)
+                /*
+                Cumulative sum property
+                ==========================================
+                0-------|i|-------------|j|
+
+                sum(i,j)= sum(0,j) - sum(0,i), where sum(i,j) represents the sum of all the elements from index i to j-1
+                => k = sum(0,j) - sum(0,i)
+                => sum(0,i) - k = sum(0,i)
+                */
+
+                //**********************************************
+                //if you need list of subarrays, then store the Indicies in dictionary
+                //Else you can put count of indices in a integer.. instead of list         
+
+                Dictionary<int, IList<int>> dp = new Dictionary<int, IList<int>>();
+                //Dictionary<int, int> dp1 = new Dictionary<int, int>();
+                int cumSum = 0;
+                int count = 0;
+                //int count1 = 0;
+
+                //Initially Add Sum 0 with 1 occurance
+                dp.Add(0, new List<int>() { 1 }); //to handle the case when sub-array with sum S starts from index 0
+                                                  //dp1.Add(0, 1);
+
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    cumSum += nums[i];
+
+                    if (dp.ContainsKey(cumSum - k))
+                    {
+                        IList<int> lstInx = dp[cumSum - k];
+                        for (int j = 0; j < lstInx.Count; j++)
+                        {
+                            count++;
+                            //Console.WriteLine("[" + (lstInx[j] + 1) + ", " + i + "]" + " - Length : " + (i - lstInx[j]));    
+                        }
+                    }
+
+                    /*if (dp1.ContainsKey(cumSum - k))
+                    {
+                        count1 += dp1[cumSum - k];  
+                    }*/
+
+                    if (!dp.ContainsKey(cumSum))
+                        dp.Add(cumSum, new List<int>());
+
+                    dp[cumSum].Add(i);
+
+                    /*
+                    if (!dp1.ContainsKey(cumSum))
+                        dp1.Add(cumSum, 0);            
+                    dp1[cumSum] ++;
+                    */
+                }
+
+                return count;
+            }
+        }
+
+        //974. Subarray Sums Divisible by K
+        class SubarraysSumDivByK
+        {
+            //https://leetcode.com/problems/subarray-sums-divisible-by-k/
+            public static int SubarraysDivByK(int[] A, int K)
+            {
+                /*
+                we find subarray sum from from i to j by 
+                SUM[i-1] - SUM[j]
+
+                if it has to be div by K then 
+                SUM[i-1] - SUM[j] = K*something
+
+                => (SUM[i-1] - SUM[j]) %K  = (K*something) %K = 0
+                => SUM[i-1] % k == SUM[j]%k
+
+                So basically for any SUM[i] if its remainder is same as remainder of any other SUM[ some index] then their sum % k == 0
+                */
+
+                Dictionary<int, int> dp = new Dictionary<int, int>();
+
+                //setting count for only 0th element to be 1 
+                //because we have sub array = [] which has sum of 0
+
+                dp.Add(0, 1);
+
+                int cumSum = 0, count = 0;
+                for (int i = 0; i < A.Length; i++)
+                {
+                    cumSum += A[i];
+
+                    //plus K beacuse there are negative nums too
+                    int rem = ((cumSum % K) + K) % K;
+
+                    if (dp.ContainsKey(rem))
+                        count += dp[rem];
+
+                    if (!dp.ContainsKey(rem))
+                        dp.Add(rem, 0);
+
+                    dp[rem]++;
+                }
+                return count;
+            }
+        }
+
+        //1590. Make Sum Divisible by P
+        class MakeSumDivisiblebyP
+        {
+            //https://leetcode.com/problems/make-sum-divisible-by-p/
+            public static int MinSubarray(int[] nums, int p)
+            {
+                /*
+                Let pre[] be the prefix sum array,
+                then pre[i] is running prefix sum or prefix sum of i elements,
+                pre[j] is the prefix sum such that pre[i]-pre[j] is the subarray we need to remove to make pre[n] (sum of all elements) divisible by p
+
+                (pre[n] - (pre[i]-pre[j])) % p = 0 ... (remove a subarray to make pre[n] divisible by p)
+                => pre[n] % p = (pre[i]-pre[j]) % p ... ((a-b)%m = a%m - b%m)
+                => pre[j]%p = pre[i]%p - pre[n]%p ... (same property used above)
+                since RHS can be negative we make it positive modulus by adding p and taking modulus
+                => pre[j]%p = (pre[i]%p - pre[n]%p + p) % p
+                */
+
+                //****************************************
+                //Store The cum Sum % p on DP array ******
+                //****************************************
+
+                long cSum = 0;
+
+                //Minimum subarry to remove cannt be bigger than length of array
+                int min = nums.Length;
+
+                ////**************************************************************************************************
+                //If we dont store cumSum as (cumSum % p), then there would be integer overflow.. so I used 'long' type variable.
+                //But both of these approach give same result...
+                //for (int i = 0; i < nums.Length; i++)
+                //    cSum += nums[i];
+                //**************************************************************************************************
+                for (int i = 0; i < nums.Length; i++)
+                    cSum = (cSum + nums[i]) % p;
+
+                //long modToReduce = cSum % p;
+                long modToReduce = cSum;
+
+                //No modToReduce, then exit
+                if (modToReduce == 0)
+                    return 0;
+
+                Dictionary<int, int> dp = new Dictionary<int, int>();
+
+                //setting count for only 0th element to be -1 
+                //because we have sub array = [] which has sum of 0
+                dp.Add(0, -1);
+
+                cSum = 0;
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    cSum += nums[i];
+                    //cSum = (cSum + nums[i]) % p;
+
+                    //per above formula
+                    //plus P beacuse there are negative nums too
+                    int prev = (int)(((cSum % p) - modToReduce) + p) % p;
+                    //int prev = (int)((cSum - modToReduce) + p) % p;
+
+                    if (dp.ContainsKey(prev))
+                        min = Math.Min(min, i - dp[prev]);
+
+                    //Store cum sum % p
+                    dp[(int)(cSum % p)] = i;
+                    //dp[(int)cSum] = i;
+                }
+
+                //Minimum subarry to remove cannt be bigger than length of array
+                return min >= nums.Length ? -1 : min;
+            }
+        }
 
         public static int[] MergeSortedArrays(int[] myArray, int[] alicesArray) //O(n) time and O(n)
         {

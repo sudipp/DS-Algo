@@ -1500,9 +1500,61 @@ namespace ConsoleApplication1
 
             }
         }
+        
+        class CutRibbons
+        {
+            //https://ideahive.me/2021/01/01/google-cut-ribbon-binarysearch/
+            public static int greatestLength(int[] arr, int k)
+            {
+                //O(N), Space - O(1)
+
+                //We can't cut the ribbon bigger than its Max piece size, so find the max piece size
+                int max = int.MinValue;
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    max = Math.Max(max, arr[i]);
+                }
+
+                //low could be the smallest size - which is 1
+                int loSize = 1, hiSize = max;
+
+                //Do binary search to find the the optimum size faster, than lierar search
+                while (loSize <= hiSize)
+                {
+                    int midSize = loSize + (hiSize - loSize) / 2;
+                    int countPieceByMidSize = getLen(arr, midSize);
+
+                    // countPieceByMidSize > = k, we can further go for bigger 'size' cut, to see if we still atleast k cuts
+                    if (countPieceByMidSize >= k)
+                    {
+                        loSize = midSize + 1;
+                    }
+                    else
+                    {
+                        hiSize = midSize - 1;
+                    }
+                }
+
+                //return the max size
+                return hiSize;
+            }
+
+            private static int getLen(int[] arr, int target)
+            {
+                int res = 0;
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    //add the count, by splitting a[i] by target
+                    res += (arr[i] / target);
+                }
+                return res;
+            }
+        }
 
         public static void runTest()
         {
+            CutRibbons.greatestLength(new int[] { 1, 2, 3, 4, 9 }, 5);
+
             //FindtheClosestPalindrome.NearestPalindromic("14");
 
             MincostToHireWorkers.GetMincost(new int[] { 10, 20, 5}, new int[]{70,50,30},2);
