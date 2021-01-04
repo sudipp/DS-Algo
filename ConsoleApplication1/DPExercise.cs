@@ -219,18 +219,25 @@ namespace ConsoleApplication1
             public static int GetMinPathSum(int[][] grid)
             {
                 //Permutation problem****
+                
+                //Exponential ... overlapping subproblems - optimal substructure
 
                 int[][] dp = new int[grid.Length][];
                 for (int r = 0; r < dp.Length; r++)
                     dp[r] = new int[grid[0].Length];
 
+                //base case
                 dp[0][0] = grid[0][0];
 
+                //Min path to traverse horizontally only
                 for (int r = 1; r < dp.Length; r++)
                     dp[r][0] = dp[r - 1][0] + grid[r][0];
+
+                //Min path to traverse vertically only
                 for (int c = 1; c < dp[0].Length; c++)
                     dp[0][c] = dp[0][c - 1] + grid[0][c];
 
+                //we can reach this cell[r,c] from top or left side, store their min
                 for (int r = 1; r < grid.Length; r++)
                     for (int c = 1; c < grid[0].Length; c++)
                         dp[r][c] = Math.Min(dp[r][c - 1], dp[r - 1][c]) + grid[r][c];
@@ -2053,6 +2060,41 @@ namespace ConsoleApplication1
             }
         }
 
+        class AmericanFootballScore
+        {
+            //https://stackoverflow.com/questions/9206903/algorithm-to-get-all-combinations-of-american-football-point-accumulations-nec
+            public static long CombinationalCountToFinalScore(int[] points, int FinalScore)
+            {
+                /*Like 
+                    WaysToClimbStairs(points, FinalScore)
+                    CoinChangeII(FinalScore, points)
+                */
+
+                //By Tilo..  https://uplevel.interviewkickstart.com/resource/associated-class-video-4891-6-1044-1  1:20
+                
+                //Basicaly Its a Cominatorial (enumeration) problems repeatATION ALLOWED.... SO its O(m^n) - exponential
+                int[] tab = new int[FinalScore + 1];
+
+                //base case - we have only 1 way to score 0 - i.e doing nothing
+                tab[0] = 1;
+
+                for (int r = 0; r < points.Length; r++)  //points
+                {
+                    for (int score = 1; score < tab.Length; score ++) //score
+                    {
+                        if (score - points[r] >= 0) //this amt count be made (+ve val) with this coin, 
+                        {
+                            //Sum of exclude and include current coin
+                            tab[score] += tab[score - points[r]];
+                        }
+                    }
+                }
+
+                return tab[tab.Length - 1];
+            }
+        }
+
+
         //746. Min Cost Climbing Stairs
         class MinCostClimingStairs
         {
@@ -2885,8 +2927,149 @@ namespace ConsoleApplication1
             }
         }
 
+        //174. Dungeon Game
+        class DungeonGame
+        {
+            //https://leetcode.com/problems/dungeon-game/
+            public static int CalculateMinimumHP(int[][] dungeon)
+            {
+                //Permutation problem****
+                //Exponential ... overlapping subproblems - optimal substructure
+
+                //******************************
+                //It is a variation of Min Path Sum - MinPathSum.GetMinPathSum() - 64. Minimum Path Sum
+                //******************************
+
+                //https://www.youtube.com/watch?v=LbC0ejgACkE
+                //https://www.youtube.com/watch?v=4uUGxZXoR5o ...
+
+                int rows = dungeon.Length;
+                int cols = dungeon[0].Length;
+                int[][] dp = new int[rows][];
+
+                for (int x = 0; x < dp.Length; x++)
+                {
+                    dp[x] = new int[cols];
+                }
+
+                //The minimum health neeeded, to be alive in princess room...
+                //If the Cell value is -ve, we need atleast Abs(dungeon[rows - 1][cols - 1]) + 1
+                //if the cell value is +ve, we need atleast 1 to be alive
+                dp[rows - 1][cols - 1] = dungeon[rows - 1][cols - 1] > 0 ? 1 : (1 - dungeon[rows - 1][cols - 1]);
+
+                //for last column(above pricess room), the min health required, to reach below cell .....
+                for (int row = rows - 2; row >= 0; row--)
+                    dp[row][cols - 1] = Math.Max(dp[row + 1][cols - 1] - dungeon[row][cols - 1], 1);
+
+                //for last rows, the min health required, to reach right cell.....
+                for (int col = cols - 2; col >= 0; col--)
+                    dp[rows - 1][col] = Math.Max(dp[rows - 1][col + 1] - dungeon[rows - 1][col], 1);
+
+                //min of (right and below cell) - subtract the current cell value
+                for (int row = rows - 2; row >= 0; row--)
+                {
+                    for (int col = cols - 2; col >= 0; col--)
+                    {
+                        //the min health required, to reach either right/bottom cell, depends on the the which one is smaller.....
+                        int minVal = Math.Min(dp[row + 1][col], dp[row][col + 1]);
+                        dp[row][col] = Math.Max(minVal - dungeon[row][col], 1);
+                    }
+                }
+
+                return dp[0][0];
+            }
+        }
+
+        //741. Cherry Pickup
+        public class CherryPickup
+        {
+            public static int MaxCherryPickup(int[][] grid)
+            {
+                //Similar to -----
+                //Minimum Path Sum  - MinPathSum.GetMinPathSum(grd);
+                //DungeonGame  - DungeonGame.CalculateMinimumHP
+
+
+                //Permutation problem****
+                //Exponential ... overlapping subproblems - optimal substructure
+
+                //Traverse the grid from (0,0) to bottom right most cells (twice together to pick the maximum cherries). 
+                //If you go from top/left to bottom/right first and come back to (0,0) - during return your choice to pick the maximum cherry depends on 
+                //the coming to (top to bottom treaversal).. See the definition.
+
+                //https://leetcode.com/problems/cherry-pickup/discuss/165218/Java-O(N3)-DP-solution-w-specific-explanation
+
+                //O(N^3), Space O(N^3)
+
+                int n = grid.Length;
+                int[][][] dp = new int[n + 1][][];
+                for (int i = 0; i <= n; i++)
+                {
+                    dp[i] = new int[n + 1][];
+                    for (int j = 0; j <= n; j++)
+                    {
+                        dp[i][j] = new int[n + 1];
+                        for (int k = 0; k <= n; k++)
+                        {
+                            dp[i][j][k] = int.MinValue;
+                        }
+                    }
+                }
+
+                dp[1][1][1] = grid[0][0];
+
+                for (int x1 = 1; x1 <= n; x1++)
+                {
+                    for (int y1 = 1; y1 <= n; y1++)
+                    {
+                        for (int x2 = 1; x2 <= n; x2++)
+                        {
+                            //x1 + y1 = x2 + y2
+                            //=>y2 = x1 + y1 - x2;
+
+                            int y2 = x1 + y1 - x2;
+
+                            if (dp[x1][y1][x2] > 0 || y2 < 1 || y2 > n || grid[x1 - 1][y1 - 1] == -1 || grid[x2 - 1][y2 - 1] == -1)
+                            {
+                                continue;
+                                // have already detected || out of boundary || cannot access 
+                            }
+
+                            int cur = Math.Max(
+                                Math.Max(dp[x1 - 1][y1][x2], dp[x1 - 1][y1][x2 - 1]),
+                                Math.Max(dp[x1][y1 - 1][x2], dp[x1][y1 - 1][x2 - 1]));
+
+                            if (cur < 0)
+                            {
+                                continue;
+                            }
+
+                            dp[x1][y1][x2] = cur + grid[x1 - 1][y1 - 1];
+                            if (x1 != x2) //update for one
+                            {
+                                dp[x1][y1][x2] += grid[x2 - 1][y2 - 1];
+                            }
+                        }
+                    }
+                }
+                return dp[n][n][n] < 0 ? 0 : dp[n][n][n];
+            }
+        }
+
         public static void runTest()
         {
+            int[][] mt2 = new int[3][];
+            mt2[0] = new int[3] { 0,1,-1 };
+            mt2[1] = new int[3] { 1,0,-1 };
+            mt2[2] = new int[3] { 1,1,1 };
+            CherryPickup.MaxCherryPickup(mt2);
+
+            int[][] dungeon = new int[3][];
+            dungeon[0] = new int[3] { -2, - 3,  3 };
+            dungeon[1] = new int[3] { -5, - 10, 1 };
+            dungeon[2] = new int[3] { 10, 30, - 5 };
+            DungeonGame.CalculateMinimumHP(dungeon);
+
             FindTwoNonoverlappingSubArraysEachWithTargetSum.MinSumOfLengths(new int[] {  3, 1, 1, 1, 5, 1, 2, 1 }, 3);
 
             DivisorGame.WillWin(123);

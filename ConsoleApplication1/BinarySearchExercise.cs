@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ConsoleApplication1
@@ -507,8 +508,34 @@ namespace ConsoleApplication1
             return pow;
         }
 
+
+        //35. Search Insert Position
+        class SearchInsertPosition
+        {
+            public static int SearchInsert(int[] nums, int target)
+            {
+                int lo = 0, hi = nums.Length - 1;
+
+                while (lo <= hi)
+                {
+                    int mid = lo + (hi - lo) / 2;
+
+                    if (nums[mid] == target)
+                        return mid;
+                    else if (nums[mid] > target)
+                        hi = mid - 1;
+                    else
+                        lo = mid + 1;
+                }
+                return hi + 1;
+            }
+        }
+
+
         public static void runTest()
         {
+            SearchInsertPosition.SearchInsert(new int[] { 1,3,4,6,7}, 12);
+
             int ggg= power(2, 5);
 
 

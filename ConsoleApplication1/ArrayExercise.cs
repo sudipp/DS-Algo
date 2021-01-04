@@ -226,6 +226,155 @@ namespace ConsoleApplication1
             }
         }
 
+        class NearestNeighbours
+        {
+            /*
+                Given a point p, and other n points in two-dimensional space, find k points out of n points which are nearest to p.
+                NOTE: Distance between two points is measured by the standard Euclidean method.
+
+                Input Format:
+                There are 4 arguments in input, an integer p_x, which is the x coordinate of point p, integer p_y, 
+                which is the y coordinate of point p, an integer k and a 2D integer array of points n_points.
+            */
+            public static List<List<int>> nearest_neighbours(int p_x, int p_y, int k, List<List<int>> n_points)
+            {
+                //Euclidean distance between two points in Euclidean space is the length of a line segment between the two points
+                //Euclidean Distance - Sqrt((x2-x1)^2 + (y2-y1)^2)
+
+                //O(NLogN), space O(K)
+                n_points.Sort(new EuclideanDistanceComparer(p_x, p_y));
+
+                List<List<int>> result = new List<List<int>>();
+                for (int i = 0; i < k; i++)
+                {
+                    result.Add(new List<int>(n_points[i]));
+                }
+                return result;
+            }
+
+            class EuclideanDistanceComparer : IComparer<List<int>>
+            {
+                int px = 0, py = 0;
+                public EuclideanDistanceComparer(int p_x, int p_y)
+                {
+                    px = p_x;
+                    py = p_y;
+                }
+                public int Compare(List<int> x, List<int> y)
+                {
+                    //compute Euclidean Distance for x and y corrdinates separately - using Sqrt((x2-x1)^2 + (y2-y1)^2)
+                    double eqDistance1 = Math.Sqrt(Math.Pow(Math.Abs(x[0] - px), 2) + Math.Pow(Math.Abs(x[1] - py), 2));
+                    double eqDistance2 = Math.Sqrt(Math.Pow(Math.Abs(y[0] - px), 2) + Math.Pow(Math.Abs(y[1] - py), 2));
+
+                    //compare the distance to sort them ASC order
+                    return eqDistance1.CompareTo(eqDistance2);
+                }
+            }
+        }
+
+        class SortAllCharacters
+        {
+            public static List<char> sort_array(List<char> arr)
+            {
+                //Quick Sort - O(NLogN), Space(1)
+                //Count Sort - O(n), space O(n)....
+
+                int[] frequency = new int[128]; /*an array to store the number of 
+                                        occurence of each character in the string*/
+                foreach (char c in arr)
+                {
+                    frequency[c]++;
+                }
+                arr.Clear();
+                for (int i = 0; i < 128; i++)
+                {   
+                    /*traversing from charcter having lowest ascii value to that of highest ascii value*/
+                    for (int j = 0; j < frequency[i]; j++)
+                    {
+                        /*appending the result with the 
+                        number of occurences of character in the string*/
+                        arr.Add((char)i);
+                    }
+                }
+                return arr;
+            }
+        }
+
+        //266. Palindrome Permutation
+        class PalindromePermutation
+        {
+            //https://leetcode.com/problems/palindrome-permutation/
+            public bool CanPermutePalindrome(string s)
+            {
+                Dictionary<char, int> dict = new Dictionary<char, int>();
+                foreach (char c in s)
+                {
+                    if (!dict.ContainsKey(c))
+                        dict.Add(c, 0);
+
+                    dict[c]++;
+                }
+
+                int OddOccuranceCount = 0;
+                foreach (char c in dict.Keys)
+                {
+                    if (dict[c] % 2 == 1) //odd occurances
+                        OddOccuranceCount++;
+                }
+
+                if (s.Length % 2 != 0) //odd length
+                {
+                    //max of odd occurance char could be 1
+                    return (OddOccuranceCount == 1) ? true : false;
+                }
+                else
+                { //even length
+
+                    //max of odd occurance char could be 0
+                    return (OddOccuranceCount == 0) ? true : false;
+                }
+            }
+        }
+
+        //1640. Check Array Formation Through Concatenation
+        class CheckArrayFormationThroughConcatenation
+        {
+            //https://leetcode.com/problems/check-array-formation-through-concatenation/
+            public bool CanFormArray(int[] arr, int[][] pieces)
+            {
+                //***********************
+                //Note that the distinct part means that every position in the array belongs to only one piece
+                //***********************
+
+                Dictionary<int, int> dict = new Dictionary<int, int>();
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    dict.Add(arr[i], i);
+                }
+
+                for (int r = 0; r < pieces.Length; r++)
+                {
+                    int lastItemMatch = -1;
+                    for (int c = 0; c < pieces[r].Length; c++)
+                    {
+                        if (!dict.ContainsKey(pieces[r][c]))
+                            return false;
+
+                        if (lastItemMatch > -1)
+                        {
+                            if (dict[pieces[r][c]] != lastItemMatch + 1)
+                                return false;
+                        }
+                        lastItemMatch = dict[pieces[r][c]];
+
+                        dict.Remove(pieces[r][c]);
+                    }
+                }
+
+                return (dict.Count == 0);
+            }
+        }
+
         public static int[] MergeSortedArrays(int[] myArray, int[] alicesArray) //O(n) time and O(n)
         {
             /*
@@ -739,6 +888,15 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            SortAllCharacters.sort_array(new List<char>() { 'a', 'z', 'i', '#', '&', 'l', 'c' });
+
+            List<List<int>> dist = new List<List<int>>();
+            dist.Add(new List<int>() { 1, 0 });
+            dist.Add(new List<int>() { 2, 1 });
+            dist.Add(new List<int>() { 0, 1 });
+            NearestNeighbours.nearest_neighbours(1, 1, 2, dist);
+
+
             findMinIndex(new int[] { 1, 2, 3 }, new List<int>(), 0, 2);
 
             findDistinctCount(new int[] { 5, 2, 3, 5, 4, 3 },0);
