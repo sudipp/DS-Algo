@@ -375,6 +375,108 @@ namespace ConsoleApplication1
             }
         }
 
+        //268. Missing Number
+        class MissingNumber
+        {
+            //https://leetcode.com/problems/missing-number/
+            public static int Find(int[] nums)
+            {
+                //O(N), Space O(1)
+
+                //(n * (n + 1)) /2
+                int typicalSumOfAllNumbersTillN = (nums.Length * (nums.Length + 1)) / 2;
+                int sum = 0;
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    sum += nums[i];
+                }
+
+                if (sum == typicalSumOfAllNumbersTillN)
+                    return 0;
+                else
+                    return typicalSumOfAllNumbersTillN - sum;
+            }
+        }
+
+        //41. First Missing Positive
+        class FirstSmallestMissingPositive
+        {
+            //https://leetcode.com/problems/first-missing-positive/
+            public static int Find(int[] nums)
+            {
+                //O(N), Space O(1)
+                //*******************************************************
+                //WE will do inplace sort of +ve numbers ****************
+                //*******************************************************
+                //Tricky - Put positive numbers into array at index [(i) + 1]. < 
+                //ignore +ve numbers, thats are beyond the array size
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    //we are interested into +ve numbers
+                    if (nums[i] < 1)
+                        continue;
+
+                    //We will ignore items whose value is greater than array
+                    if (nums[i] > nums.Length)
+                        continue;
+
+                    //if the values are not placed correctly.. place them to right index
+                    if (nums[i] != i + 1)
+                    {
+                        //if 2 items to be replaved are same, ignore them
+                        if (nums[i] == nums[nums[i] - 1])
+                            continue;
+
+                        int temp = nums[nums[i] - 1];
+                        nums[nums[i] - 1] = nums[i];
+                        nums[i] = temp;
+
+                        //We must recheck the replaced value at i, as it might be some thing greater than (i + 1)
+                        i--;
+                    }
+                }
+
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    //Whenever you find the first get the wrongly placed +ve number, thats our number
+                    if (nums[i] != i + 1)
+                        return (i + 1);
+                }
+                //if all +ve numbers are placed correctly, the our answer would be arr length +1
+                return nums.Length == 0 ? 1 : nums.Length + 1;
+
+
+
+                //O(N), Space O(N)
+                HashSet<int> hs = new HashSet<int>();
+
+                //Keep track of max + ve number
+                int positiveMax = int.MinValue;
+
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    //we are interested in only +ve numbers
+                    if (nums[i] < 1)
+                        continue;
+
+                    //we only need max of +ve numbers
+                    positiveMax = Math.Max(positiveMax, nums[i]);
+                    if (!hs.Contains(nums[i]))
+                        hs.Add(nums[i]);
+                }
+
+                //start from smallest +ve number, find the first +ve number is missing
+                for (int i = 1; i < positiveMax; i++)
+                {
+                    if (!hs.Contains(i))
+                        return i;
+                }
+                //if arry is empty, return 1, else return the next max+ ve numer
+                return (positiveMax == int.MinValue) ? 1 : positiveMax + 1;
+            }
+        }
+
+
         public static int[] MergeSortedArrays(int[] myArray, int[] alicesArray) //O(n) time and O(n)
         {
             /*
@@ -888,6 +990,8 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            FirstSmallestMissingPositive.Find(new int[] { 3, 4, -1, 1 });
+
             SortAllCharacters.sort_array(new List<char>() { 'a', 'z', 'i', '#', '&', 'l', 'c' });
 
             List<List<int>> dist = new List<List<int>>();

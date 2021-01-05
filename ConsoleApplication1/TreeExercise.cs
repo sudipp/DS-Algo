@@ -7,6 +7,46 @@ namespace ConsoleApplication1
 {
     public class TreeExercise
     {
+        //1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree
+        public class FindCorrespondingNodeOfBinaryTreeInACloneofThatTree
+        {
+            //https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/
+            public TreeNode GetTargetCopy(TreeNode original, TreeNode cloned, TreeNode target)
+            {
+                //O(N), Space O(2*N)
+
+                Stack<TreeNode> stack = new Stack<TreeNode>();
+                Stack<TreeNode> stackC = new Stack<TreeNode>();
+
+                stack.Push(original);
+                stackC.Push(cloned);
+
+                while (stack.Any())
+                {
+                    TreeNode temp = stack.Pop();
+                    TreeNode tempC = stackC.Pop();
+
+                    if (temp == target)
+                        return tempC;
+
+                    if (temp.right_ptr != null)
+                    {
+                        stack.Push(temp.right_ptr);
+                        stackC.Push(tempC.right_ptr);
+                    }
+
+                    if (temp.left_ptr != null)
+                    {
+                        stack.Push(temp.left_ptr);
+                        stackC.Push(tempC.left_ptr);
+                    }
+                }
+
+                return null;
+            }
+        }
+
+
         public class TreeNode
         {
             public int val;

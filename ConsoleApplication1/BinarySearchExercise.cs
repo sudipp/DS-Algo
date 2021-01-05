@@ -527,7 +527,7 @@ namespace ConsoleApplication1
                     else
                         lo = mid + 1;
                 }
-                return hi + 1;
+                return lo; //or hi + 1;
             }
         }
 
