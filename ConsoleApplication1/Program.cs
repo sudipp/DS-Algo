@@ -21,10 +21,12 @@ namespace ConsoleApplication1
         {
             try
             {
+                //DPExercise.runTest();
+
                 ArrayExercise.runTest();
                 //BinarySearchExercise.runTest();
                 SortingSearchingLogarithmsExercise.runTest();
-                DPExercise.runTest();
+                
                 //DPRecursionBottomUpExercise.runTest();
 
 

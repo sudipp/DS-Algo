@@ -7,6 +7,338 @@ namespace ConsoleApplication1
 {
     public class ArrayExercise
     {
+        //163. Missing Ranges
+        class MissingRanges
+        {
+            //https://leetcode.com/problems/missing-ranges/
+            public static IList<string> FindMissingRanges(int[] nums, int lower, int upper)
+            {
+
+                IList<string> result = new List<string>();
+
+                if (nums.Length == 0)
+                {
+                    if (upper - lower > 1)
+                        result.Add(lower + "->" + upper);
+                    else
+                        result.Add(lower + "");
+                }
+
+                //check if number missing on left side of array
+                if (nums.Length > 0 && lower != nums[0])
+                {
+                    if (nums[0] - lower > 1)
+                        result.Add(lower + "->" + (nums[0] - 1));
+                    else
+                        result.Add(lower + "");
+                }
+
+                //start from lower 
+                for (int i = 1; i < nums.Length; i++)
+                {
+                    if (nums[i] - nums[i - 1] > 1)
+                    {
+                        if (nums[i - 1] + 1 == nums[i] - 1)
+                            result.Add((nums[i - 1] + 1) + "");
+                        else
+                            result.Add((nums[i - 1] + 1) + "->" + (nums[i] - 1));
+                    }
+                }
+
+                //check if number missing on right side of array
+                if (nums.Length > 0 && upper - nums[nums.Length - 1] > 0)
+                {
+                    if (upper - nums[nums.Length - 1] > 1)
+                        result.Add((nums[nums.Length - 1] + 1) + "->" + +upper);
+                    else
+                        result.Add(upper + "");
+                }
+
+                return result;
+            }
+        }
+
+        //228. Summary Ranges
+        class SummaryRanges
+        {
+            //https://leetcode.com/problems/summary-ranges/
+            public static IList<string> GetSummaryRanges(int[] nums)
+            {
+                IList<string> result = new List<string>();
+
+                int startRangeIndex = 0;
+                for (int r = 0; r < nums.Length; r++)
+                {
+                    //if the number difference is more than 1, then its a group change, so collect the range
+                    if (r + 1 < nums.Length && Math.Abs(nums[r + 1] - nums[r]) > 1)
+                    {
+                        if (r - startRangeIndex == 0)
+                            result.Add(nums[r] + "");
+                        else
+                            result.Add(nums[startRangeIndex] + "->" + nums[r]);
+
+                        startRangeIndex = r + 1;
+                    }
+                }
+
+                if (startRangeIndex < nums.Length)
+                {
+                    if ((nums.Length - 1) - startRangeIndex == 0)
+                        result.Add(nums[nums.Length - 1] + "");
+                    else
+                    {
+                        result.Add(nums[startRangeIndex] + "->" + nums[nums.Length - 1]);
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        //985. Sum of Even Numbers After Queries
+        class SumOfEvenNumbersAfterQueries
+        {
+            //https://leetcode.com/problems/sum-of-even-numbers-after-queries/
+            public static int[] SumEvenAfterQueries(int[] A, int[][] queries)
+            {
+                int[] result = new int[A.Length];
+
+                int evenSum = 0;
+                for (int i = 0; i < A.Length; i++)
+                {
+                    if (A[i] % 2 == 0)
+                        evenSum += A[i];
+                }
+
+                for (int i = 0; i < queries.Length; i++)
+                {
+                    int val = queries[i][0];
+                    int index = queries[i][1];
+
+                    if (A[index] % 2 == 0) //even
+                    {
+                        if (val % 2 == 0) //even
+                        {
+                            //the addition will also be even
+                            evenSum += val;
+                            A[index] += val;
+                        }
+                        else //odd
+                        {
+                            //sum turning into odd
+                            if (A[index] % 2 == 0) //if the previous item was even, deduct it from evenSum
+                                evenSum -= A[index];
+                            A[index] += val;
+                        }
+                    }
+                    else //odd
+                    {
+                        if (val % 2 == 0) //even
+                        {
+                            ////sum turning into odd
+                            if (A[index] % 2 == 0) //if the previous item was even, deduct it from evenSum
+                                evenSum -= A[index];
+                            A[index] += val;
+                        }
+                        else
+                        {
+                            //even
+                            A[index] += val;
+                            evenSum += A[index];
+                        }
+                    }
+
+                    result[i] = evenSum;
+                }
+
+                return result;
+            }
+        }
+
+        //566. Reshape the Matrix
+        class ReshapetheMatrix
+        {
+            //https://leetcode.com/problems/reshape-the-matrix/
+            public static int[][] MatrixReshape(int[][] nums, int r, int c)
+            {
+                if (nums.Length == 0)
+                    return nums;
+
+                if (r * c != nums.Length * nums[0].Length)
+                    return nums;
+
+                int[][] result = new int[r][];
+                for (int i = 0; i < r; i++)
+                {
+                    result[i] = new int[c];
+                }
+                //1,2,  1,2,3
+                //3,4   4,5,6
+                //5,6
+
+                int dest_r = 0;
+                int dest_c = 0;
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    for (int j = 0; j < nums[0].Length; j++)
+                    {
+                        result[dest_r][dest_c] = nums[i][j];
+
+                        dest_c++;
+                        if (dest_c == result[0].Length)
+                        {
+                            dest_c = 0;
+                            dest_r++;
+                        }
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        //26. Remove Duplicates from Sorted Array
+        class RemoveDuplicatesfromSortedArray
+        {
+            //https://leetcode.com/problems/remove-duplicates-from-sorted-array/submissions/
+            public static int RemoveDuplicates(int[] nums)
+            {
+                if (nums.Length == 0)
+                    return 0;
+
+                int insertPosition = 1;
+                int lastValue = nums[0];
+
+                for (int i = 1; i < nums.Length; i++)
+                {
+                    if (nums[i] != lastValue)
+                    {
+                        //bring nums[i] into 'insertPosition' position
+                        nums[insertPosition] = nums[i];
+
+                        lastValue = nums[i];
+                        insertPosition++;
+                    }
+                }
+                return insertPosition;
+
+            }
+        }
+
+        //80. Remove Duplicates from Sorted Array II
+        class RemoveDuplicatesfromSortedArrayII
+        {
+            public static int RemoveDuplicates(int[] nums)
+            {
+                //0,0,1,1,1,1,2,3,3
+                //0,0,1,1,2,3,3
+                if (nums.Length == 0)
+                    return 0;
+
+                int insertPosition = 1;
+                int lastValueIndex = 0;
+
+                for (int i = 1; i < nums.Length; i++)
+                {
+                    if (nums[i] == nums[lastValueIndex])
+                    {
+                        //bring nums[i] into 'insertPosition' position
+                        nums[insertPosition] = nums[i];
+
+                        if (i - lastValueIndex < 2)
+                            insertPosition++;
+                    }
+                    else
+                    {
+                        //bring nums[i] into 'insertPosition' position
+                        nums[insertPosition] = nums[i];
+
+                        lastValueIndex = i;
+
+                        insertPosition++;
+                    }
+                }
+                return insertPosition;
+            }
+        }
+
+        //4. Median of Two Sorted Arrays
+        public class MedianOfTwoSortedArrays
+        {
+            //https://leetcode.com/problems/median-of-two-sorted-arrays/
+            public double FindMedianSortedArrays(int[] nums1, int[] nums2)
+            {
+                return 0;
+            }
+        }
+
+        //84. Largest Rectangle in Histogram
+        class LargestRectangleinHistogram
+        {
+            //https://leetcode.com/problems/largest-rectangle-in-histogram/
+            public static int LargestRectangleArea(int[] heights)
+            {
+                //Array and DP
+
+                //generally, its N^3 algo... at every index calculate the Max area going thorugh all heights 
+                if (heights.Length == 0)
+                    return 0;
+
+                /*      _
+                     _ |  |            __
+                    |  |  |_        _ |  |
+                    |  |  |  |_    |  |  |__
+                    |_ |_ |_ |_ |_ |_ | _|__|
+                    |4 |5 |3 |2 |1 |3 | 4| 2|
+                    -------------------------
+            left    -1 |0 |-1|-1|-1|4 | 5| 4|
+            right    2 |2 |3 | 4| 8|7 | 7| 8|
+                */
+
+                //O(N)
+
+                //To reduce the runtime, at every index i we find the first smaller height on left and right side an store their (height) indicies.
+
+                int[] firstSmallHeightOnLeftSide = new int[heights.Length];
+                int[] firstSmallHeightOnRightSide = new int[heights.Length];
+
+                //Base case
+                //no further smaller height on left, so the index = -1
+                firstSmallHeightOnLeftSide[0] = -1;
+                //no smaller height on right, so the index = heights.Length
+                firstSmallHeightOnRightSide[heights.Length - 1] = heights.Length;
+
+                //Get first less height element (left side) at i and store on firstSmallHeightOnLeftSide 
+                for (int i = 1; i < heights.Length; i++)
+                {
+                    int minIndex = i - 1;
+                    while (minIndex >= 0 && heights[minIndex] >= heights[i])
+                        minIndex = firstSmallHeightOnLeftSide[minIndex];
+
+                    firstSmallHeightOnLeftSide[i] = minIndex;
+                }
+
+                //Get first less height element (right side) at i and store on firstSmallHeightOnLeftSide 
+                for (int i = heights.Length - 2; i >= 0; i--)
+                {
+                    int minIndex = i + 1;
+                    while (minIndex < heights.Length && heights[minIndex] >= heights[i])
+                        minIndex = firstSmallHeightOnRightSide[minIndex];
+
+                    firstSmallHeightOnRightSide[i] = minIndex;
+                }
+
+                //At every index, calculate the area, (first right side smaller height - first left side smaller height) * height(i)
+                int maxRectArea = 0;
+                for (int i = 0; i < heights.Length; i++)
+                {
+                    maxRectArea = Math.Max(maxRectArea, (firstSmallHeightOnRightSide[i] - firstSmallHeightOnLeftSide[i] - 1) * heights[i]);
+                }
+
+                return maxRectArea;
+            }
+        }
+
         //523. Continuous Subarray Sum
         class ContinuousSubarraySumMultiplesOfK
         {
@@ -476,6 +808,78 @@ namespace ConsoleApplication1
             }
         }
 
+        //Given a list of 4 billion integers, find an integer not in the list using 4MB of memory.
+        class FindAnIntegerNotInList
+        {
+            //https://prismoskills.appspot.com/lessons/Programming_Puzzles/Missing_number_in_billion_integers_.jsp
+            //https://uplevel.interviewkickstart.com/resource/editorial/rc-codingproblem-4917-63763-5-91
+            public static int Get(uint[] arr)
+            {
+                // We split the whole range of possible input values [0..2^32) into
+                // 2^16 non-overlapping subranges, each subrange is 2^16-long:
+                // 0-th subrange: [0 .. 2^16),
+                // 1-st subrange: [2^16 .. 2^17),
+                // ...,
+                // the last, 2^16-1-th subrange: [2^32-2^16 .. 2^32).
+                int TWO_POWER_SIXTEEN = (int)(Math.Pow(2, 16));
+
+                // This array will store how many input array elements actually fall
+                // into each bucket. Its size is 2^16 * 8 bytes = 2^19 bytes = 1/2 MiB.
+                long[] numbersInBucket = new long[TWO_POWER_SIXTEEN];
+                foreach (long inputValue in arr)
+                {
+                    // Dividing the number by 2^16 determines which bucket/subrange it falls into.
+                    int bucket = (int)(inputValue >> 16);
+                    numbersInBucket[bucket]++;
+                }
+                // Now let's find a bucket/subrange that has at least one number missing
+                // from the input AND then find a missing number in that subrange.
+                for (int bucket = 0; bucket < TWO_POWER_SIXTEEN; bucket++)
+                {
+                    if (numbersInBucket[bucket] >= TWO_POWER_SIXTEEN)
+                    {
+                        // This bucket _might_ have its entire subrange covered by input values.
+                        // Let's skip it. There certainly exists a bucket will fewer input values.
+                        continue;
+                    }
+                    // We found a bucket with fewer than 2^16 input values fallen into it.
+                    // This guarantees that at least one value from this bucket's subrange
+                    // isn't present in the input.
+                    // Such value is a correct answer, let's find and return it.
+
+                    // We will read all the input numbers one more time. This time we will
+                    // only care about values from this particular bucket/subrange.
+                    // We will use a simple boolean array to store which values
+                    // from the current bucket subrange present/absent in the input.
+                    bool[] presentInBucket = new bool[TWO_POWER_SIXTEEN]; // Initialized by false by JVM.
+                    foreach (long inputValue in arr)
+                    {
+                        int bucketThisValueFallsInto = (int)(inputValue >> 16);
+                        if (bucketThisValueFallsInto == bucket)
+                        {
+                            int indexWithinCurrentSubrange = (int)(inputValue % TWO_POWER_SIXTEEN);
+                            presentInBucket[indexWithinCurrentSubrange] = true;
+                        }
+                    }
+                    // Let us find a falsy value in presentInBucket array. It corresponds to a value
+                    // that's missing in the input. Such value is a correct answer and we can return it.
+                    for (int i = 0; i < TWO_POWER_SIXTEEN; i++)
+                    {
+                        if (!presentInBucket[i])
+                        {
+                            int startOfSubrange = bucket << 16;
+                            return startOfSubrange + i;
+                        }
+                    }
+                    throw new Exception("We knew that the subrange of bucket " + bucket +
+                            " isn't completely covered by input numbers but we didn't find" +
+                            " any value missing in input.");
+                }
+                throw new Exception("We knew that at least one bucket/subrange" +
+                " is bound to have fewer than 2^16 input values in it" +
+                " (because four billion is less than 2^16 * 2^16) but didn't find any");
+            }
+        }
 
         public static int[] MergeSortedArrays(int[] myArray, int[] alicesArray) //O(n) time and O(n)
         {
@@ -990,6 +1394,18 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            //[[1,0],[-3,1],[-4,0],[2,3]]
+            int[][] ar = new int[1][];
+            ar[0] = new int[2] { 4, 0};
+            //ar[1] = new int[2] { 3, 0 };
+            //ar[2] = new int[2] { -4, 0 };
+            //ar[3] = new int[2] { 2, 3 };
+            SumOfEvenNumbersAfterQueries.SumEvenAfterQueries(new int[] { 1 }, ar);
+
+            SummaryRanges.GetSummaryRanges(new int[] { -2147483648, -2147483647, 2147483647 });
+            LargestRectangleinHistogram.LargestRectangleArea(new int[] { 4 , 5 , 3 , 2 , 1 , 3 , 4 , 2 });
+
+            FindAnIntegerNotInList.Get(new uint[] { 4294967295, 399999999, 0 });
             FirstSmallestMissingPositive.Find(new int[] { 3, 4, -1, 1 });
 
             SortAllCharacters.sort_array(new List<char>() { 'a', 'z', 'i', '#', '&', 'l', 'c' });

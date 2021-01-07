@@ -2981,7 +2981,7 @@ namespace ConsoleApplication1
         }
 
         //741. Cherry Pickup
-        public class CherryPickup
+        class CherryPickup
         {
             public static int MaxCherryPickup(int[][] grid)
             {
@@ -3056,8 +3056,277 @@ namespace ConsoleApplication1
             }
         }
 
+        //84. Largest Rectangle in Histogram
+        class LargestRectangleinHistogram
+        {
+            //https://leetcode.com/problems/largest-rectangle-in-histogram/
+            public static int LargestRectangleArea(int[] heights)
+            {
+                //Array and DP
+
+                //generally, its N^3 algo... at every index calculate the Max area at every i.
+                if (heights.Length == 0)
+                    return 0;
+
+                /*      _
+                     _ |  |            __
+                    |  |  |_        _ |  |
+                    |  |  |  |_    |  |  |__
+                    |_ |_ |_ |_ |_ |_ | _|__|
+                    |4 |5 |3 |2 |1 |3 | 4| 2|
+                    -------------------------
+            left    -1 |0 |-1|-1|-1|4 | 5| 4|
+            right    2 |2 |3 | 4| 8|7 | 7| 8|
+                */
+
+                //O(N)
+
+                //To reduce the runtime, at every index i we find the first smaller height on left and 
+                //right side an store their (height) indicies. This will help us to calculate the Max area at i => (right -left -1) * height(i)
+
+                int[] firstSmallHeightOnLeftSide = new int[heights.Length];
+                int[] firstSmallHeightOnRightSide = new int[heights.Length];
+
+                //Base case
+                //no further smaller height on left, so the index = -1
+                firstSmallHeightOnLeftSide[0] = -1;
+                //no smaller height on right, so the index = heights.Length
+                firstSmallHeightOnRightSide[heights.Length - 1] = heights.Length;
+
+                //Get first less height element (left side) at i and store on firstSmallHeightOnLeftSide 
+                for (int i = 1; i < heights.Length; i++)
+                {
+                    int minIndex = i - 1;
+                    while (minIndex >= 0 && heights[minIndex] >= heights[i])
+                        minIndex = firstSmallHeightOnLeftSide[minIndex];
+
+                    firstSmallHeightOnLeftSide[i] = minIndex;
+                }
+
+                //Get first less height element (right side) at i and store on firstSmallHeightOnLeftSide 
+                for (int i = heights.Length - 2; i >= 0; i--)
+                {
+                    int minIndex = i + 1;
+                    while (minIndex < heights.Length && heights[minIndex] >= heights[i])
+                        minIndex = firstSmallHeightOnRightSide[minIndex];
+
+                    firstSmallHeightOnRightSide[i] = minIndex;
+                }
+
+                //At every index, calculate the area, (first right side smaller height - first left side smaller height) * height(i)
+                int maxRectArea = 0;
+                for (int i = 0; i < heights.Length; i++)
+                {
+                    maxRectArea = Math.Max(maxRectArea, (firstSmallHeightOnRightSide[i] - firstSmallHeightOnLeftSide[i] - 1) * heights[i]);
+                }
+
+                return maxRectArea;
+            }
+        }
+
+        //221. Maximal Square
+        class MaximalSquare
+        {
+            //https://leetcode.com/problems/maximal-square/
+            public static int GetMaximalSquare(char[][] matrix)
+            {
+                if (matrix.Length == 0)
+                    return 0;
+
+                //We will use the same logic "largest rantangle in histogram".. 
+                //To Do it We need to collapse row by row, to calculate the height on each column[i]
+
+                int[] firstSmallHeightOnLeftSide = new int[matrix[0].Length];
+                int[] firstSmallHeightOnRightSide = new int[matrix[0].Length];
+                int[] heights = new int[matrix[0].Length];
+
+                int MaxSquareSize = 0;
+                for (int r = 0; r < matrix.Length; r++)
+                {
+                    //collapse heights row by row, from top to bottom
+                    for (int c = 0; c < heights.Length; c++)
+                    {
+                        if (matrix[r][c] == '1')
+                            heights[c]++;
+                        else
+                            heights[c] = 0;
+                    }
+
+                    //To reduce the runtime, at every index i we find the first smaller heights on left and 
+                    //right side an store their (heights) indicies. 
+                    //This will help us to calculate the Max area at i => (right -left -1) * heights(i)
+
+                    //Base case
+                    //no further smaller heights on left, so the index = -1
+                    firstSmallHeightOnLeftSide[0] = -1;
+                    //no smaller heights on right, so the index = heights.Length
+                    firstSmallHeightOnRightSide[heights.Length - 1] = heights.Length;
+
+                    for (int c = 1; c < heights.Length; c++)
+                    {
+                        int minIndex = c - 1;
+                        while (minIndex >= 0 && heights[minIndex] >= heights[c])
+                            minIndex = firstSmallHeightOnLeftSide[minIndex];
+
+                        firstSmallHeightOnLeftSide[c] = minIndex;
+                    }
+
+                    for (int c = heights.Length - 2; c >= 0; c--)
+                    {
+                        int minIndex = c + 1;
+                        while (minIndex < heights.Length && heights[minIndex] >= heights[c])
+                            minIndex = firstSmallHeightOnRightSide[minIndex];
+
+                        firstSmallHeightOnRightSide[c] = minIndex;
+                    }
+
+                    //At every index, calculate the area, (first right side smaller heights - first left side smaller heights) * heights(i)
+                    for (int i = 0; i < heights.Length; i++)
+                    {
+                        //the min value is one side of square
+                        int sqrSize = Math.Min(heights[i], (firstSmallHeightOnRightSide[i] - firstSmallHeightOnLeftSide[i] - 1));
+
+                        MaxSquareSize = Math.Max(MaxSquareSize, sqrSize * sqrSize);
+                    }
+                }
+                return MaxSquareSize;
+
+
+                /*
+                int[,] dp = new int[matrix.Length, matrix[0].Length];
+
+                int maxSquareSize = 0;
+
+                //base case 
+                for (int r = 0; r < matrix.Length; r++)
+                {
+                    dp[r, 0] = (matrix[r][0] == '1') ? 1 : 0;
+
+                    if (dp[r, 0] == 1) //the smallest square size
+                        maxSquareSize = 1;
+                }
+                for (int c = 0; c < matrix[0].Length; c++)
+                {
+                    dp[0, c] = (matrix[0][c] == '1') ? 1 : 0;
+
+                    if (dp[0, c] == 1) //the smallest square size
+                        maxSquareSize = 1;
+                }
+
+                for (int r = 1; r < matrix.Length; r++)
+                {
+                    for (int c = 1; c < matrix[0].Length; c++)
+                    {
+                        if (matrix[r][c] == '1')
+                            dp[r, c] = Math.Min(Math.Min(dp[r - 1, c - 1], dp[r, c - 1]), dp[r - 1, c]) + 1;
+
+                        maxSquareSize = Math.Max(maxSquareSize, dp[r, c]);
+                    }
+                }
+
+                return maxSquareSize * maxSquareSize;
+                */
+            }
+        }
+
+        //85. Maximal Rectangle
+        class MaximalRectangle
+        {
+            public static int GetMaximalRectangle(char[][] matrix)
+            {
+                //refer to LargestRectangleinHistogram.LargestRectangleArea()
+                //https://leetcode.com/problems/largest-rectangle-in-histogram/
+
+                //Array and DP
+
+                //generally, its N^3 algo... at every index calculate the Max area at every i.
+                if (matrix.Length == 0)
+                    return 0;
+
+                /*   _  _  _  _  _  
+                    |1 |0 |1 |0 |0 |
+                    ----------------
+                    |1 |0 |1 |1 |1 |
+                    ----------------
+                    |1 |1 |1 |1 |1 |
+                    ----------------
+                    |1 |0 |0 |1 |0 |
+                    ----------------
+                    |4 |5 |3 |2 |1 |
+                    ----------------
+            heights    |  |  |  |  |
+            left       |  |  |  |  |
+            right      |  |  |  |  |
+                */
+
+                //O(N)
+
+                //We will use the same logic "largest rantangle in histogram".. 
+                //To Do it We need to collapse row by row, to calculate the height on each column[i]
+
+                int[] firstSmallHeightOnLeftSide = new int[matrix[0].Length];
+                int[] firstSmallHeightOnRightSide = new int[matrix[0].Length];
+                int[] heights = new int[matrix[0].Length];
+
+                int MaxRectableSize = 0;
+                for (int r = 0; r < matrix.Length; r++)
+                {
+                    //collapse heights row by row, from top to bottom
+                    for (int c = 0; c < heights.Length; c++)
+                    {
+                        if (matrix[r][c] == '1')
+                            heights[c]++;
+                        else
+                            heights[c] = 0;
+                    }
+
+                    //To reduce the runtime, at every index i we find the first smaller heights on left and 
+                    //right side an store their (heights) indicies. 
+                    //This will help us to calculate the Max area at i => (right -left -1) * heights(i)
+
+                    //Base case
+                    //no further smaller heights on left, so the index = -1
+                    firstSmallHeightOnLeftSide[0] = -1;
+                    //no smaller heights on right, so the index = heights.Length
+                    firstSmallHeightOnRightSide[heights.Length - 1] = heights.Length;
+
+                    for (int c = 1; c < heights.Length; c++)
+                    {
+                        int minIndex = c - 1;
+                        while (minIndex >= 0 && heights[minIndex] >= heights[c])
+                            minIndex = firstSmallHeightOnLeftSide[minIndex];
+
+                        firstSmallHeightOnLeftSide[c] = minIndex;
+                    }
+
+                    for (int c = heights.Length - 2; c >= 0; c--)
+                    {
+                        int minIndex = c + 1;
+                        while (minIndex < heights.Length && heights[minIndex] >= heights[c])
+                            minIndex = firstSmallHeightOnRightSide[minIndex];
+
+                        firstSmallHeightOnRightSide[c] = minIndex;
+                    }
+
+                    //At every index, calculate the area, (first right side smaller heights - first left side smaller heights) * heights(i)
+                    for (int i = 0; i < heights.Length; i++)
+                    {
+                        MaxRectableSize = Math.Max(MaxRectableSize, (firstSmallHeightOnRightSide[i] - firstSmallHeightOnLeftSide[i] - 1) * heights[i]);
+                    }
+                }
+                return MaxRectableSize;
+            }
+        }
+
         public static void runTest()
         {
+            char[][] arr1 = new char[4][];
+            arr1[0] = new char[5] { '1', '0', '1', '0', '0' };
+            arr1[1] = new char[5] { '1', '0', '1', '1', '1' };
+            arr1[2] = new char[5] { '1', '1', '1', '1', '1' };
+            arr1[3] = new char[5] { '1', '0', '0', '1', '0' };
+            MaximalSquare.GetMaximalSquare(arr1);
+
             int[][] mt2 = new int[3][];
             mt2[0] = new int[3] { 0,1,-1 };
             mt2[1] = new int[3] { 1,0,-1 };
