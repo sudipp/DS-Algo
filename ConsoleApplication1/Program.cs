@@ -21,6 +21,7 @@ namespace ConsoleApplication1
         {
             try
             {
+                //TreeExercise.runTest();
                 //DPExercise.runTest();
 
                 ArrayExercise.runTest();

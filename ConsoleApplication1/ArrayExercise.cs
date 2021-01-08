@@ -7,6 +7,72 @@ namespace ConsoleApplication1
 {
     public class ArrayExercise
     {
+        //1539. Kth Missing Positive Number
+        class KthMissingPositiveNumber
+        {
+            //https://leetcode.com/problems/kth-missing-positive-number/
+            public static int FindKthPositive(int[] arr, int k)
+            {
+                int prev = 0;
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    while (arr[i] - prev > 1 && k > 0)
+                    {
+                        prev++;
+                        k--;
+
+                        if (k == 0)
+                            return prev;
+                    }
+                    //forwarding prev value, to the item
+                    prev = arr[i];
+                }
+
+                return arr[arr.Length - 1] + k;
+            }
+        }
+
+        //3. Longest Substring Without Repeating Characters
+        class LongestSubstringWithoutRepeatingCharacters
+        {
+            //https://leetcode.com/problems/longest-substring-without-repeating-characters/
+            public static int LengthOfLongestSubstring(string s)
+            {
+                Dictionary<char, int> d = new Dictionary<char, int>();
+
+                //Sliding window, when there is no duplicate it grows on right side
+                //once duplicate found, shink from left, till duplicates are gone.
+
+                int MaxUniqueCharSubString = 0;
+
+                int l = 0;
+                int r = 0;
+                //abcabcbb
+                while (l <= r && l < s.Length && r < s.Length)
+                {
+                    //remove duplicate - shring the windows
+                    while (d.ContainsKey(s[r]))
+                    {
+                        char c = s[l];
+                        d[c]--;
+
+                        if (d[c] == 0)
+                            d.Remove(c);
+
+                        l++;
+                    }
+
+                    MaxUniqueCharSubString = Math.Max(MaxUniqueCharSubString, r - l + 1);
+
+                    //expand the window
+                    d.Add(s[r], 1);
+                    r++;
+                }
+
+                return MaxUniqueCharSubString;
+            }
+        }
+
         //163. Missing Ranges
         class MissingRanges
         {
@@ -1394,6 +1460,9 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            LongestSubstringWithoutRepeatingCharacters.LengthOfLongestSubstring("pwwkew");
+            KthMissingPositiveNumber.FindKthPositive(new int[] { 1, 2, 3, 4 }, 2);
+
             //[[1,0],[-3,1],[-4,0],[2,3]]
             int[][] ar = new int[1][];
             ar[0] = new int[2] { 4, 0};

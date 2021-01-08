@@ -8,7 +8,7 @@ namespace ConsoleApplication1
     public class TreeExercise
     {
         //1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree
-        public class FindCorrespondingNodeOfBinaryTreeInACloneofThatTree
+        class FindCorrespondingNodeOfBinaryTreeInACloneofThatTree
         {
             //https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/
             public TreeNode GetTargetCopy(TreeNode original, TreeNode cloned, TreeNode target)
@@ -46,6 +46,93 @@ namespace ConsoleApplication1
             }
         }
 
+        //21. Merge Two Sorted Lists
+        class MergeTwoLists
+        {
+            //https://leetcode.com/problems/merge-two-sorted-lists/
+            public static ListNode Merge(ListNode l1, ListNode l2)
+            {
+                ListNode head = new ListNode(-1, null);
+                ListNode current = head;
+                while (l1 != null && l2 != null)
+                {
+                    if (l1.val < l2.val)
+                    {
+                        current.next = l1;
+                        current = current.next;
+                        l1 = l1.next;
+                    }
+                    else if (l2.val < l1.val)
+                    {
+                        current.next = l2;
+                        current = current.next;
+                        l2 = l2.next;
+                    }
+                    else
+                    {
+                        current.next = l1;
+                        current = current.next;
+                        l1 = l1.next;
+                        //*********************
+                        current.next = l2;
+                        current = current.next;
+                        l2 = l2.next;
+                    }
+                }
+
+                while (l1 != null)
+                {
+                    current.next = l1;
+                    current = current.next;
+                    l1 = l1.next;
+                }
+                while (l2 != null)
+                {
+                    current.next = l2;
+                    current = current.next;
+                    l2 = l2.next;
+                }
+
+                return head.next;
+            }
+        }
+
+        //82. Remove Duplicates from Sorted List II
+        class RemoveDuplicatesfromSortedListII
+        {
+            //https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
+            public static ListNode DeleteDuplicates(ListNode head)
+            {
+                ListNode temp = new ListNode(-1, head);
+                ListNode prev = temp;
+
+                while (head != null)
+                {
+                    // if it's a beginning of duplicates sublist 
+                    // skip all duplicates
+                    if (head.next != null && head.val == head.next.val)
+                    {
+                        // move till the end of duplicates sublist
+                        while (head.next != null && head.val == head.next.val)
+                        {
+                            head = head.next;
+                        }
+                        // skip all duplicates
+                        prev.next = head.next;
+                    }
+                    else
+                    {
+                        // otherwise, move predecessor
+                        prev = prev.next;
+                    }
+
+                    // move forward
+                    head = head.next;
+                }
+
+                return temp.next;
+            }
+        }
 
         public class TreeNode
         {
@@ -56,6 +143,17 @@ namespace ConsoleApplication1
             public TreeNode(int _val)
             {
                 this.val = _val;
+            }
+        }
+
+        public class ListNode
+        {
+            public int val;
+            public ListNode next;
+            public ListNode(int val = 0, ListNode next = null)
+            {
+                this.val = val;
+                this.next = next;
             }
         }
 
@@ -804,11 +902,33 @@ namespace ConsoleApplication1
             root.left_ptr.right_ptr.left_ptr = new TreeNode(10);
             root.left_ptr.right_ptr.right_ptr = new TreeNode(14);
 
+            
             root.right_ptr = new TreeNode(22);
             root.right_ptr.right_ptr = new TreeNode(25);
             //root.right_ptr.left_ptr.left_ptr = new TreeNode(10);
             //root.right_ptr.left_ptr.right_ptr = new TreeNode(12);
             //root.right_ptr.left_ptr.right_ptr.left_ptr = new TreeNode(11);
+
+
+            //ListNode l = new ListNode(1);
+            //l.next = new ListNode(2);
+            //l.next.next = new ListNode(4);
+            
+            // 1,2,3,3,4,4,
+            ListNode l = new ListNode(1);
+            l.next = new ListNode(2);
+            l.next.next = new ListNode(3);
+            l.next.next.next = new ListNode(3);
+            l.next.next.next.next = new ListNode(4);
+            l.next.next.next.next.next = new ListNode(4);
+
+            RemoveDuplicatesfromSortedListII.DeleteDuplicates(l);
+
+            //ListNode r = new ListNode(1);
+            //r.next = new ListNode(3);
+            //r.next.next = new ListNode(4);
+            MergeTwoLists.Merge(l, null);
+
 
             //kth_Maximum_element.Get(root,3);
 
