@@ -21,12 +21,12 @@ namespace ConsoleApplication1
         {
             try
             {
-                //TreeExercise.runTest();
+                TreeExercise.runTest();
                 //DPExercise.runTest();
 
-                ArrayExercise.runTest();
+                //ArrayExercise.runTest();
                 //BinarySearchExercise.runTest();
-                SortingSearchingLogarithmsExercise.runTest();
+                //SortingSearchingLogarithmsExercise.runTest();
                 
                 //DPRecursionBottomUpExercise.runTest();
 

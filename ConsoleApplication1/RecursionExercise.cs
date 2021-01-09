@@ -7,6 +7,94 @@ using System.Text;
 namespace ConsoleApplication1
 {
 
+    class TowerOfHonoi
+    {
+        public static List<List<int>> tower_of_hanoi(int n)
+        {
+            List<List<int>> result = new List<List<int>>();
+
+            towerOfHanoi(n, 1, 3, 2, result);
+
+            return result;
+        }
+        static void towerOfHanoi(int n, int from_rod, int to_rod, int aux_rod, List<List<int>> result)
+        {
+            if (n == 1)
+            {
+                //cout << "Move disk 1 from rod " << from_rod << 
+                //                    " to rod " << to_rod<<endl; 
+                result.Add(new List<int>(new int[] { from_rod, to_rod }));
+                return;
+            }
+
+            //move n-1 disk from A to B
+            towerOfHanoi(n - 1, from_rod, aux_rod, to_rod, result);
+            //cout << "Move disk " << n << " from rod " << from_rod <<
+            //                            " to rod " << to_rod << endl; 
+
+            result.Add(new List<int>(new int[] { from_rod, to_rod }));
+
+            //move n-1 disk from B to C
+            towerOfHanoi(n - 1, aux_rod, to_rod, from_rod, result);
+        }
+    }
+
+    class power
+    {
+        //divide and conquer
+        static int power_LogN(int x, int y) //O(LogN), space O(1) - 
+        {
+            int temp;
+            if (y == 0)
+                return 1;
+
+            temp = power_LogN(x, y / 2);
+
+            if (y % 2 == 0) //even
+                return temp * temp;
+            else
+                return x * temp * temp;
+        }
+    }
+    
+    class StringsFromWildCard
+    {
+        public static string[] Get(string s)
+        {
+            IList<string> result = new List<string>();
+
+            MakeString(s, 0, new StringBuilder(), result);
+
+            return result.ToArray();
+        }
+        private static void MakeString(string s, int index, StringBuilder slate, IList<string> result)
+        {
+            if (index == s.Length)
+            {
+                result.Add(slate.ToString());
+                return;
+            }
+
+            if(s[index] == '?')
+            {
+                slate.Append('0');
+                MakeString(s, index + 1, slate, result);
+                slate.Remove(slate.Length - 1, 1);
+
+
+                slate.Append('1');
+                MakeString(s, index + 1, slate, result);
+                slate.Remove(slate.Length - 1, 1);
+            }
+            else
+            {
+                slate.Append(s[index]);
+                MakeString(s, index + 1, slate, result);
+                slate.Remove(slate.Length - 1, 1);
+            }
+        }
+    }
+
     /*
      * Dynamic Programming: USE and (REUSE Subproblems - overlapping subproblem)
      * Two ways of Implementing DP Solutions - (Tabulation - Bottom up) and (recursion with Memoization - top down approach, shows REUSE subproblem)
@@ -51,20 +139,7 @@ namespace ConsoleApplication1
             return power;
         }
 
-        //divide and conquer
-        int power_LogN(int x, int y) //O(LogN), space O(1) - 
-        {
-            int temp;
-            if (y == 0)
-                return 1;
-
-            temp = power_LogN(x, y/2);
-
-            if (y%2 == 0) //even
-                return temp*temp;
-            else
-                return x*temp*temp;
-        }
+        
 
         //https://www.youtube.com/watch?v=k4y5Pr0YVhg ***********
         // It takes O(n*m) time and O(n*m) space - where n is the size of amount and m is the number of items in denominations
@@ -786,6 +861,8 @@ namespace ConsoleApplication1
         
         public static void runTest()
         {
+            StringsFromWildCard.Get("111");
+
             Permutation.PrintAllPermutation(new int[] { 1, 2, 3 });
 
 

@@ -5,6 +5,55 @@ using System.Linq;
 
 namespace ConsoleApplication1
 {
+    class NAryNode
+    {
+        public int val;
+        public IList<NAryNode> children;
+
+        public NAryNode()
+        {
+            val = 0;
+            children = new List<NAryNode>();
+        }
+
+        public NAryNode(int _val)
+        {
+            val = _val;
+            children = new List<NAryNode>();
+        }
+
+        public NAryNode(int _val, List<NAryNode> _children)
+        {
+            val = _val;
+            children = _children;
+        }
+    }
+
+    public class TreeNode
+    {
+        public int val;
+        public TreeNode left_ptr;
+        public TreeNode right_ptr;
+
+        public TreeNode(int _val)
+        {
+            this.val = _val;
+        }
+    }
+
+    public class ListNode
+    {
+        public int val;
+        public ListNode next;
+        public ListNode(int val = 0, ListNode next = null)
+        {
+            this.val = val;
+            this.next = next;
+        }
+    }
+
+
+
     public class TreeExercise
     {
         //1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree
@@ -134,26 +183,170 @@ namespace ConsoleApplication1
             }
         }
 
-        public class TreeNode
+        //1506. Find Root of N-Ary Tree
+        class FindRootofNAryTree
         {
-            public int val;
-            public TreeNode left_ptr;
-            public TreeNode right_ptr;
-
-            public TreeNode(int _val)
+            //https://leetcode.com/problems/find-root-of-n-ary-tree/
+            public static NAryNode FindRoot(List<NAryNode> tree)
             {
-                this.val = _val;
+                //***********************************
+                //node with 0 indegree is root.
+                //traverse all nodes, and find the node that is not children of any nodes. that node will have indegree  0., which would be root
+                //But the runtime is O(n^2)
+                //***********************************
+
+                /*        
+                To achive O(1) space we can use the same idea as here https://leetcode.com/problems/single-number
+                Each node will be visited twice during iteration (1st time in the list and 2nd time as a child of another node) expect the root. So find the sum of the vals of all nodes, then subtract all the children's vals, and finally the result will be the id of the root. Use it to find the corresponding node in the list. To avoid overflow xor all the vals instead.
+                Java: https://leetcode.com/playground/NRQ9CQ4K
+                Time complexity: O(n).
+                Space complexity: O(1).
+                */
+
+                int sum = 0;
+                for (int i = 0; i < tree.Count; i++)
+                {
+                    //doing sum of node values 
+                    sum = sum ^ tree[i].val;
+
+                    //doing sum of node children's value
+                    for (int j = 0; j < tree[i].children.Count; j++)
+                    {
+                        sum = sum ^ tree[i].children[j].val;
+                    }
+                }
+
+                //find the node with value = sum 
+                for (int i = 0; i < tree.Count; i++)
+                {
+                    if (tree[i].val == sum)
+                        return tree[i];
+                }
+
+                return null;
             }
         }
 
-        public class ListNode
+        class CloneTree
         {
-            public int val;
-            public ListNode next;
-            public ListNode(int val = 0, ListNode next = null)
+            public static TreeNode Clone(TreeNode root)
             {
-                this.val = val;
-                this.next = next;
+                if (root == null)
+                    return null;
+
+                TreeNode newNode = new TreeNode(root.val);
+                newNode.left_ptr = Clone(root.left_ptr);
+                newNode.right_ptr = Clone(root.right_ptr);
+
+                return newNode;
+                /*
+                TreeNode rootClone = null;// root;
+                TreeNode current = null;
+                Stack<KeyValuePair<TreeNode, int>> stack = new Stack<KeyValuePair<TreeNode, int>>();
+                stack.Push(new KeyValuePair<TreeNode, int>(root, 0));
+
+                //TreeNode prev = null;
+                while (stack.Any())
+                {
+                    KeyValuePair<TreeNode, int> temp= stack.Pop();
+
+                    //TreeNode temp = stack.Pop().Key;
+                    if(temp.Value ==0)
+                    { 
+                        rootClone = new TreeNode(temp.Key.val);
+                        current = rootClone;
+                    }
+                    else
+                    {
+                        //if (prev.left_ptr == temp)
+                        if(temp.Value == 1)
+                        {
+                            //current = current.left_ptr;
+                            current.left_ptr = new TreeNode(temp.Key.val);
+                        }
+                        else//else if (prev.right_ptr == temp)
+                        {
+                            //current = current.right_ptr;
+                            current.right_ptr = new TreeNode(temp.Key.val);
+                        }
+                    }
+                    
+                    //prev = temp;
+
+                    if (temp.Key.right_ptr != null)
+                    {
+                        //current.right_ptr = new TreeNode(temp.Key.val);
+                        stack.Push(new KeyValuePair<TreeNode, int>(temp.Key.right_ptr, 2));
+                    }
+                    if (temp.Key.left_ptr != null)
+                    {
+                        //current.left_ptr = new TreeNode(temp.Key.val);
+                        stack.Push(new KeyValuePair<TreeNode, int>( temp.Key.left_ptr, 1));
+                    }
+
+                    if (temp.Key.left_ptr == null)
+                        current = current.right_ptr;
+                    else
+                        current = current.left_ptr;
+                }
+
+                return rootClone;
+
+                */
+            }
+        }
+
+        class MirrorImageOfBinaryTree
+        {
+            public static void mirror_image(TreeNode root)
+            {
+                // Write your code here
+
+            }
+        }
+
+        class PopulateSiblingPointers
+        {
+            public static TreeNode populateSiblingPointers(TreeNode root)
+            {
+                return null;
+
+            }
+        }
+
+        class LargestBST
+        {
+            public static int findLargestBST(TreeNode root)
+            {
+                return 0;
+            }
+        }
+
+        class ConstructBinaryTree
+        {
+            public static TreeNode constructBinaryTree(List<int> inorder, List<int> preorder)
+            {
+                // Write your code here
+
+                return null;
+            }
+        }
+
+        class BTIterator
+        {
+            public BTIterator(TreeNode root)
+            {
+                // initialize here
+            }
+
+            public bool hasNext()
+            {
+                return false;
+            }
+
+            public int next()
+            {
+                return 0;
             }
         }
 
@@ -902,7 +1095,9 @@ namespace ConsoleApplication1
             root.left_ptr.right_ptr.left_ptr = new TreeNode(10);
             root.left_ptr.right_ptr.right_ptr = new TreeNode(14);
 
-            
+            CloneTree.Clone(root);
+
+
             root.right_ptr = new TreeNode(22);
             root.right_ptr.right_ptr = new TreeNode(25);
             //root.right_ptr.left_ptr.left_ptr = new TreeNode(10);
