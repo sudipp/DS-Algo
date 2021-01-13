@@ -6,6 +6,49 @@ namespace ConsoleApplication1
 {
     public class BinarySearchExercise
     {
+        //702. Search in a Sorted Array of Unknown Size
+        class SearchInSortedArrayofUnknownSize
+        {
+            //https://leetcode.com/problems/search-in-a-sorted-array-of-unknown-size/
+            public static int Search(ArrayReader reader, int target)
+            {
+                //array is empty
+                if (reader.Get(0) == 2147483647)
+                    return -1;
+
+                //find the Hi range ---- This should nt be ginner than the target
+                int hi = 1;
+                while (reader.Get(hi) <= target)
+                {
+                    //high speed pointer
+                    hi = hi * 2;
+                }
+
+                int lo = 0;
+
+                while (lo <= hi)
+                {
+                    int mid = lo + (hi - lo) / 2;
+
+                    if (reader.Get(mid) == target)
+                        return mid;
+                    else if (target > reader.Get(mid))
+                        lo = mid + 1;
+                    else
+                        hi = mid - 1;
+                }
+
+                return -1;
+            }
+
+            internal class ArrayReader
+            {
+                public int Get(int index) {
+                    return -1;
+                }
+            }
+        }
+        
         private static bool IsMedianFoundInArrayA(int[] a, int[] b, int num_elements_larger_than_median_in_total, ref int median)
         {
             int a_right = a.Length - 1;

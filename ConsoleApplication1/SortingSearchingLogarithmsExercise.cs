@@ -447,6 +447,39 @@ namespace ConsoleApplication1
             }
         }
 
+        //703. Kth Largest Element in a Stream
+        public class KthLargest
+        {
+            Heap<int> heap = null;
+            int K = 0;
+
+            public KthLargest(int k, int[] nums)
+            {
+                //Create a Min Heap *****
+                heap = new Heap<int>(k + 1, true);
+                K = k;
+
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    heap.Push(new HeapNode<int>(nums[i]));
+                    if (heap.Count > k)
+                    {
+                        heap.Pop();
+                    }
+                }
+            }
+
+            public int Add(int val)
+            {
+                heap.Push(new HeapNode<int>(val));
+                if (heap.Count > K)
+                {
+                    heap.Pop();
+                }
+                return heap.Top().val;
+            }
+        }
+
         //692. Top K Frequent Words
         class TopKFrequentWords
         {
@@ -1264,7 +1297,6 @@ namespace ConsoleApplication1
 
                 return max.ToArray();
             }
-
         }
 
         //857. Minimum Cost to Hire K Workers
@@ -1548,6 +1580,68 @@ namespace ConsoleApplication1
                     res += (arr[i] / target);
                 }
                 return res;
+            }
+        }
+
+        //350. Intersection of Two Arrays II
+        class IntersectionOfTwoArraysII
+        {
+            public static int[] Intersect(int[] nums1, int[] nums2)
+            {
+
+                //O(n), Space - O(Max(n, m))
+                //If we sort larger array - we can do binary search - Runtime - O(NLogN) + (Binary Search - O(LogN) ) + O(Min(n,M)), - So the runtime will be O(NLoGN), Space O(1) 
+                //If array is already sorted - O(Min(n,M)) + (Binary Search - O(LogN) )  = O(Min(n,M))
+
+                int num1Len = nums1.Length;
+                int num2Len = nums2.Length;
+
+                IList<int> result = new List<int>();
+                Dictionary<int, int> dict = new Dictionary<int, int>();
+                //store all elements from longer array into heap.
+                if (num1Len < num2Len)
+                {
+                    for (int i = 0; i < nums2.Length; i++)
+                    {
+                        if (!dict.ContainsKey(nums2[i]))
+                            dict.Add(nums2[i], 0);
+
+                        dict[nums2[i]]++;
+                    }
+
+                    for (int i = 0; i < nums1.Length; i++)
+                    {
+                        if (dict.ContainsKey(nums1[i]))
+                        {
+                            result.Add(nums1[i]);
+                            dict[nums1[i]]--;
+                            if (dict[nums1[i]] == 0)
+                                dict.Remove(nums1[i]);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < nums1.Length; i++)
+                    {
+                        if (!dict.ContainsKey(nums1[i]))
+                            dict.Add(nums1[i], 0);
+
+                        dict[nums1[i]]++;
+                    }
+                    for (int i = 0; i < nums2.Length; i++)
+                    {
+                        if (dict.ContainsKey(nums2[i]))
+                        {
+                            result.Add(nums2[i]);
+                            dict[nums2[i]]--;
+                            if (dict[nums2[i]] == 0)
+                                dict.Remove(nums2[i]);
+                        }
+                    }
+                }
+
+                return result.ToArray();
             }
         }
 

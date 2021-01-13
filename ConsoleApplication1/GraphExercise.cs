@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleApplication1
 {
@@ -774,6 +775,194 @@ namespace ConsoleApplication1
             }
         }
 
+        //127. Word Ladder
+        class WordLadder
+        {
+            //https://leetcode.com/problems/word-ladder/
+            public static int LadderLength(string beginWord, string endWord, IList<string> wordList)
+            {
+                //Time: O(M ^ 2 * N)
+                //Space : O(M*N) <- HashSet size + 26 words from GetNeighbours( this is fixed 26 words) 
+                //So the space is O(M*N)
+
+                //M is the length of str/beginWord
+                //N = length of wordList
+
+                //DO BFS, to find the shortest ladder length
+
+                //Graph find shortest path
+                Queue<string> queue = new Queue<string>();
+                queue.Enqueue(beginWord);
+
+                HashSet<string> words = new HashSet<string>(wordList);
+                words.Remove(beginWord);
+
+                int level = 0;
+
+                while (queue.Any())
+                {
+                    int size = queue.Count;
+                    level++;
+
+                    for (int i = 0; i < size; i++)
+                    {
+                        string currentWord = queue.Dequeue();
+                        if (currentWord == endWord)
+                            return level;
+
+                        List<string> neighbours = GetNeighbours(currentWord);
+                        foreach (string neigh in neighbours)
+                        {
+                            if (words.Contains(neigh))
+                            {
+                                words.Remove(neigh);
+                                queue.Enqueue(neigh);
+                            }
+                        }
+                    }
+                }
+                return 0;
+            }
+
+            //O(M^2) -  M is the length of str/beginWord
+            private static List<string> GetNeighbours(string str)
+            {
+                char[] chars = str.ToCharArray();
+                List<string> result = new List<string>();
+                for (int i = 0; i < chars.Length; i++)
+                {
+                    char temp = chars[i];
+                    for (char c = 'a'; c <= 'z'; c++)
+                    {
+                        chars[i] = c;
+                        string neighbour = new string(chars);
+                        result.Add(neighbour);
+                    }
+                    chars[i] = temp;
+                }
+
+                return result;
+            }
+        }
+
+        //126. Word Ladder II
+        class WordLadderII
+        {
+            //https://leetcode.com/problems/word-ladder-ii/
+            public static IList<IList<string>> FindLadders(string beginWord, string endWord, IList<string> wordList)
+            {
+                //Graph find shortest path
+                IList<IList<string>> result = new List<IList<string>>();
+
+                //Graph find shortest path
+                Queue<string> queue = new Queue<string>();
+                queue.Enqueue(beginWord);
+
+                HashSet<string> words = new HashSet<string>(wordList);
+                words.Add(beginWord);
+                words.Add(endWord);
+
+                int level = 0;
+
+                Dictionary<string, int> visited = new Dictionary<string, int>();
+                visited.Add(beginWord, level);
+
+                //maintain nide -> neighbours relationship
+                Dictionary<string, List<string>> parentChilds = new Dictionary<string, List<string>>();
+
+                while (queue.Any())
+                {
+                    level ++;
+                    int size = queue.Count;
+
+                    while (size > 0)
+                    {
+                        string currentWord = queue.Dequeue();
+                        
+                        if (!parentChilds.ContainsKey(currentWord))
+                            parentChilds.Add(currentWord, new List<string>());
+
+                        if (currentWord == endWord)
+                        {
+                            break;
+                        }
+                        List<string> neighbours = GetNeighbours(currentWord);
+
+                        foreach (string neigh in neighbours)
+                        {
+                            if (words.Contains(neigh))
+                            {
+                                if (!visited.ContainsKey(neigh))
+                                {
+                                    parentChilds[currentWord].Add(neigh);
+
+                                    //words.Remove(neigh);
+                                    queue.Enqueue(neigh);
+
+                                    visited.Add(neigh, level + 1);
+                                }
+                                else
+                                {
+                                    if(visited[neigh] > level)
+                                        parentChilds[currentWord].Add(neigh);
+                                }
+                            }
+                        }
+
+                        size--;
+                    }
+                }
+
+                //Build the path ...
+                Dfs(beginWord, endWord, parentChilds, result, new List<string>());
+
+                return result;
+            }
+
+            private static void Dfs(string start, string end, Dictionary<string, List<string>> neighbours, IList<IList<string>> result, IList<string> temp)
+            {
+                temp.Add(start);
+                if (start == end)
+                {
+                    result.Add(new List<string>(temp));
+                }
+                else
+                {
+                    if (neighbours.ContainsKey(start))
+                    {
+                        foreach (var newWord in neighbours[start])
+                        {                            
+                            Dfs(newWord, end, neighbours, result, temp);
+                        }
+                    }
+                }
+
+                temp.RemoveAt(temp.Count - 1);
+            }
+
+
+            //O(M^2) -  M is the length of str/beginWord
+            private static List<string> GetNeighbours(string str)
+            {
+                char[] chars = str.ToCharArray();
+                List<string> result = new List<string>();
+                for (int i = 0; i < chars.Length; i++)
+                {
+                    char temp = chars[i];
+                    for (char c = 'a'; c <= 'z'; c++)
+                    {
+                        chars[i] = c;
+                        string neighbour = new string(chars);
+                        if(!neighbour.Equals(str))
+                            result.Add(neighbour);
+                    }
+                    chars[i] = temp;
+                }
+
+                return result;
+            }
+        }
+
         class StringTransformationUsingDictionary
         {
             public static string[] string_transformation(string[] words, string start, string stop)
@@ -1356,6 +1545,8 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            WordLadderII.FindLadders("toon", "plea", new List<string>(new string[] { "poon", "plee", "same", "poie", "plie", "poin" }));
+
             //Strongly connected graph
 
 

@@ -16,11 +16,64 @@ namespace ConsoleApplication1
 {
     class Program
     {
+        public static IList<IList<int>> ThreeSum1(int[] nums)
+        {
+            //Must sort the array to reduce the runtime...
+
+            Array.Sort(nums);
+
+            IList<IList<int>> result = new List<IList<int>>();
+            for (int i = 0; i < nums.Length - 2; i++)
+            {
+                //duplicate start element, avoid
+                if (i > 0 && nums[i] == nums[i - 1])
+                    continue;
+
+                int l = i + 1;
+                int r = nums.Length - 1;
+
+                //use sliding window... 
+                //if sum < 0, shrink it from left(move towards right)
+                //if sum > 0, shrink it from right, is ==, shrink it from bothside
+                while (l < r)
+                {
+                    //duplicate high elements
+                    if (r + 1 < nums.Length && nums[r] == nums[r + 1])
+                    {
+                        r--;
+                        continue;
+                    }
+
+                    if (nums[l] + nums[r] + nums[i] == 0)
+                    {
+                        result.Add(new List<int>(new int[] { nums[i], nums[l], nums[r] }));
+
+                        r--;
+                        l++;
+                    }
+                    else if (nums[l] + nums[r] + nums[i] < 0)
+                    {
+                        l++;
+                    }
+                    else
+                    {
+                        r--;
+                    }
+                }
+            }
+
+            return result;
+        }
 
         static void Main(string[] args)
         {
             try
             {
+                ThreeSum1(new int[] { -1, 0, 1, 2, -1, -4 });
+
+                ArrayExercise.runTest();
+
+                GraphExercise.runTest();
                 TreeExercise.runTest();
                 //DPExercise.runTest();
 

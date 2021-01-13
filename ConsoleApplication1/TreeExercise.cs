@@ -34,6 +34,7 @@ namespace ConsoleApplication1
         public int val;
         public TreeNode left_ptr;
         public TreeNode right_ptr;
+        public TreeNode next_right;
 
         public TreeNode(int _val)
         {
@@ -231,6 +232,7 @@ namespace ConsoleApplication1
         {
             public static TreeNode Clone(TreeNode root)
             {
+                /*
                 if (root == null)
                     return null;
 
@@ -239,60 +241,44 @@ namespace ConsoleApplication1
                 newNode.right_ptr = Clone(root.right_ptr);
 
                 return newNode;
-                /*
-                TreeNode rootClone = null;// root;
-                TreeNode current = null;
-                Stack<KeyValuePair<TreeNode, int>> stack = new Stack<KeyValuePair<TreeNode, int>>();
-                stack.Push(new KeyValuePair<TreeNode, int>(root, 0));
+                */
 
-                //TreeNode prev = null;
-                while (stack.Any())
+                if (root == null)
+                    return root;
+
+                TreeNode clonedRoot = null, cloneCurrent = null;
+                Queue<KeyValuePair<TreeNode, TreeNode>> queue = new Queue<KeyValuePair<TreeNode, TreeNode>>();
+                queue.Enqueue(new KeyValuePair<TreeNode, TreeNode>(root, cloneCurrent));
+
+                while (queue.Any())
                 {
-                    KeyValuePair<TreeNode, int> temp= stack.Pop();
-
-                    //TreeNode temp = stack.Pop().Key;
-                    if(temp.Value ==0)
-                    { 
-                        rootClone = new TreeNode(temp.Key.val);
-                        current = rootClone;
-                    }
-                    else
+                    int count = queue.Count;
+                    while (count > 0)
                     {
-                        //if (prev.left_ptr == temp)
-                        if(temp.Value == 1)
+                        KeyValuePair<TreeNode, TreeNode> temp = queue.Dequeue();
+                        cloneCurrent = temp.Value;
+                        if (cloneCurrent == null)
                         {
-                            //current = current.left_ptr;
-                            current.left_ptr = new TreeNode(temp.Key.val);
+                            //create the cloned root
+                            cloneCurrent = new TreeNode(temp.Key.val);
+                            clonedRoot = cloneCurrent;
                         }
-                        else//else if (prev.right_ptr == temp)
+
+                        if (temp.Key.left_ptr != null)
                         {
-                            //current = current.right_ptr;
-                            current.right_ptr = new TreeNode(temp.Key.val);
+                            cloneCurrent.left_ptr = new TreeNode(temp.Key.left_ptr.val);
+                            queue.Enqueue(new KeyValuePair<TreeNode, TreeNode>(temp.Key.left_ptr, cloneCurrent.left_ptr));
                         }
+                        if (temp.Key.right_ptr != null)
+                        {
+                            cloneCurrent.right_ptr = new TreeNode(temp.Key.right_ptr.val);
+                            queue.Enqueue(new KeyValuePair<TreeNode, TreeNode>(temp.Key.right_ptr, cloneCurrent.right_ptr));
+                        }
+                        count--;
                     }
-                    
-                    //prev = temp;
-
-                    if (temp.Key.right_ptr != null)
-                    {
-                        //current.right_ptr = new TreeNode(temp.Key.val);
-                        stack.Push(new KeyValuePair<TreeNode, int>(temp.Key.right_ptr, 2));
-                    }
-                    if (temp.Key.left_ptr != null)
-                    {
-                        //current.left_ptr = new TreeNode(temp.Key.val);
-                        stack.Push(new KeyValuePair<TreeNode, int>( temp.Key.left_ptr, 1));
-                    }
-
-                    if (temp.Key.left_ptr == null)
-                        current = current.right_ptr;
-                    else
-                        current = current.left_ptr;
                 }
 
-                return rootClone;
-
-                */
+                return clonedRoot;
             }
         }
 
@@ -301,27 +287,227 @@ namespace ConsoleApplication1
             public static void mirror_image(TreeNode root)
             {
                 // Write your code here
+                if (root == null)
+                    return;
 
+                Queue<TreeNode> queue = new Queue<TreeNode>();
+                queue.Enqueue(root);
+                while (queue.Any())
+                {
+                    int count = queue.Count;
+                    while (count > 0)
+                    {
+                        TreeNode temp = queue.Dequeue();
+
+                        if (temp.left_ptr != null && temp.right_ptr != null)
+                        {
+                            TreeNode l = temp.left_ptr;
+                            temp.left_ptr = temp.right_ptr;
+                            temp.right_ptr = l;
+                        }
+                        else if(temp.left_ptr != null)
+                        {
+                            temp.right_ptr = temp.left_ptr;
+                            temp.left_ptr = null;
+                        }
+                        else
+                        {
+                            temp.left_ptr= temp.right_ptr;
+                            temp.right_ptr = null;
+                        }
+
+                        if (temp.left_ptr != null)
+                            queue.Enqueue(temp.left_ptr);
+                        
+                        if (temp.right_ptr != null)
+                            queue.Enqueue(temp.right_ptr);
+                        
+                        count--;
+                    }
+                }
             }
         }
 
+        //101. Symmetric Tree
+        class IsSymmetricTree
+        {
+            //https://leetcode.com/problems/symmetric-tree/
+            public static bool IsSymmetric(TreeNode root)
+            {
+                //Symmetric check is easy, when you imagine putting a tree above another...
+
+                if (root == null)
+                    return true;
+
+                Queue<KeyValuePair<TreeNode, TreeNode>> queue = new Queue<KeyValuePair<TreeNode, TreeNode>>();
+                queue.Enqueue(new KeyValuePair<TreeNode, TreeNode>(root, root));
+                while (queue.Any())
+                {
+                    int count = queue.Count;
+                    while (count > 0)
+                    {
+                        KeyValuePair<TreeNode, TreeNode> temp = queue.Dequeue();
+                        TreeNode belowNode = temp.Key;
+                        TreeNode upperNode = temp.Value;
+
+                        if (belowNode == null && upperNode == null)
+                        {
+                            continue;
+                        }
+                        if (belowNode != null && upperNode != null)
+                        {
+                            if (belowNode.val != upperNode.val)
+                                return false;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                        
+                        if (belowNode.left_ptr != null)
+                            queue.Enqueue(new KeyValuePair<TreeNode, TreeNode>(belowNode.left_ptr, upperNode.right_ptr));
+
+                        if (belowNode.right_ptr != null)
+                            queue.Enqueue(new KeyValuePair<TreeNode, TreeNode>(belowNode.right_ptr, upperNode.left_ptr));
+
+                        count--;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        //116. Populating Next Right Pointers in Each Node
+        //117. Populating Next Right Pointers in Each Node II
         class PopulateSiblingPointers
         {
+            //https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
+            //https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/
             public static TreeNode populateSiblingPointers(TreeNode root)
             {
-                return null;
+                if (root == null)
+                    return root;
 
+                TreeNode rootPointer = root;
+                Queue<TreeNode> queue = new Queue<TreeNode>();
+                queue.Enqueue(root);
+
+                TreeNode prev =null;
+                while(queue.Any())
+                {
+                    int count = queue.Count;
+                    /*
+                    (1)
+                 (2)->(3)
+                  p(5)  (6)
+                     */
+
+                    while(count > 0 )
+                    {
+                        TreeNode temp = queue.Dequeue(); 
+                        
+                        if (temp.left_ptr != null)
+                        {
+                            queue.Enqueue(temp.left_ptr);
+                            if (prev == null)
+                                prev = temp.left_ptr;
+                            else
+                            {
+                                prev.next_right = temp.left_ptr;
+                                prev = prev.next_right;
+                            }
+                        }
+                        if (temp.right_ptr != null)
+                        {
+                            queue.Enqueue(temp.right_ptr);
+                            if (prev == null)
+                                prev = temp.right_ptr;
+                            else
+                            {
+                                prev.next_right = temp.right_ptr;
+                                prev = prev.next_right;
+                            }
+                        }
+
+                        count--;
+                    }
+
+                    //reset prev pointer, when we fisnihed one level
+                    prev = null;
+                }
+
+                return rootPointer;
             }
         }
 
+        //98. Validate Binary Search Tree
+        class ValidateBinarySearchTree
+        {
+            //https://leetcode.com/problems/validate-binary-search-tree/
+            public static bool IsValidBST(TreeNode root)
+            {
+                return isValidBst(root, long.MinValue, long.MaxValue);
+            }
+            private static bool isValidBst(TreeNode root, long min, long max)
+            {
+                if (root == null)
+                    return true;
+
+                bool leftSide = isValidBst(root.left_ptr, min, root.val);
+                if (!leftSide) return false;
+
+                bool rightSide = isValidBst(root.next_right, root.val, max);
+
+                if (root.val <= min || root.val >= max)
+                    return false;
+
+                return (leftSide && rightSide);
+            }
+        }
+
+        //333. Largest BST Subtree
         class LargestBST
         {
+            //https://leetcode.com/problems/largest-bst-subtree/
             public static int findLargestBST(TreeNode root)
             {
-                return 0;
-            }
-        }
+                if (root == null)
+                    return 0;
+                int[] maxHeight = new int[1];
+                maxHeight[0] = int.MinValue;
+                findLargest(root, maxHeight, int.MinValue, int.MaxValue);
 
+                return maxHeight[0];
+            }
+
+            static int findLargest(TreeNode root, int[] maxHeight, int min, int max)
+            {
+                if (root == null)
+                    return 0;
+
+                //int leftSide = findLargest(root.left_ptr, maxHeight, min, root.val);
+                //int rightSide = findLargest(root.right_ptr, maxHeight, root.val, max);
+
+                int leftSide = findLargest(root.left_ptr, maxHeight, int.MinValue, root.val);
+                int rightSide = findLargest(root.right_ptr, maxHeight, root.val, int.MaxValue);
+
+                int largestBSTAtNode = 1;
+                if (leftSide != -1 && rightSide != -1)
+                {
+                    largestBSTAtNode = leftSide + rightSide + 1;
+                    maxHeight[0] = Math.Max(maxHeight[0], largestBSTAtNode);
+                }
+
+                //If value range violates or (left subtree violates == -1 or right subtree violates == -1), then this node also violates
+                if (root.val <= min || root.val >= max || leftSide == -1 || rightSide == -1)
+                    return -1;
+
+                return largestBSTAtNode;
+            }
+
+        }
+        
         class ConstructBinaryTree
         {
             public static TreeNode constructBinaryTree(List<int> inorder, List<int> preorder)
@@ -1088,13 +1274,16 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
-            TreeNode root = new TreeNode(20);
-            root.left_ptr = new TreeNode(8);
-            root.left_ptr.left_ptr= new TreeNode(4);
-            root.left_ptr.right_ptr = new TreeNode(12);
-            root.left_ptr.right_ptr.left_ptr = new TreeNode(10);
-            root.left_ptr.right_ptr.right_ptr = new TreeNode(14);
 
+            TreeNode root = new TreeNode(3);
+                root.left_ptr = new TreeNode(1);
+                root.left_ptr.left_ptr= new TreeNode(2);
+                root.left_ptr.left_ptr.right_ptr = new TreeNode(4);
+            //root.right_ptr = new TreeNode(15);
+                //root.right_ptr.left_ptr = new TreeNode(4);
+                //root.right_ptr.right_ptr = new TreeNode(7);
+            LargestBST.findLargestBST(root);
+            IsSymmetricTree.IsSymmetric(root);
             CloneTree.Clone(root);
 
 

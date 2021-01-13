@@ -7,6 +7,123 @@ namespace ConsoleApplication1
 {
     public class ArrayExercise
     {
+        //15. 3Sum
+        class ThreeSum
+        {
+            //https://leetcode.com/problems/3sum/
+            public static IList<IList<int>> Get_ThreeSum(int[] nums)
+            {
+                //O(N^2)
+
+                //Must sort the array to reduce the runtime...
+
+                Array.Sort(nums);
+
+                IList<IList<int>> result = new List<IList<int>>();
+                for (int i = 0; i < nums.Length - 2; i++)
+                {
+                    //duplicate start element, avoid
+                    if (i > 0 && nums[i] == nums[i - 1])
+                        continue;
+
+                    int l = i + 1;
+                    int r = nums.Length - 1;
+
+                    //use sliding window... 
+                    //if sum < 0, shrink it from left(move towards right)
+                    //if sum > 0, shrink it from right, is ==, shrink it from bothside
+                    while (l < r)
+                    {
+                        //duplicate high elements
+                        if (r + 1 < nums.Length && nums[r] == nums[r + 1])
+                        {
+                            r--;
+                            continue;
+                        }
+
+                        if (nums[l] + nums[r] + nums[i] == 0)
+                        {
+                            result.Add(new List<int>(new int[] { nums[i], nums[l], nums[r] }));
+
+                            r--;
+                            l++;
+                        }
+                        else if (nums[l] + nums[r] + nums[i] < 0)
+                        {
+                            l++;
+                        }
+                        else
+                        {
+                            r--;
+                        }
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        //1. Two Sum
+        class TwoSum
+        {
+            //https://leetcode.com/problems/two-sum/
+            public static int[] Get(int[] nums, int target)
+            {
+                //O(n), Space O(N)
+                //neeed has table
+                Dictionary<int, int> dict = new Dictionary<int, int>();
+
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    int remain = target - nums[i];
+                    if (dict.ContainsKey(remain))
+                        return new int[2] { i, dict[remain] };
+
+                    if (!dict.ContainsKey(nums[i]))
+                        dict.Add(nums[i], i);
+                }
+
+                return null;
+            }
+        }
+
+        //1099. Two Sum Less Than K
+        class TwoSumLessThanK
+        {
+            //https://leetcode.com/problems/two-sum-less-than-k/
+            public static int Get(int[] nums, int k)
+            {
+                //O(NLogN), SPace O(1)
+                if (nums.Length < 2)
+                    return -1;
+
+                //Must Sort the array to use 2 pointer approach
+                Array.Sort(nums);  //O(NLogN)
+
+                int MaxSum = -1;
+
+                //sliding window....
+                int l = 0;
+                int r = nums.Length - 1;
+
+                while (l < r && r < nums.Length)
+                {
+                    int sum = nums[l] + nums[r];
+                    if (sum < k)
+                    {
+                        MaxSum = Math.Max(MaxSum, nums[l] + nums[r]);
+                        l++;
+                    }
+                    else
+                    {
+                        r--;
+                    }
+                }
+
+                return MaxSum;
+            }
+        }
+
         //1539. Kth Missing Positive Number
         class KthMissingPositiveNumber
         {
@@ -329,12 +446,288 @@ namespace ConsoleApplication1
         }
 
         //4. Median of Two Sorted Arrays
-        public class MedianOfTwoSortedArrays
+        class MedianOfTwoSortedArrays
         {
             //https://leetcode.com/problems/median-of-two-sorted-arrays/
             public double FindMedianSortedArrays(int[] nums1, int[] nums2)
             {
+                //https://www.youtube.com/watch?v=LPFhl65R7ww
+
+                //idea is to split the arrays such a way where every element in left is less than right side
+
+                //Time (O(Log(Min(m,n))))
+                int len1 = nums1.Length;
+                int len2 = nums2.Length;
+
+                //make sure that forst array is smaller
+                if (len1 > len2)
+                    return FindMedianSortedArrays(nums2, nums1);
+
+                int lo = 0;
+                int hi = len1;
+
+                while (lo <= hi)
+                {
+                    //split 2 arrays, such that have have eual numbers on both sides
+                    int firstArrSplitIndex = (lo + hi) / 2;
+                    int secondArrSplitIndex = (len1 + len2 + 1) / 2 - firstArrSplitIndex;
+
+                    //collect left and right around splits
+                    int F1ArrLeft = (firstArrSplitIndex == 0) ? Int32.MinValue : nums1[firstArrSplitIndex - 1];
+                    int F1ArrRight = (firstArrSplitIndex == len1) ? Int32.MaxValue : nums1[firstArrSplitIndex];
+
+                    int F2ArrLeft = (secondArrSplitIndex == 0) ? Int32.MinValue : nums2[secondArrSplitIndex - 1];
+                    int F2ArrRight = (secondArrSplitIndex == len2) ? Int32.MaxValue : nums2[secondArrSplitIndex];
+
+                    //split where every element in left is less than right side
+                    if (F1ArrLeft <= F2ArrRight && F2ArrLeft <= F1ArrRight)
+                    {
+                        //We have partitioned the array at correct place
+                        //now get max of left elements and min of right elements to get the median in case of even length combined array size
+                        //or get max of left for odd length combined array size
+                        if ((len1 + len2) % 2 == 0)
+                        {
+                            return (double)(Math.Max(F1ArrLeft, F2ArrLeft) + Math.Min(F1ArrRight, F2ArrRight)) / 2;
+                        }
+                        else
+                        {
+                            return (double)Math.Max(F1ArrLeft, F2ArrLeft);
+                        }
+                    }
+                    else if (F1ArrRight < F2ArrLeft)
+                    {
+                        lo = firstArrSplitIndex + 1;
+                    }
+                    else
+                    {
+                        hi = firstArrSplitIndex - 1;
+                    }
+                }
+
+                // we can come here only if the arrays are not sorted 
+                // throw a valid exception
+                throw new Exception();
+            }
+        }
+
+        class KthLargestElementofTwoSortedArrays
+        {
+            //https://leetcode.com/discuss/interview-question/351782/google-phone-screen-kth-largest-element-of-two-sorted-arrays
+            public int FindMedianSortedArrays(int[] nums1, int[] nums2, int k)
+            {
                 return 0;
+            }
+        }
+
+        //295. Find Median from Data Stream
+        class FindMedianfromDataStream
+        {
+            Heap<int> leftMaxHeap = null;
+            Heap<int> RightMinHeap = null;
+            //https://leetcode.com/problems/find-median-from-data-stream/
+            /** initialize your data structure here. */
+            public FindMedianfromDataStream()
+            {
+                //The idea is to split the numbers into 2 halfs
+                //left half will maintain numbers in Asc order, (Max heap)
+                //right side will maintain numbers in Desc order, (MinHeap)
+
+                /*
+                 --------------------
+                |3|4|5|6|   |8|10|12|
+                ---------------------
+                 MaxHeap     MinHeap
+                */
+
+                leftMaxHeap = new Heap<int>(100, false);
+                RightMinHeap = new Heap<int>(100, true);
+            }
+
+            public void AddNum(int num)
+            {
+                //add to max heap
+                leftMaxHeap.Push(new HeapNode<int>(num));
+
+                //move it to min heap
+                RightMinHeap.Push(leftMaxHeap.Top());
+                leftMaxHeap.Pop();
+
+                //if count(minheap) is grear than max heap
+                //move the Min value to Max heap
+                if (RightMinHeap.Count > leftMaxHeap.Count)
+                {
+                    leftMaxHeap.Push(RightMinHeap.Top());
+                    RightMinHeap.Pop();
+                }
+            }
+
+            public double FindMedian()
+            {
+                //if max heap has one more extra value, then return it, 
+                if (leftMaxHeap.Count > RightMinHeap.Count)
+                {
+                    return leftMaxHeap.Top().val;
+                }
+                else
+                {
+                    return (RightMinHeap.Top().val + leftMaxHeap.Top().val) * 0.5;
+                }
+            }
+        }
+
+        //480. Sliding Window Median
+        class SlidingWindowMedian
+        {
+            //https://leetcode.com/problems/sliding-window-median/
+            public static double[] MedianSlidingWindow(int[] nums, int k)
+            {
+                //The idea is to split the numbers into 2 halfs
+                //left half will maintain numbers in Asc order, (Max heap - SortedSet)
+                //right side will maintain numbers in Desc order, (MinHeap - SortedSet)
+
+                /*
+                 --------------------
+                |3|4|5|6|   |8|10|12|
+                ---------------------
+                 MaxHeap     MinHeap
+                 */
+
+                //https://www.c-sharpcorner.com/UploadFile/0f68f2/comparative-analysis-of-list-hashset-and-sortedset/
+                //c# SortedSet - Add/delete operation is O(LogN) - refer to above link
+
+                //O(NLogK), Space(k)
+
+                IList<double> result = new List<double>();
+                
+                SortedSet<Pair> minSet = new SortedSet<Pair>();
+                SortedSet<Pair> maxSet = new SortedSet<Pair>(new PairDescOrder());
+
+                // To hold the pairs, we will keep renewing 
+                // these instead of creating the new pairs 
+                Pair[] windowPairs = new Pair[k];
+
+                for (int i = 0; i < k; i++)
+                {
+                    windowPairs[i] = new Pair(nums[i], i);
+                }
+
+                // Add k items 
+                for (int i = 0; i < k; i++)
+                {
+                    maxSet.Add(windowPairs[i]);
+
+                    minSet.Add(maxSet.First());
+                    maxSet.Remove(maxSet.First());
+
+                    if (minSet.Count > maxSet.Count)
+                    {
+                        maxSet.Add(minSet.First());
+                        minSet.Remove(minSet.First());
+                    }
+                }
+                
+                printMedian(minSet, maxSet, k, result);
+
+                for (int i = k; i < nums.Length; i++)
+                {
+                    // Get the item going out of window 
+                    Pair temp = windowPairs[i % k];
+
+                    //find which set the older value belong
+                    if (temp.value > maxSet.First().value)
+                    {
+                        //temp was stored on min set, remove it from min set
+                        minSet.Remove(temp);
+                    }
+                    else
+                    {
+                        //temp was stored on max set, remove it from max set
+                        maxSet.Remove(temp);
+                    }
+
+                    // Renew window start to new window end 
+                    temp.Renew(nums[i], i);
+
+                    maxSet.Add(temp);
+                    minSet.Add(maxSet.First());
+                    maxSet.Remove(maxSet.First());
+                    if (minSet.Count > maxSet.Count)
+                    {
+                        maxSet.Add(minSet.First());
+                        minSet.Remove(minSet.First());
+                    }
+
+                    printMedian(minSet, maxSet, k, result);
+                }
+
+                return result.ToArray();
+            }
+
+            static void printMedian(SortedSet<Pair> minSet, SortedSet<Pair> maxSet, int window, IList<double> result)
+            {
+                // If the window size is even then the 
+                // median will be the average of the 
+                // two middle elements 
+                if (window % 2 == 0)
+                {
+                    result.Add(((double)minSet.First().value + (double)maxSet.First().value) / 2.0);
+                }
+                // Else it will be the middle element 
+                else
+                {
+                    result.Add(maxSet.First().value);
+                }
+            }
+
+            class Pair : IComparable<Pair>
+            {
+                public int value = 0, index=0;
+
+                // Constructor 
+                public Pair(int v, int p)
+                {
+                    value = v;
+                    index = p;
+                }
+
+                public int CompareTo(Pair o)
+                {
+                    // Two nodes are equal only when 
+                    // their indices are same 
+                    if (index == o.index)
+                    {
+                        return 0;
+                    }
+                    else if (value == o.value)
+                    {
+                        return index.CompareTo(o.index);
+                    }
+                    else
+                    {
+                        return value.CompareTo(o.value);
+                    }
+                }
+
+                // Update the value and the position 
+                // for the same object to save space 
+                public void Renew(int v, int p)
+                {
+                    value = v;
+                    index = p;
+                }
+
+                public override string ToString()
+                {
+                    return string.Format("{0:0.0}, {1:0.0}", value, index);
+                }
+            }
+
+            class PairDescOrder : IComparer<Pair>
+            {
+                public int Compare(Pair x, Pair y)
+                {
+                    return y.CompareTo(x);
+                }
             }
         }
 
@@ -1460,6 +1853,13 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            SlidingWindowMedian.MedianSlidingWindow(new int[] {1, 4, 2, 3}, 4);
+
+            FindMedianfromDataStream fm = new FindMedianfromDataStream();
+            fm.AddNum(1);
+            fm.AddNum(2);
+            fm.AddNum(3);
+
             LongestSubstringWithoutRepeatingCharacters.LengthOfLongestSubstring("pwwkew");
             KthMissingPositiveNumber.FindKthPositive(new int[] { 1, 2, 3, 4 }, 2);
 

@@ -3133,7 +3133,7 @@ namespace ConsoleApplication1
                 if (matrix.Length == 0)
                     return 0;
 
-                //We will use the same logic "largest rantangle in histogram".. 
+                //We will use the same logic "largest rantangle in histogram"..  LargestRectangleinHistogram.
                 //To Do it We need to collapse row by row, to calculate the height on each column[i]
 
                 int[] firstSmallHeightOnLeftSide = new int[matrix[0].Length];
@@ -3190,42 +3190,6 @@ namespace ConsoleApplication1
                     }
                 }
                 return MaxSquareSize;
-
-
-                /*
-                int[,] dp = new int[matrix.Length, matrix[0].Length];
-
-                int maxSquareSize = 0;
-
-                //base case 
-                for (int r = 0; r < matrix.Length; r++)
-                {
-                    dp[r, 0] = (matrix[r][0] == '1') ? 1 : 0;
-
-                    if (dp[r, 0] == 1) //the smallest square size
-                        maxSquareSize = 1;
-                }
-                for (int c = 0; c < matrix[0].Length; c++)
-                {
-                    dp[0, c] = (matrix[0][c] == '1') ? 1 : 0;
-
-                    if (dp[0, c] == 1) //the smallest square size
-                        maxSquareSize = 1;
-                }
-
-                for (int r = 1; r < matrix.Length; r++)
-                {
-                    for (int c = 1; c < matrix[0].Length; c++)
-                    {
-                        if (matrix[r][c] == '1')
-                            dp[r, c] = Math.Min(Math.Min(dp[r - 1, c - 1], dp[r, c - 1]), dp[r - 1, c]) + 1;
-
-                        maxSquareSize = Math.Max(maxSquareSize, dp[r, c]);
-                    }
-                }
-
-                return maxSquareSize * maxSquareSize;
-                */
             }
         }
 
@@ -3317,6 +3281,75 @@ namespace ConsoleApplication1
                 return MaxRectableSize;
             }
         }
+
+        //1335. Minimum Difficulty of a Job Schedule
+        class MinimumDifficultyofaJobSchedule
+        {
+            //https ://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/
+            public static int MinDifficulty(int[] jobDifficulty, int d)
+            {
+                return 0;
+            }
+
+            /*
+             public int minDifficulty(int[] jobDifficulty, int d) {
+        int n = jobDifficulty.length;
+        if (n < d) {
+            return -1;
+        }
+        return dfs(0, d, jobDifficulty, new int[n][d+1]);
+    }
+    private int dfs(int index, int d, int[] a, int[][] memo) { // Time: O(d * N^2 ), Space: O(d * N)
+        int dayMax = a[index];
+        if (d == 1) {
+            for (int i = index + 1; i < a.length; i++) {
+                dayMax = Math.max(dayMax, a[i]);
+            }
+            return dayMax;
+        }
+        if (memo[index][d] != 0) {
+            return memo[index][d];
+        }
+        int minSum = Integer.MAX_VALUE;
+        dayMax = 0;
+        for (int i = index; i <= a.length - d; i++) {  // n
+            dayMax = Math.max(dayMax, a[i]);
+            minSum = Math.min(minSum, dayMax + dfs(i + 1, d - 1, a, memo));
+        }
+        return memo[index][d] = minSum;
+    } 
+    public int minDifficulty(int[] jobDifficulty, int d) {
+        int n = jobDifficulty.length;
+        if (n < d) {
+            return -1;
+        }
+        // dp[i][j]: min difficulty given days[0..i] and jobs[0..j]
+        int[][] dp = new int[d][n];
+        // initial condition
+        dp[0][0] = jobDifficulty[0];
+        for (int j = 1; j < n; j++) {
+            dp[0][j] = Math.max(dp[0][j - 1], jobDifficulty[j]);
+        }
+        // regular case
+        
+        // dp[i][j] = min( dp[i-1][k-1] + max(jobDifficulty[k..j]) ), where k: i..j
+        
+        for (int i = 1; i < d; i++) {
+            for (int j = i; j < n; j++) {
+                int maxDifficulty = jobDifficulty[j];
+                dp[i][j] = dp[i - 1][j - 1] + maxDifficulty;
+                for (int k = j - 1; k >= i; k--) {
+                    maxDifficulty = Math.max(maxDifficulty, jobDifficulty[k]);
+                    dp[i][j] = Math.min(dp[i][j], dp[i-1][k-1] + maxDifficulty);
+                }
+            }
+        }
+        return dp[d - 1][n - 1];
+    }    
+
+            */
+        }
+
 
         public static void runTest()
         {
