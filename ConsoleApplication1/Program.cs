@@ -16,6 +16,77 @@ namespace ConsoleApplication1
 {
     class Program
     {
+        public static int[] LargestSubarray(int[] nums, int k)
+        {
+            IList<int> result = new List<int>();
+
+            //how many subarray we can build??
+            int KSizeSubArrayCount = nums.Length - k + 1;
+
+            //subarray could be overlapping or not (k = 1)
+            //if subarray is not over lapping... then we need to loop           till KSizeSubArrayCount
+
+            if (k == 1) //not over lapping, so we need loop
+            {
+                //how many loop??  KSizeSubArrayCount
+
+            }
+            else
+            {
+                for (int i = 0; i < k; i++)
+                {
+                    int maxValIndex = i;
+
+                    int count = 0;
+                    int j = i;
+                    for (; j < i + KSizeSubArrayCount; j++)
+                    {
+                        if (nums[j] >= nums[maxValIndex])
+                        {
+                            count++;
+
+                            //if (count > 1)
+                            //    break;
+
+                            maxValIndex = i;
+                        }
+                        j++;
+                    }
+
+                    if (count == 1)
+                    {
+                        //result.Add();
+                        return result.ToArray();
+                    }
+                }
+            }
+            return null;
+
+
+
+
+            //1,4,5,2,3  k=3
+            //1,4,5
+            //4,5,2
+            //5,2,3
+
+            //1,3,5,2,3  k=3
+            //1,3,5
+            //3,5,2
+            //5,2,3
+
+            //1,4,5,2,3,6  k=2
+            //1,4
+            //4,5
+            //5,2
+            //2,3
+            //3,6
+
+            //1,4,5,2,3,6  k=5
+            //1,4,5,2,3
+            //4,5,2,3,6
+        }
+
         public static IList<IList<int>> ThreeSum1(int[] nums)
         {
             //Must sort the array to reduce the runtime...
@@ -65,10 +136,360 @@ namespace ConsoleApplication1
             return result;
         }
 
+        public static int LengthOfLongestSubstring(string s)
+        {
+
+            HashSet<char> dict = new HashSet<char>();
+
+            int max = 0;
+            int l = 0;
+            int r = 0;
+            while (l <= r && r < s.Length)
+            {
+                Console.WriteLine(l + ":" + r + ":" + max);
+
+                if (dict.Contains(s[r]))
+                {
+                    Console.WriteLine("indise");
+
+                    //shrink window from left till it has all unique elements
+                    while (dict.Contains(s[r]))
+                    {
+                        dict.Remove(s[l]);
+                        l++;
+                    }
+
+                    dict.Add(s[r]);
+                }
+                else
+                {
+                    dict.Add(s[r]);
+                    max = Math.Max(max, r - l + 1);
+                    r++;
+                }
+            }
+
+            return max;
+        }
+
+        public class Solution
+        {
+            
+            public static IList<int> FindSubstring(string s, string[] words)
+            {
+                IList<int> result = new List<int>();
+                if (s.Length < words[0].Length)
+                    return result;
+
+                int totalChars = words[0].Length * words.Length;
+
+                Dictionary<string, int> tMap = new Dictionary<string, int>();
+                foreach (string str in words)
+                {
+                    if (!tMap.ContainsKey(str))
+                        tMap.Add(str, 0);
+                    tMap[str]++;
+                }
+
+                for (int l = 0; l <= s.Length - totalChars; l++)
+                {  
+                    //O(m - n) time complexity, where m is length of s, n is the length of all word
+                    Dictionary<string, int> tempMap = new Dictionary<string, int>(tMap);
+
+                    int r = 0;
+                    while (!IsWinValid(tempMap) && r < totalChars)
+                    {
+                        string str = s.Substring(l + r, words[0].Length);
+                        if(tempMap.ContainsKey(str))
+                        {
+                            if (tempMap[str] > 0)
+                                tempMap[str]--;
+                        }
+                        r = r + words[0].Length;
+                    }
+
+                    if (!IsWinValid(tempMap))
+                        continue;
+
+                    result.Add(l);
+                }
+
+                return result;
+            }
+
+            private static bool IsWinValid(Dictionary<string, int> tMap)
+            {
+                foreach (string str in tMap.Keys)
+                {
+                    if (tMap[str] > 0) return false;
+                }
+                return true;
+            }
+
+        }
+
+        public static string Convert(string s, int numRows)
+        {
+            IList<IList<char>> result = new List<IList<char>>();
+            for (int i = 0; i < numRows; i++)
+                result.Add(new List<char>());
+
+            int insertAryIndex = 0;
+            bool direction = true; //going down
+            for (int i = 0; i < s.Length; i++)
+            {
+                result[insertAryIndex].Add(s[i]);
+
+                //true is going down
+
+                if (direction)
+                {
+                    if (insertAryIndex == numRows - 1)
+                    {
+                        direction = false;
+                        if (insertAryIndex > 0)
+                            insertAryIndex--;
+                    }
+                    else
+                    {
+                        if (insertAryIndex < numRows - 1)
+                            insertAryIndex++;
+                    }
+                }
+                else
+                {
+                    if (insertAryIndex == 0)
+                    {
+                        direction = true;
+                        if (insertAryIndex < numRows - 1)
+                            insertAryIndex++;
+                    }
+                    else
+                    {
+                        if (insertAryIndex > 0)
+                            insertAryIndex--;
+                    }
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < numRows; i++)
+                sb.Append(new string(result[i].ToArray()));
+            return sb.ToString();
+        }
+
+        public static IList<IList<string>> GroupAnagrams(string[] strs)
+        {
+            int[] buffer = new int[26];
+            Dictionary<string, IList<string>> ans = new Dictionary<string, IList<string>>();
+
+            for (int i = 0; i < strs.Length; i++)
+            {
+                for (int j = 0; j < 26; j++)
+                    buffer[j] = 0;
+
+                foreach (char c in strs[i])
+                    buffer[c - 'a']++;
+
+                StringBuilder sb = new StringBuilder();
+                for (int k = 0; k < 26; k++)
+                {
+                    for (int j = 0; j < buffer[k]; j++)
+                    {
+                        sb.Append((char)(k + 'a'));
+                    }
+                }
+
+                string key = sb.ToString();
+                if (!ans.ContainsKey(key))
+                    ans.Add(key, new List<string>());
+                ans[key].Add(strs[i]);
+            }
+
+            IList<IList<string>> result = new List<IList<string>>();
+            foreach(string key in ans.Keys)
+                result.Add(ans[key]);
+            return result;
+        }
+
+        public static int[][] Insert(int[][] intervals, int[] newInterval)
+        {
+            int s = newInterval[0], e = newInterval[1];
+            IList<int[]> left = new List<int[]>();
+            IList<int[]> right = new List<int[]>();
+            
+            for (int i = 0; i < intervals.Length; i++)
+            {
+                if (intervals[i][1] < s) //interval end is less than new S
+                    left.Add(intervals[i]);
+                else if (intervals[i][0] > e) //interval start is greater than new E
+                    right.Add(intervals[i]);
+                else
+                {
+                    s = Math.Min(s, intervals[i][0]);
+                    e = Math.Max(e, intervals[i][1]);
+                }
+            }
+
+            left.Add(new int[] { s, e });
+            return left.Concat(right).ToArray();
+        }
+
+        public static IList<string> FullJustify(string[] words, int maxWidth)
+        {
+
+            IList<string> result = new List<string>();
+            int start = 0, sum = 0, sumLast = 0;
+
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (i > 0)
+                    sumLast += words[i - 1].Length;
+                sum += words[i].Length;
+
+                //Console.WriteLine(sum);
+
+                if (sum + (i - start) > maxWidth)
+                {
+                    //build till i - 1;
+                    result.Add(BuildString(words, start, i - 1, maxWidth - (sumLast)));
+
+                    start = i;
+                    sumLast = 0;
+                    if (i != words.Length - 1)
+                        sum = words[i].Length;
+                }
+            }
+
+            if (sum > 0)
+            {
+                result.Add(BuildString(words, start, words.Length - 1, maxWidth - sum));// (sumLast + words[words.Length - 1].Length)));
+            }
+
+            return result;
+        }
+
+        private static string BuildString(string[] words, int start, int end, int padLeft)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int wordCount = end - start + 1;
+            int padSplitCount = 0, padSplitCountCarry = 0;
+            if (wordCount > 1)
+            {
+                padSplitCount = padLeft / (wordCount - 1);
+                padSplitCountCarry = padLeft % (wordCount - 1);
+            }
+            else
+            {
+                padSplitCountCarry = padLeft;
+            }
+
+            Console.WriteLine(wordCount + ":" + padSplitCount + ":" + padSplitCountCarry);
+
+            for (int i = start; i <= end; i++)
+            {
+                sb.Append(words[i]);
+
+                if (i < end)
+                    sb.Append(new string(' ', padSplitCount));
+
+                if (padSplitCountCarry > 0)
+                {
+                    sb.Append(new string(' ', padSplitCountCarry));
+                    padSplitCountCarry = 0;
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public static string SimplifyPath(string path)
+        {
+            Stack<string> stack = new Stack<string>();
+
+            int start = 1;
+            for (int i = 0; i < path.Length; i++)
+            {
+                if (i > 0 && path[i] == '/')
+                {
+                    if (i - start > 0) //escaping 2 kore '/' together
+                    {
+                        string pathSegment = path.Substring(start, i - start);
+                        if (pathSegment == "..")
+                        {
+                            if (stack.Count > 0)
+                                stack.Pop();
+                        }
+                        else if(pathSegment != ".")
+                            stack.Push(pathSegment);
+                    }
+                    start = i + 1;
+                }
+            }
+
+            if (start != path.Length) //if the last char is not '/'
+            {
+                string pathSegment = path.Substring(start, path.Length - start);
+                if (pathSegment == "..")
+                {
+                    if (stack.Count > 0)
+                        stack.Pop();
+                }
+                else if (pathSegment != ".")
+                    stack.Push(pathSegment);
+            }
+
+
+            if (stack.Count == 0)
+                return "/";
+
+            Console.WriteLine(stack.Count);
+
+            StringBuilder sb = new StringBuilder();
+            while (stack.Any())
+            {
+                sb.Insert(0, stack.Pop());
+                sb.Insert(0, "/");
+            }
+
+            return sb.ToString();
+        }
+
+        
         static void Main(string[] args)
         {
             try
             {
+                ArrayExercise.runTest();
+                RecursionExercise.runTest();
+
+
+                
+                FullJustify(new string[] { "What", "must", "be", "acknowledgment", "shall", "be" }, 16);
+                //[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+                Insert(new int[][]{ new int[]{1,2}, new int[]{3,5}, new int[] { 6, 7 }, new int[] { 8, 10 }, new int[] { 12, 16 } }, new int[]{ 4,8});
+               //Solution1.CanJump(new int[] { 3, 2, 1, 0, 4 });
+                RecursionExercise.runTest();
+
+                Convert("PAYPALISHIRING", 1);
+
+
+                Solution.FindSubstring("aaaaaaaaaaaaaa", new string[] { "aa", "aa"});
+
+                Solution.FindSubstring("wordgoodgoodgoodbestword", new string[] { "word", "good", "best", "good" });//, "wing", "ding", "wing" });
+                Solution.FindSubstring("barfoothefoobarman", new string[] { "foo", "bar" });
+                Solution.FindSubstring("barfoofoobarthefoobarman", new string[] { "bar", "foo", "the" });
+                Solution.FindSubstring("wordgoodgoodgoodbestword", new string[] { "word", "good", "best", "word" });
+
+                //MinWindow.MinWindow1("ADOBECODEBANC", "ABC");
+                //int[][] d = new int[1][] { new int[] { 1} };
+                //RainWaterII.TrapRainWater(d);
+
+                LengthOfLongestSubstring("abcabd");
+
+                LargestSubarray(new int[] { 1, 4, 5, 2, 3 }, 3);
+
                 ThreeSum1(new int[] { -1, 0, 1, 2, -1, -4 });
 
                 ArrayExercise.runTest();
@@ -130,7 +551,7 @@ namespace ConsoleApplication1
 
                 TreeNode tn = RecoverFromPreorder("1-401--349---90--88");
 
-                string wwwww1 = Convert.ToString(67, toBase: 2);
+                //string wwwww1 = Convert.ToString(67, toBase: 2);
 
 
 
@@ -685,8 +1106,6 @@ namespace ConsoleApplication1
                 //BinarySearchExercise.runTest();
 
 
-                var str222 = Convert.ToString(8, 2);
-
                 BitArray b111 = new BitArray(new int[] { 3 });
 
 
@@ -785,63 +1204,6 @@ namespace ConsoleApplication1
 
 
                 Array.Copy(grades, grades, 0);
-
-
-                var uri = "https://qa.hondaweb.com/partsequoteservice/api/reports/GetCommonReportInfo/1";
-
-                HttpClientHandler handler = new HttpClientHandler() { PreAuthenticate = true };//, UseDefaultCredentials = true };
-                //handler.Credentials = CredentialCache.DefaultNetworkCredentials;// WindowsIdentity.GetCurrent(); new NetworkCredential(@"AMU\Sudip Purkayastha", "Hond@300");// 
-                using (HttpClient httpClient = new HttpClient(handler))//; HttpClientFactory.Create(new ClientHeaderHandler()))
-                {
-                    httpClient.Timeout = TimeSpan.FromMinutes(30);
-
-                    //httpClient.BaseAddress = new Uri(baseuri);
-                    httpClient.DefaultRequestHeaders.Accept.Clear();
-                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-
-                    //httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
-                    //httpClient.DefaultRequestHeaders.Add("Keep-Alive", "600");
-
-                    byte[] authbytes = System.Text.Encoding.ASCII.GetBytes(@"Sudip Purkayastha" + ":" + "Hond@300");
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authbytes)); //.Add("Authorization", "Basic " + Convert.ToBase64String(authbytes));
-                                                                                                                                                //httpClient.DefaultRequestHeaders.ProxyAuthorization=new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authbytes)); //.Add("Authorization", "Basic " + Convert.ToBase64String(authbytes));
-
-                    //foreach (var header in customHeaders)
-                    //    httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
-
-                    //httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
-                    httpClient.DefaultRequestHeaders.Add("hondaHeaderTypebusinessId", "VCC74010");
-                    httpClient.DefaultRequestHeaders.Add("hondaHeaderTypecollectedTimestamp", "02/24/2017 11:55:28 AM");
-                    httpClient.DefaultRequestHeaders.Add("hondaHeaderTypemessageId", new Guid().ToString());
-                    httpClient.DefaultRequestHeaders.Add("hondaHeaderTypesiteId", "SP eQuote");
-
-                    HttpResponseMessage response = httpClient.GetAsync(uri).Result;
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        //if (MvcWeb.IsWebApiRequest())
-                        //{
-                        //    var httpError = new HttpError();
-                        //    var v = JObject.Parse(responseContent).Properties().ToList();
-                        //    foreach (var v1 in v)
-                        //        httpError.Add(v1.Name, v1.Value);
-
-                        //    throw new HttpResponseException(response.RequestMessage.CreateErrorResponse(response.StatusCode, httpError));
-                        //}
-                        //else
-                        {
-
-                            //throw new HttpException((int)response.StatusCode, errorMessage);
-                        }
-                    }
-                    else
-                    {
-                        string errorMessage = (responseContent);
-                    }
-                }
-
                 return;
             }
             catch (Exception ex)

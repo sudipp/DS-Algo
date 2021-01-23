@@ -1267,6 +1267,171 @@ namespace ConsoleApplication1
             }
         }
 
+        //76. Minimum Window Substring
+        class MinimumWindowSubstring
+        {
+            public static string MinWindow(string s, string t)
+            {
+                /************************
+                 * Clarifying questions: 
+                 *  1) is 't' contains duplicate??? if not, only 1 hashmap will is sufficient to track window's character validity 
+                 *  2) if checking presence of character in window, then Dictionary is required...
+                 ************************/
+
+                //Sliding window - start at index 0
+                //keep growing till we find all characters, take text size
+                //once found, shrink window from left side.... if imbalanced, then grow
+                //repeat the process till we complete all characters
+
+                Dictionary<char, int> tMap = new Dictionary<char, int>();
+                foreach (char c in t)
+                {
+                    if (!tMap.ContainsKey(c))
+                        tMap.Add(c, 0);
+                    tMap[c]++;
+                }
+
+                Dictionary<char, int> WindowCharsInTMap = new Dictionary<char, int>();
+
+                //default answer is whole 's'
+                int resultLen = s.Length;
+                string result = "";
+                int l = 0, r = 0;
+                while (l <= r)   //for (l = 0; l < s.Length - t.Length; l++)
+                {
+                    //keep expanding window, till we get all characters
+                    //check we window contains all items in 't',  
+                    while (!IsWinValid(tMap, WindowCharsInTMap) && r < s.Length)
+                    {
+                        //We track characters, which are there tMap, 
+                        if (tMap.ContainsKey(s[r]))
+                        {
+                            if (!WindowCharsInTMap.ContainsKey(s[r]))
+                                WindowCharsInTMap.Add(s[r], 0);
+                            WindowCharsInTMap[s[r]]++;
+                        }
+                        r++;
+                    }
+
+                    //here we MUST find all letters... it dont find all letters, we quit
+                    if (!IsWinValid(tMap, WindowCharsInTMap))
+                        break;
+
+                    if (resultLen >= r - l)
+                    {
+                        result = s.Substring(l, r - l);
+                        resultLen = r - l;
+                    }
+
+                    //here all found - shrink from left
+                    if (WindowCharsInTMap.ContainsKey(s[l]))
+                        WindowCharsInTMap[s[l]]--;
+
+                    l++;
+                }
+
+                return result;
+            }
+
+            private static bool IsWinValid(Dictionary<char, int> tMap, Dictionary<char, int> WindowCharsInTMap)
+            {
+                foreach (char c in tMap.Keys)
+                {
+                    //WindowCharsInTMap can have more occurance of 'c' than tMap, so <=
+                    if (!(WindowCharsInTMap.ContainsKey(c) && tMap[c] <= WindowCharsInTMap[c]))
+                        return false;
+                }
+
+                return true;
+            }
+        }
+
+        //407 Trapping Rain Water II
+        class RainWaterII
+        {
+            internal class Cell : IComparable<Cell>
+            {
+                public int row { get { return _row; } }
+                public int col { get { return _col; } }
+                public int height { get { return _height; } }
+
+                int _row = 0, _col = 0, _height = 0;
+                public Cell(int r, int c, int h)
+                {
+                    _row = r;
+                    _col = c;
+                    _height = h;
+                }
+
+                public int CompareTo(Cell other)
+                {
+                    //if (this.height == other.height) return 0;
+                    //if (this.height < other.height) return -1;
+                    //return 1;
+                    return this.height.CompareTo(other.height);
+                }
+            }
+
+            public static int TrapRainWater(int[][] heightMap)
+            {
+                int m = heightMap.Length;
+                int n = heightMap[0].Length;
+
+                if (m < 3 && n < 3)
+                    return 0;
+
+                int[][] directions = new int[4][] {
+                    new int[] { 0, 1 },
+                    new int[] { 0, -1 },
+                    new int[] { 1, 0 },
+                    new int[] { -1, 0 }
+                };
+
+
+                bool[,] visited = new bool[m, n];
+
+                Heap<Cell> minHeap = new Heap<Cell>(m * n, true);
+                for (int r = 0; r < m; r++)
+                {
+                    visited[r, 0] = true;
+                    visited[r, n - 1] = true;
+                    minHeap.Push(new HeapNode<Cell>(new Cell(r, 0, heightMap[r][0])));
+                    minHeap.Push(new HeapNode<Cell>(new Cell(r, n - 1, heightMap[r][n - 1])));
+                }
+                for (int c = 1; c < n - 1; c++)
+                {
+                    visited[0, c] = true;
+                    visited[m - 1, c] = true;
+                    minHeap.Push(new HeapNode<Cell>(new Cell(0, c, heightMap[0][c])));
+                    minHeap.Push(new HeapNode<Cell>(new Cell(m - 1, c, heightMap[m - 1][c])));
+                }
+
+                int res = 0;
+                while (minHeap.Count > 0)
+                {
+                    Cell temp = minHeap.Pop().val;
+                    int row = temp.row, col = temp.col, height = temp.height;
+                    foreach (int[] dir in directions)
+                    {
+                        int r = row + dir[0];
+                        int c = col + dir[1];
+
+                        if (r > 0 && r < m - 1 && c > 0 && c < n - 1 && !visited[r, c])
+                        {
+                            visited[r, c] = true;
+
+                            res += Math.Max(0, height - heightMap[r][c]);
+
+                            minHeap.Push(new HeapNode<Cell>(new Cell(r, c, Math.Max(height, heightMap[r][c]))));
+                        }
+                    }
+                }
+
+                return res;
+            }
+        }
+
+
         //Given a list of 4 billion integers, find an integer not in the list using 4MB of memory.
         class FindAnIntegerNotInList
         {
@@ -1851,8 +2016,234 @@ namespace ConsoleApplication1
             }
         }
 
+        //134	Gas Station
+        class Gas
+        {
+            class StationGasCostPair : IComparable<StationGasCostPair>
+            {
+                public int Gas;
+                public int Cost;
+                public int Index;
+                public StationGasCostPair(int i, int g, int c)
+                {
+                    Index = i;
+                    Gas = g;
+                    Cost = c;
+                }
+
+                public int CompareTo(StationGasCostPair other)
+                {
+                    if (this.Gas == other.Gas)
+                    {
+                        return other.Cost.CompareTo(this.Cost);
+                    }
+                    else
+                    {
+                        int thisDif = this.Gas - this.Cost;
+                        int otherDif = other.Gas - other.Cost;
+                        return otherDif.CompareTo(thisDif);
+                    }
+                }
+            }
+
+            public static int CanCompleteCircuit(int[] gas, int[] cost)
+            {
+                StationGasCostPair[] gcpairs = new StationGasCostPair[gas.Length];
+                for (int i = 0; i < gas.Length; i++)
+                    gcpairs[i] = new StationGasCostPair(i, gas[i], cost[i]);
+                Array.Sort(gcpairs);
+
+                //start from gcpairs[0]
+                //gcpairs[0].Index
+                // 3 4 5 0 1 2
+                // 0 1 2 3 4 5
+                //------------
+                // 5 % 6 = 5
+
+                for (int i = 0; i < gcpairs.Length; i++)
+                {
+                    int fuelSum = 0;
+                    int nextIndex = gcpairs[i].Index;
+                    int prevIndex = (gcpairs[i].Index + (gas.Length - 1)) % gas.Length;
+                    while (cost[nextIndex] <= (gas[nextIndex] + fuelSum))//  true)
+                    {
+                        fuelSum += gas[nextIndex];
+
+                        //if accumulated fuel is less than cost..we cant move forward
+                        if (fuelSum < cost[nextIndex])
+                            break;
+
+                        if (nextIndex == prevIndex)
+                            return gcpairs[i].Index;
+
+                        //reduce the trip cost
+                        fuelSum -= cost[nextIndex];
+                        nextIndex = (nextIndex + 1) % gas.Length;
+                    }
+                }
+
+                return -1;
+            }
+        }
+
+        //153. Find Minimum in Rotated Sorted Array
+        class FindMinimuminRotatedSortedArray
+        {
+            public static int FindMin(int[] nums)
+            {
+                int l = 0;
+                int r = nums.Length - 1;
+                while (l <= r)
+                {
+                    int m = l + (r - l) / 2;
+
+                    //1 2 [3] 4 5 6 7
+                    //7 1 [2] 3 4 5 6
+                    //6 7 [1] 2 3 4 5 *** smallest might on the middle... so we put r = m
+                    //5 6 [7] 1 2 3 4
+                    //4 5 [6] 7 1 2 3
+                    //3 4 [5] 6 7 1 2
+                    //2 3 [4] 5 6 7 1
+
+                    //3 [3] 1 3  //middle and right are same, try reduce so the same number gets removed from right
+                    //2,2,2,0,1
+
+                    if (nums[m] < nums[r]) //mid < end (right side is sorted) then, lowest element is on left side. smallest might on the middle... so we put r = m
+                        r = m;
+                    else if (nums[m] > nums[r]) //mid > end (left side is sorted) then, lowest element is on right side
+                        l = m + 1;
+                    else //both value are same, try reduce so the same number gets removed from right
+                        r--;
+                }
+                return nums[l];
+            }
+        }
+
+        //1673. Find the Most Competitive Subsequence
+        public class FindtheMostCompetitiveSubsequence
+        {
+            public static int[] MostCompetitive(int[] nums, int k)
+            {
+                //find subset of size k
+                IList<IList<int>> result = new List<IList<int>>();
+                DFS(nums, 0, k, result, new List<int>());
+                return null;
+            }
+
+            private static void DFS(int[] nums, int index, int k, IList<IList<int>> result, IList<int> slate)
+            {
+                if (index == nums.Length)
+                {
+                    //result.Add(new List<int>(slate));
+                    return;
+                }
+
+                if (slate.Count < k)
+                {
+                    //exclude
+                    DFS(nums, index + 1, k, result, slate);
+
+                    //include
+                    slate.Add(nums[index]);
+
+                    if (slate.Count == k)
+                    {
+                        result.Add(new List<int>(slate));
+                    }
+
+                    DFS(nums, index + 1, k, result, slate);
+                    slate.RemoveAt(slate.Count - 1);
+                }
+            }
+        }
+
+        //159. Longest Substring with At Most Two Distinct Characters
+        class LongestSubstringwithAtMostTwoDistinctCharacters
+        {
+            //https://leetcode.com/problems/longest-substring-with-at-most-two-distinct-characters/submissions/
+            public static int LengthOfLongestSubstringTwoDistinct(string s)
+            {
+                //sliding window .... 
+                //l and r start from 0
+                //till we have 2 distinct character, keep expanding... we will keep growing till we make the window invalid (more than 2 distinct)
+                //once unstable  shrink from left till we make it valid again...
+
+                int maxLength = int.MinValue;
+                Dictionary<char, int> dict = new Dictionary<char, int>();
+                int l = 0, r = 0;
+
+                while (r < s.Length)
+                {
+                    if (!dict.ContainsKey(s[r]))
+                        dict.Add(s[r], 0);
+                    dict[s[r]]++;
+
+                    while (dict.Keys.Count > 2) //invalid
+                    {
+                        //shrink from left to stanble it
+
+                        if (dict.ContainsKey(s[l]) && dict[s[l]] > 0)
+                            dict[s[l]]--;
+
+                        if (dict.ContainsKey(s[l]) && dict[s[l]] == 0)
+                            dict.Remove(s[l]);
+                        
+                        l++;
+                    }
+                    maxLength = Math.Max(maxLength, r - l + 1);
+
+                    r++;
+                }
+                return (maxLength == int.MinValue) ? 0 : maxLength;
+            }
+        }
+
+        //165. Compare Version Numbers
+        class CompareVersionNumbers
+        {
+            public static int CompareVersion(string version1, string version2)
+            {
+
+                int l1 = 0, r1 = 0, l2 = 0, r2 = 0;
+                int num1, num2;
+                while (r1 < version1.Length || r2 < version2.Length)
+                {
+                    num1 = 0; num2 = 0;
+                    if (r1 < version1.Length)
+                    {
+                        while (r1 < version1.Length && version1[r1] != '.')
+                        {
+                            r1++;
+                        }
+                        num1 = int.Parse(version1.Substring(l1, r1 - l1));
+                        r1++;
+                        l1 = r1;
+                    }
+
+                    if (r2 < version2.Length)
+                    {
+                        while (r2 < version2.Length && version2[r2] != '.' )
+                        {
+                            r2++;
+                        }
+                        num2 = int.Parse(version2.Substring(l2, r2 - l2));
+                        r2++;
+                        l2 = r2;
+                    }
+
+                    if (num1 != num2)
+                        return num1.CompareTo(num2);
+                }
+                return 0;
+            }
+        }
+
         public static void runTest()
         {
+            CompareVersionNumbers.CompareVersion("7.5.2.4", "7.5.3");
+            LongestSubstringwithAtMostTwoDistinctCharacters.LengthOfLongestSubstringTwoDistinct("eceba");
+            FindtheMostCompetitiveSubsequence.MostCompetitive(new int[] { 1,2,3,4}, 2);
+            FindMinimuminRotatedSortedArray.FindMin(new int[] { 3,3,4,4,0,0,1,1,2,2 });
             SlidingWindowMedian.MedianSlidingWindow(new int[] {1, 4, 2, 3}, 4);
 
             FindMedianfromDataStream fm = new FindMedianfromDataStream();

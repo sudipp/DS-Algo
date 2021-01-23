@@ -613,19 +613,19 @@ namespace ConsoleApplication1
 
         class SebsetSum
         {
+            //IK question....
+
             //Combimation 
             public static bool check_if_sum_possible(long[] arr, long k)
             {
                 var result = new List<string>();
-                return helper(arr, 0, k, 0, new StringBuilder(), result);
+                return helper(arr, 0, k, 0, new StringBuilder(), result, 0);
             }
 
-            static bool helper(long[] arr, int index, long k, long slate, StringBuilder soFar, List<string> result)
+            static bool helper(long[] arr, int index, long k, long slate, StringBuilder soFar, List<string> result, int count)
             {
                 //base case
-                if (slate > k)
-                    return false;
-                if (slate == k)
+                if (slate == k && count > 0 )
                     return true;
 
                 if (index == arr.Length)
@@ -634,25 +634,16 @@ namespace ConsoleApplication1
                 }
                 else
                 {
+                    //exclude
+                    bool found = helper(arr, index + 1, k, slate, soFar, result, count);
+                    if (found) return true;
 
-                    /*if (index > 0 && slate == k)
-                        return true;
-                        */
-
-                    bool found = helper(arr, index + 1, k, slate, soFar, result);
-                    if (found)
-                        return true;
-
+                    //include
                     soFar.Append(arr[index]);
-
-                    //swap(arr, index, x);
-                    found = helper(arr, index + 1, k, slate + arr[index], soFar, result);
-                    //swap(arr, index, x);
-
+                    found = helper(arr, index + 1, k, slate + arr[index], soFar, result, count + 1);
                     soFar.Remove(soFar.Length - 1, 1);
 
-                    if (found)
-                        return true;
+                    if (found) return true;
                 }
 
                 return false;
@@ -660,6 +651,7 @@ namespace ConsoleApplication1
 
         }
 
+        //78. Subsets
         class AllSubsetOrPowerset
         {
             //combination
@@ -689,7 +681,6 @@ namespace ConsoleApplication1
                     //without /exclude
                     helper(s, index + 1, soFar, result);
 
-
                     soFar.Append(s[index]);
 
                     //with/include
@@ -699,6 +690,63 @@ namespace ConsoleApplication1
                 }
             }
 
+        }
+
+        //90	Subsets II
+        class SubsetsII
+        {
+            public static IList<IList<int>> SubsetsWithDup(int[] nums)
+            {
+                //https://uplevel.interviewkickstart.com/resource/helpful-class-video-4869-45-337-0   4:40
+
+                IList<IList<int>> result = new List<IList<int>>();
+
+                Array.Sort(nums);
+                DFS(nums, 0, result, new List<int>());
+
+                return result;
+            }
+
+            static void DFS(int[] nums, int index, IList<IList<int>> result, List<int> slate)
+            {
+                //base case
+                if (index == nums.Length)
+                {
+                    result.Add(new List<int>(slate));
+                }
+                else
+                {
+                    //since there are multiple copied on s[i], count them
+                    int count = 1; //we have atleast 1
+                    int j = index + 1;
+                    while( j < nums.Length && nums[index] == nums[j])
+                    {
+                        count++;
+                        j ++;
+                    }
+
+                    //exclude - jump to next unique number (index +  count) 
+                    DFS(nums, index + count, result, slate);
+                    
+                    //When you make choice fo s[i], it is not about exclude or include
+                    //it is about "how many times" to include
+                    for (int i = 0; i < count; i++) //for each choice we make about how many "copied" of s[i] to incude
+                    {
+                        for (j = 0; j <= i; j++) //append those many copied of s[i] to slate
+                        {
+                            //choose c copied for S[i]
+                            slate.Add(nums[index]);
+                        }
+
+                        DFS(nums, index + count, result, slate);
+
+                        for (j = 0; j <= i; j++)
+                        {
+                            slate.RemoveAt(slate.Count - 1);
+                        }
+                    }
+                }
+            }
         }
 
         class PalindromicSubsetOfString
@@ -733,12 +781,57 @@ namespace ConsoleApplication1
             }
         }
 
+
+        //46. Permutations
         class Permutation
+        {
+            public static IList<IList<int>> Permute(int[] nums)
+            {
+                IList<IList<int>> result = new List<IList<int>>();
+
+                DFS(nums, 0, result, new List<int>());
+
+                return result;
+            }
+
+            private static void DFS(int[] nums, int index, IList<IList<int>> result, IList<int> slate)
+            {
+                if (index == nums.Length)
+                {
+                    result.Add(new List<int>(slate.ToArray()));
+                    return;
+                }
+
+                for (int i = index; i < nums.Length; i++)
+                {
+                    slate.Add(nums[i]);
+
+                    swap(nums, i, index);
+                    DFS(nums, index + 1, result, slate);
+                    swap(nums, i, index);
+
+                    slate.RemoveAt(slate.Count - 1);
+                }
+            }
+
+            private static void swap(int[] nums, int i, int j)
+            {
+                int temp = nums[j];
+                nums[j] = nums[i];
+                nums[i] = temp;
+            }
+        }
+
+        //47. Permutations II
+        class PermutationII
         {
             //O(N!) -- If repetation is not allwowed
             public static string[] PrintAllPermutation(int[] arr)
             {
                 //Repeation is NOT allowed ******
+                //https://uplevel.interviewkickstart.com/resource/library-video-221    3:15
+                
+
                 IList<string> result = new List<string>();
 
                 Helper(arr, 0, result, new StringBuilder());
@@ -858,20 +951,91 @@ namespace ConsoleApplication1
                 }
             }
         }
+
+
+
+
+        public class Solution
+        {
+            public static IList<string> GenerateParenthesis(int n)
+            {
+                IList<string> result = new List<string>();
+
+                DFS(n, 0, result, new StringBuilder());
+                return result;
+            }
+
+            private static void DFS(int n, int currentIndex, IList<string> result, StringBuilder slate)
+            {
+                if (slate.Length == n * 2)
+                {
+                    result.Add(slate.ToString());
+                    return;
+                }
+
+                for (int i = currentIndex; i < n; i++)
+                {
+                    slate.Append("(");
+                    DFS(n, currentIndex + 1, result, slate);
+                    slate.Remove(slate.Length - 1, 1);
+
+                    slate.Append(")");
+                    DFS(n, currentIndex + 1, result, slate);
+                    slate.Remove(slate.Length - 1, 1);
+                }
+            }
+        }
+
+
+        public static int Search(int[] nums, int target)
+        {
+            int l = 0, r = nums.Length - 1;
+            while (l <= r)
+            {
+                int m = l + (r - l) / 2;
+                if (nums[m] == target)
+                    return m;
+
+                else if (nums[m] < nums[r]) //right sorted
+                {
+                    if (target > nums[m] && target <= nums[r])
+                        l = m + 1;
+                    else
+                        r = m - 1;
+                }
+                else //left sorted
+                {
+                    if (target >= nums[l] && target < nums[m])
+                        r = m - 1;
+                    else
+                        l = m + 1;
+                }
+
+            }
+
+            return -1;
+        }
         
+
         public static void runTest()
         {
+            SubsetsII.SubsetsWithDup(new int[] { 1, 2,2 });
+
+            Search(new int[] { 4, 5, 6, 7, 0, 1, 2 }, 0);
+
+            //Solution.GenerateParenthesis(2);
+
+            PermutationII.PrintAllPermutation(new int[] { 1, 2, 3 });
+            Permutation.Permute(new int[] { 1, 2, 3 });
+
             StringsFromWildCard.Get("111");
-
-            Permutation.PrintAllPermutation(new int[] { 1, 2, 3 });
-
 
             AllSubsetOrPowerset.generate_all_subsets("123");
 
-            Permutation.PrintDecimalString(2);
-            Permutation.PrintBinaryString(3);
+            PermutationII.PrintDecimalString(2);
+            PermutationII.PrintBinaryString(3);
 
-            Permutation.PermutateMenAndChairs(4, 3);
+            PermutationII.PermutateMenAndChairs(4, 3);
 
             PalindromicSubsetOfString.PrintAllSubStrings("abc");
 
