@@ -459,8 +459,8 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             try
-            {              
-
+            {
+                GraphExercise.runTest();
                 ArrayExercise.runTest();
                 RecursionExercise.runTest();
 

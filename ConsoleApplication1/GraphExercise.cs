@@ -207,6 +207,70 @@ namespace ConsoleApplication1
             }
         }
 
+        //1631. Path With Minimum Effort
+        class PathWithMinimumEffort
+        {
+            public static int MinimumEffortPath(int[][] heights)
+            {
+                int[][] dirs = new int[4][] {
+                    new int[] { 0, 1 },
+                    new int[] { 0, -1 },
+                    new int[] { 1, 0 },
+                    new int[] { -1, 0 }};
+
+                int r = heights.Length;
+                int c = heights[0].Length;
+
+                //we can either use visited or dist array****. 
+                bool[,] visited = new bool[r, c];
+                int[,] dist = new int[r, c];
+                for (int i = 0; i < r; i++)
+                    for (int j = 0; j < c; j++)
+                        dist[i, j] = int.MaxValue;
+                
+                //Tuple<int, int, int>  //height, x, y
+
+                var pq = new SortedSet<Tuple<int, int, int>>();
+                pq.Add(new Tuple<int, int, int>(0, 0, 0));
+
+                while (pq.Count > 0)
+                {
+                    int height = pq.Min.Item1;
+                    int x = pq.Min.Item2;
+                    int y = pq.Min.Item3;
+
+                    if (height > dist[x, y])
+                        continue;
+
+                    if (x == r - 1 && y == c - 1)
+                        return height;
+
+                    visited[x, y] = true;
+
+                    pq.Remove(pq.Min);
+
+                    for (int d = 0; d < dirs.Length; d++)
+                    {
+                        int nx = x + dirs[d][0];
+                        int ny = y + dirs[d][1];
+
+                        if (nx < 0 || nx == r || ny < 0 || ny == c || visited[nx, ny])
+                            continue;
+
+                        int newHeight = Math.Max(height, Math.Abs(heights[x][y] - heights[nx][ny]));
+                        
+                        //if new height is smaller than previous height update...
+                        if (newHeight < dist[nx, ny])
+                        {
+                            dist[nx, ny] = newHeight;
+                            pq.Add(new Tuple<int, int, int>(newHeight, nx, ny));
+                        }
+                    }
+                }
+                return 0;
+            }
+        }
+
         class HasCycle
         {
             //DIRECTED graph
@@ -1545,6 +1609,9 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            PathWithMinimumEffort.MinimumEffortPath(new int[3][] { new int[] { 1, 2, 2 }, new int[] { 3, 8, 2 },new int[] { 5, 3, 5 } });
+
+
             WordLadderII.FindLadders("toon", "plea", new List<string>(new string[] { "poon", "plee", "same", "poie", "plie", "poin" }));
 
             //Strongly connected graph
