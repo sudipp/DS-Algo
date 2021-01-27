@@ -1015,10 +1015,160 @@ namespace ConsoleApplication1
 
             return -1;
         }
-        
+
+        //79. Word Search
+        class WordSearch
+        {
+            static int[][] direction = new int[4][] { new int[] { 0, -1 }, new int[] { 0, 1 }, new int[] { -1, 0 }, new int[] { 1, 0 } };
+            public static bool Exist(char[][] board, string word)
+            {
+                bool[][] visited = new bool[board.Length][];
+                for (int r = 0; r < board.Length; r++)
+                    visited[r] = new bool[board[0].Length];
+
+                for (int r = 0; r < board.Length; r++)
+                {
+                    for (int c = 0; c < board[0].Length; c++)
+                    {
+                        if (DFS(board, r, c, visited, word, 0))
+                            return true;
+                    }
+                }
+                return false;
+            }
+
+            private static bool DFS(char[][] board, int r, int c, bool[][] visited, string word, int index)
+            {
+                //base case
+                if (index == word.Length)
+                {
+                    return false;
+                }
+
+                bool found = false;
+                if (board[r][c] == word[index])
+                {
+                    //If we reached the last character, then we found all characters
+                    if (index == word.Length - 1)
+                        return true;
+
+                    visited[r][c] = true;
+                    foreach (List<int> neighbour in GetNeighbours(board, r, c, visited))
+                    {
+                        int nr = neighbour[0]; int nc = neighbour[1];
+                        found = DFS(board, nr, nc, visited, word, index + 1);
+                        if (found)
+                            break;
+                    }
+                    visited[r][c] = false;
+                }
+
+                return found;
+            }
+
+            private static IList<IList<int>> GetNeighbours(char[][] board, int r, int c, bool[][] visited)
+            {
+                IList<IList<int>> result = new List<IList<int>>();
+                for (int d = 0; d < direction.Length; d++)
+                {
+                    int r1 = direction[d][0] + r;
+                    int c1 = direction[d][1] + c;
+                    if (r1 >= 0 && r1 < board.Length && c1 >= 0 && c1 < board[0].Length && !visited[r1][c1])
+                        result.Add(new List<int>() { direction[d][0] + r, direction[d][1] + c });
+                }
+                return result;
+            }
+        }
+
+        //279. Perfect Squares
+        public class PerfectSquares
+        {
+            /*public static int NumSquares(int n)
+            {
+                int[] result = new int[1] { int.MaxValue };
+                DFS(n, n, 0, result);
+                return result[0];
+            }
+
+            private static void DFS(int n, int sum, int count, int[] result)
+            {
+                if (sum == 0)
+                {
+                    result[0] = Math.Min(result[0], count);
+                    return;
+                }
+                else if (sum == 1)
+                {
+                    result[0] = Math.Min(result[0], count + 1);
+                    return;
+                }
+                else if (sum < 0)
+                    return;
+
+                //we are looking for minimum number of erfect sqaures.. 
+                //so lets be greedy and start it from sum /2
+                for (int i = sum / 2; i * i >= 1; i--)
+                {
+                    if (result[0] > count + 1)
+                        DFS(n, sum - (i * i), count + 1, result);
+                }
+            }*/
+
+            public static int NumSquares(int n)
+            {
+                int[] result = new int[1] { int.MaxValue };
+                int[] memo = new int[n + 1];
+                for (int i = 0; i < memo.Length; i++)
+                    memo[i] = -1;
+
+                DFS(n, n, 0, result, memo);
+                return result[0];
+            }
+
+            private static int DFS(int n, int sum, int count, int[] result, int[] memo)
+            {
+                if (sum == 0)
+                {
+                    result[0] = Math.Min(result[0], count);
+                    return count;
+                }
+                else if (sum == 1)
+                {
+                    result[0] = Math.Min(result[0], count + 1);
+                    return count + 1;
+                }
+                else if (sum < 0)
+                    return 0;
+
+                if (memo[sum] != -1)
+                {
+                    result[0] = Math.Min(result[0], count + memo[sum]);
+                    return count + memo[sum];
+                }
+                int localMin = int.MaxValue;
+
+                //we are looking for minimum number of erfect sqaures.. 
+                //so lets be greedy and start it from sum /2
+                for (int i = sum / 2; i * i >= 1; i--)
+                {
+                    if(result[0] > count + 1)
+                    {
+                        localMin = Math.Min(localMin, DFS(n, sum - (i * i), count + 1, result, memo));
+                    }
+                }
+
+                memo[sum] = localMin;
+                return localMin;
+            }
+        }
 
         public static void runTest()
         {
+            PerfectSquares.NumSquares(427);
+
+            char[][] board = new char[3][] { new char[4] { 'A', 'B', 'C', 'E' }, new char[] { 'S', 'F', 'C', 'S' }, new char[] { 'A', 'D', 'E', 'E' }  };
+            WordSearch.Exist(board,"ABCCED");
+
             SubsetsII.SubsetsWithDup(new int[] { 1, 2,2 });
 
             Search(new int[] { 4, 5, 6, 7, 0, 1, 2 }, 0);

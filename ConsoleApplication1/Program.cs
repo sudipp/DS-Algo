@@ -456,11 +456,11 @@ namespace ConsoleApplication1
             return sb.ToString();
         }
 
-        
         static void Main(string[] args)
         {
             try
-            {
+            {              
+
                 ArrayExercise.runTest();
                 RecursionExercise.runTest();
 

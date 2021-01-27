@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace ConsoleApplication1
 {
@@ -2238,8 +2239,163 @@ namespace ConsoleApplication1
             }
         }
 
+        //209. Minimum Size Subarray Sum
+        class MinimumSizeSubarraySum
+        {
+            public static int MinSubArrayLen(int s, int[] nums)
+            {
+                IList<IList<int>> result = new List<IList<int>>();
+                result.Add(new List<int>() { 1, 2 });
+
+                int l = 0, r = 0;
+                int sum = 0, min = int.MaxValue;
+                while (r < nums.Length)
+                {
+                    sum += nums[r];
+                    if (sum >= s)
+                        min = Math.Min(min, r - l + 1);
+
+                    //shrink of the sum is higher
+                    while (sum > s)
+                    {
+                        sum -= nums[l];
+                        l++;
+
+                        if (sum >= s)
+                            min = Math.Min(min, r - l + 1);
+                        
+                    }
+
+                    Console.WriteLine(sum + ":" + l + ":" + r);
+                    r++;
+                }
+
+                while (l < r)
+                {
+                    sum -= nums[l];
+                    l++;
+                    if (sum >= s)
+                        min = Math.Min(min, r - l + 1);
+                }
+
+                return min;
+            }
+        }
+
+        //218. The Skyline Problem
+        class Skyline
+        {
+            public static IList<IList<int>> GetSkyline(int[][] buildings)
+            {
+                IList<IList<int>> result = new List<IList<int>>();
+
+                int[][] pillers = new int[buildings.Length * 2][];
+
+                int x = 0;
+                for (int i = 0; i < buildings.Length; i++)
+                {
+                    //    bottom, height, 0/1            
+                    pillers[x++] = new int[3] { buildings[i][0], buildings[i][2], 0 }; //start piller
+                    pillers[x++] = new int[3] { buildings[i][1], buildings[i][2], 1 }; //end piller
+                }
+                Array.Sort(pillers, new PillerPosAscending());
+
+                SortedSet<int[]> maxQ = new SortedSet<int[]>(new DescendingSorter());
+                int lastTopHeight = 0;
+                int newTopHeight = 0;
+                for (int i = 0; i < pillers.Length; i++)
+                {
+                    int[] piller = pillers[i];
+                    int posIndex = 0;
+                    int typeIndex = 2;
+                    int heightIndex = 1;
+
+                    if (piller[typeIndex] == 0) //start piller
+                    {
+                        maxQ.Add(piller);
+
+                        newTopHeight = maxQ.First()[heightIndex];
+                        if (newTopHeight != lastTopHeight)
+                        {
+                            if (result.Count > 0 && result.Last()[0] == piller[posIndex])
+                                result.Remove(result.Last());
+
+                            result.Add(new List<int>(new int[2] { piller[posIndex], newTopHeight }));
+                        }
+                        lastTopHeight = newTopHeight;
+                    }
+                    else //end piller, delete it from MaxQ
+                    {
+                        maxQ.Remove(piller);
+                        newTopHeight = (maxQ.Count == 0) ? 0 : maxQ.First()[heightIndex];
+
+                        if (newTopHeight != lastTopHeight)
+                        {
+                            if (result.Count > 0 && result.Last()[1] == piller[1])
+                                result.Remove(result.Last());
+
+                            result.Add(new List<int>(new int[2] { piller[posIndex], newTopHeight }));
+                        }
+                        lastTopHeight = newTopHeight;
+                    }
+                }
+
+                return result;
+            }
+
+            class DescendingSorter : IComparer<int[]>
+            {
+                public int Compare(int[] x, int[] y)
+                {
+                    int heightIndex = 1;
+                    return y[heightIndex].CompareTo(x[heightIndex]);
+                }
+            }
+
+            class PillerPosAscending : IComparer<int[]>
+            {
+                public int Compare(int[] x, int[] y)
+                {
+                    int posIndex = 0;
+                    return x[posIndex].CompareTo(y[posIndex]);
+                }
+            }
+        }
+
+        public class ShortestPalindrome
+        {
+            public static string GetShortestPalindrome(string s)
+            {
+                if (s == null || s.Length == 0)
+                {
+                    return s;
+                }
+                StringBuilder sb = new StringBuilder();
+                for (int i = s.Length - 1; i >= 0; i--)
+                {
+                    sb.Append(s[i]);
+                }
+                String t = sb.ToString();
+                for (int i = 0; i <= t.Length; i++)
+                {
+                    if (s.StartsWith(t.Substring(i)))
+                    {
+                        return t.Substring(0, i) + s;
+                    }
+                }
+                return t + s;
+            }
+        }
+
         public static void runTest()
         {
+            ShortestPalindrome.GetShortestPalindrome("aacecaaa");
+
+            Skyline.GetSkyline(new int[][] { new int[] { 0,2,3 }, new int[] { 2,5,3 }});
+
+            Skyline.GetSkyline(new int[][] { new int[] { 2, 9, 10 }, new int[] { 3, 7, 15 }, new int[] { 5, 12, 12 }, new int[] { 15, 20, 10 }, new int[] { 19, 24, 8 } });
+
+            MinimumSizeSubarraySum.MinSubArrayLen(11, new int[] { 1, 2, 3, 4, 5});
             CompareVersionNumbers.CompareVersion("7.5.2.4", "7.5.3");
             LongestSubstringwithAtMostTwoDistinctCharacters.LengthOfLongestSubstringTwoDistinct("eceba");
             FindtheMostCompetitiveSubsequence.MostCompetitive(new int[] { 1,2,3,4}, 2);
