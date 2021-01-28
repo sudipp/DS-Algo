@@ -2387,8 +2387,87 @@ namespace ConsoleApplication1
             }
         }
 
+        //227. Basic Calculator II
+        class BasicCalculatorII
+        {
+            public static int Calculate(string s)
+            {
+                Stack<string> stack = new Stack<string>();
+                int l = 0, r = 0;
+                while (r < s.Length)
+                {
+                    if (s[r] == ' ')
+                    {
+                        r++;
+                        l = r;
+                    }
+                    else if(s[r] == '+' || s[r] == '-' || s[r] == '*' || s[r] == '/')
+                    {
+                        stack.Push(s.Substring(r, 1));
+                        r ++;
+                        l = r;
+                    }
+                    else
+                    {
+                        while (r < s.Length && char.IsDigit(s[r]))
+                            r++;
+
+                        if (l != r)
+                        {
+                            int cVal = int.Parse(s.Substring(l, r - l));
+
+                            if (stack.Any() && (stack.Peek() == "*" || stack.Peek() == "/"))
+                            {
+                                string op = stack.Pop(); //remove operator    
+                                int poppeedVal = int.Parse(stack.Pop());
+                                poppeedVal = (op == "/") ? (poppeedVal / cVal) : (poppeedVal * cVal);
+                                stack.Push(poppeedVal.ToString());
+                            }
+                            else
+                            {
+                                stack.Push(s.Substring(l, r - l));
+                            }
+                            l = r;
+                        }
+
+                        /*if (r < s.Length && (s[r] == '+' || s[r] == '-' || s[r] == '*' || s[r] == '/'))
+                        {
+                            stack.Push(s.Substring(r, 1));
+                            r++;
+                            l = r;
+                        }*/
+                    }
+                }
+
+                Console.WriteLine(stack.Count);
+
+                Stack<string> reverseStack = new Stack<string>();
+                while (stack.Any())
+                    reverseStack.Push(stack.Pop());
+
+                int result = 0;
+                while (reverseStack.Any())
+                {
+                    if (reverseStack.Peek() == "+" || reverseStack.Peek() == "-")
+                    {
+                        string op = reverseStack.Pop(); //remove operator
+                        int val = int.Parse(reverseStack.Pop());
+                        result = (op == "+") ? (result + val) : (result - val);
+                    }
+                    else
+                    {
+                        result = int.Parse(reverseStack.Pop());
+                    }
+                }
+
+                return result;
+            }
+        }
+
         public static void runTest()
         {
+            BasicCalculatorII.Calculate("3-2+1");
+
             ShortestPalindrome.GetShortestPalindrome("aacecaaa");
 
             Skyline.GetSkyline(new int[][] { new int[] { 0,2,3 }, new int[] { 2,5,3 }});

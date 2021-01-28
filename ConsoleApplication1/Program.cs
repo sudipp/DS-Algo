@@ -460,7 +460,7 @@ namespace ConsoleApplication1
         {
             try
             {
-                GraphExercise.runTest();
+                //GraphExercise.runTest();
                 ArrayExercise.runTest();
                 RecursionExercise.runTest();
 
