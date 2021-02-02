@@ -599,7 +599,7 @@ namespace ConsoleApplication1
                 //O(NLogK), Space(k)
 
                 IList<double> result = new List<double>();
-                
+
                 SortedSet<Pair> minSet = new SortedSet<Pair>();
                 SortedSet<Pair> maxSet = new SortedSet<Pair>(new PairDescOrder());
 
@@ -626,7 +626,7 @@ namespace ConsoleApplication1
                         minSet.Remove(minSet.First());
                     }
                 }
-                
+
                 printMedian(minSet, maxSet, k, result);
 
                 for (int i = k; i < nums.Length; i++)
@@ -682,7 +682,7 @@ namespace ConsoleApplication1
 
             class Pair : IComparable<Pair>
             {
-                public int value = 0, index=0;
+                public int value = 0, index = 0;
 
                 // Constructor 
                 public Pair(int v, int p)
@@ -1079,7 +1079,7 @@ namespace ConsoleApplication1
                 }
                 arr.Clear();
                 for (int i = 0; i < 128; i++)
-                {   
+                {
                     /*traversing from charcter having lowest ascii value to that of highest ascii value*/
                     for (int j = 0; j < frequency[i]; j++)
                     {
@@ -1613,7 +1613,7 @@ namespace ConsoleApplication1
 
             return findFirstMissingFromSortedArray(array, start, mid);
         }
-        
+
         private static string RotateArray(string str, int rotFactor) //Space - O(n), O(n) Time
         {
             char[] arr = str.ToCharArray();
@@ -1674,7 +1674,7 @@ namespace ConsoleApplication1
         }
 
         private static int[,] rotateArray90(int[,] imgArray)
-        {            
+        {
             int N = imgArray.GetLength(0);
             // Traverse each cycle 
             for (int level = 0; level < N / 2; level++)
@@ -1693,7 +1693,7 @@ namespace ConsoleApplication1
 
             return imgArray;
         }
-        
+
         private static int bestBuySell(int[] ary)
         {
             int d = 0;
@@ -1725,7 +1725,7 @@ namespace ConsoleApplication1
             }
             return maxPro;
         }
-        
+
         private static bool StringRotationToOtherString(string stringToCheck, string otherString)
         {
             return (stringToCheck + stringToCheck).Contains(otherString);
@@ -1788,7 +1788,7 @@ namespace ConsoleApplication1
                 return false;
             else return true;
         }
-        
+
         private static void FindDuplicatesInArray(int[] arr)
         {
             //https://leetcode.com/explore/interview/card/amazon/76/array-and-strings/496/
@@ -1927,12 +1927,12 @@ namespace ConsoleApplication1
 
                     So PreviousSumBefore[i] = currentSumAt[i] - K
                     */
-                    if ((cumulativeSum[j] - cumulativeSum[i]) == k || cumulativeSum[j] == k)  
+                    if ((cumulativeSum[j] - cumulativeSum[i]) == k || cumulativeSum[j] == k)
                     {
                         if (maxLen < j - i)
                         {
                             maxLen = j - i;
-                            ending_index = j-1;
+                            ending_index = j - 1;
                         }
                     }
                 }
@@ -2188,7 +2188,7 @@ namespace ConsoleApplication1
 
                         if (dict.ContainsKey(s[l]) && dict[s[l]] == 0)
                             dict.Remove(s[l]);
-                        
+
                         l++;
                     }
                     maxLength = Math.Max(maxLength, r - l + 1);
@@ -2223,7 +2223,7 @@ namespace ConsoleApplication1
 
                     if (r2 < version2.Length)
                     {
-                        while (r2 < version2.Length && version2[r2] != '.' )
+                        while (r2 < version2.Length && version2[r2] != '.')
                         {
                             r2++;
                         }
@@ -2263,7 +2263,7 @@ namespace ConsoleApplication1
 
                         if (sum >= s)
                             min = Math.Min(min, r - l + 1);
-                        
+
                     }
 
                     Console.WriteLine(sum + ":" + l + ":" + r);
@@ -2401,10 +2401,10 @@ namespace ConsoleApplication1
                         r++;
                         l = r;
                     }
-                    else if(s[r] == '+' || s[r] == '-' || s[r] == '*' || s[r] == '/')
+                    else if (s[r] == '+' || s[r] == '-' || s[r] == '*' || s[r] == '/')
                     {
                         stack.Push(s.Substring(r, 1));
-                        r ++;
+                        r++;
                         l = r;
                     }
                     else
@@ -2464,8 +2464,249 @@ namespace ConsoleApplication1
             }
         }
 
+        //Minimize Deviation in Array
+        public class MinimizeDeviationinArray
+        {
+            class Pair//: IComparable<Pair>
+            {
+                public int Value;
+                public int Index;
+                public Pair(int val, int idx)
+                {
+                    Value = val;
+                    Index = idx;
+                }
+            }
+            class AscendingSorter : IComparer<Pair>
+            {
+                public int Compare(Pair x, Pair y)
+                {
+                    if (x.Index == y.Index)
+                        return 0;
+                    else if (x.Value == y.Value)
+                        return x.Index.CompareTo(y.Index);
+                    else
+                        return x.Value.CompareTo(y.Value);
+                }
+            }
+            public static int MinimumDeviation(int[] nums)
+            {
+                /*SortedSet<int> MaxQ = new SortedSet<int>();
+                int min = int.MaxValue, v = 0, result = int.MaxValue;
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    if (nums[i] % 2 == 1) //odd
+                        v = nums[i] * 2;
+                    else
+                        v = nums[i];
+
+                    MaxQ.Add(v);// new Pair(v, i));
+                    min = Math.Min(min, v);
+                }
+
+                while (MaxQ.Max % 2 == 0)
+                {
+                    int max = MaxQ.Max;
+                    result = Math.Min(result, max - min);
+                    MaxQ.Remove(max);
+
+                    //dividing even further, till it becomes odd
+                    max = max / 2;
+                    min = Math.Min(min, max);
+
+                    MaxQ.Add(max);
+                }
+                result = Math.Min(result, MaxQ.Max - min);
+
+                return result;*/
+
+                SortedSet<Pair> MaxQ = new SortedSet<Pair>(new AscendingSorter());
+                int min = int.MaxValue, v = 0, result = int.MaxValue;
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    if (nums[i] % 2 == 1) //odd
+                        v = nums[i] * 2;
+                    else
+                        v = nums[i];
+
+                    MaxQ.Add(new Pair(v, i));
+                    min = Math.Min(min, v);
+                }
+
+                while (MaxQ.Max.Value % 2 == 0)
+                {
+                    Pair maxPair = MaxQ.Max;
+                    result = Math.Min(result, maxPair.Value - min);
+                    MaxQ.Remove(maxPair);
+
+                    //dividing even further, till it becomes odd
+                    maxPair.Value = maxPair.Value / 2;
+                    //updating new Minimum
+                    min = Math.Min(min, maxPair.Value);
+
+                    MaxQ.Add(new Pair(maxPair.Value, maxPair.Index));
+                }
+                result = Math.Min(result, MaxQ.Max.Value - min);
+
+                return result;
+            }
+        }
+
+        //1745. Palindrome Partitioning IV
+        class PalindromePartitioningIV
+        {
+            public static bool CheckPartitioning(string s)
+            {
+                int l = 1, r = 1;
+
+                while (l < s.Length - 2)
+                {
+                    while (r < s.Length - 1)
+                    {
+                        bool b1 = isPalindrome(s, l, r);
+                        if (b1)
+                        {
+                            //Console.WriteLine("1");
+                            if (isPalindrome(s, 0, l - 1) && isPalindrome(s, r + 1, s.Length - 1))
+                                return true;
+                        }
+                        r++;
+                    }
+
+                    l++;
+                    r = l;
+                }
+                return false;
+            }
+
+            static bool isPalindrome(string s, int l, int r)
+            {
+
+                //string subStr = s.Substring(0, l + 1) + new string(s.Substring(l + 1, r - l - 1).Reverse().ToArray()) + s.Substring(r, s.Length - r);
+                //Console.WriteLine("check " + new string(s.Substring(l + 1, r - l - 1).Reverse().ToArray()));
+
+                string subStrRev = new string(s.Substring(l, r - l + 1).Reverse().ToArray());
+                if (s.IndexOf(subStrRev, l) == l)
+                    return true;
+                return false;
+
+                string subStr = s.Substring(0, l) + new string(s.Substring(l, r - l + 1).Reverse().ToArray()) + s.Substring(r + 1, s.Length - r - 1);
+                Console.WriteLine(l + ":" + r + " check " + new string(s.Substring(l, r - l + 1).Reverse().ToArray()));
+
+                if (s.StartsWith(subStr))
+                {
+                    Console.WriteLine("got it");
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        //1743. Restore the Array From Adjacent Pairs
+        class RestoretheArrayFromAdjacentPairs
+        {
+            public static int[] RestoreArray(int[][] adjacentPairs)
+            {
+                Dictionary<int, IList<int>> adjacentEdges = new Dictionary<int, IList<int>>();
+                for (int i = 0; i < adjacentPairs.Length; i++)
+                {
+                    int x = adjacentPairs[i][0];
+                    int y = adjacentPairs[i][1];
+                    if (!adjacentEdges.ContainsKey(x))
+                        adjacentEdges.Add(x, new List<int>());
+                    adjacentEdges[x].Add(y);
+
+                    if (!adjacentEdges.ContainsKey(y))
+                        adjacentEdges.Add(y, new List<int>());
+                    adjacentEdges[y].Add(x);
+                }
+
+                IList<int> result = new List<int>();
+
+                //find the first key which have only 1 edge..
+                int start = 0;
+                foreach (int key in adjacentEdges.Keys)
+                {
+                    if (adjacentEdges[key].Count == 1)
+                    {
+                        result.Add(key);
+                        result.Add(adjacentEdges[key][0]);
+
+                        start = adjacentEdges[key][0];
+
+                        adjacentEdges.Remove(key);
+
+                        break;
+                    }
+                }
+
+                while (adjacentEdges.Count > 0 && adjacentEdges.ContainsKey(start))
+                {
+                    foreach (int v in adjacentEdges[start])
+                    {
+                        if (adjacentEdges[start].Count > 1 && adjacentEdges.ContainsKey(v))
+                        {
+                            result.Add(v);
+                            adjacentEdges.Remove(start);
+                            start = v;
+
+                            break;
+                        }
+                        else if(adjacentEdges[start].Count == 1)
+                            adjacentEdges.Remove(start);
+                        
+                    }
+                }
+                return result.ToArray();
+            }
+        }
+
+        //573 : Squirrel Simulation
+        class SquirrelSimulation
+        {
+            public static int MinDistance(int height, int width, int[] tree, int[] squirrel, int[][] nuts)
+            {
+
+                /*
+                you can say that we'll achieve the maximum profit by picking up a nut which is farther from the tree but closer to the squirrel, as the first nut. This is because, the only travel distance which we can save is from the tree to the nut, but to achieve this saving, we need to go from the squirrel's start position to the nut's position. 
+
+                Why is the saving d is the difference between distance(tree,nut) and distance(squirrel,nut)? So the difference is actually how farther nut is from tree compared to how farther it is from squirrel. So is the algorithm to pick the nut which is farther from tree but closer to squirrel?
+
+                You can think it like this, we actually swap from one path to the tree to squirrel to that nut. Hence, it means sum => sum - dis(nut, tree) + dis(squirrel, nut)
+            => sum - (dis(nut, tree) - dis(squirrel, nut)), therefore, we want to maximum that value inside.
+
+                */
+
+                int totalDistnace = 0, maxDistance = int.MinValue;
+                for (int i = 0; i < nuts.Length; i++)
+                {
+                    //sum  of tree-nut distance 
+                    totalDistnace += Distance(nuts[i], tree) * 2;
+
+                    //we need a Nut which is farthest from tree but closest to squirrel
+                    maxDistance = Math.Max(maxDistance, Distance(nuts[i], tree) - Distance(nuts[i], squirrel));
+                }
+
+                return totalDistnace - maxDistance;
+            }
+
+            public int Distance(int[] a, int[] b)
+            {
+                /*Manhattan distance - generally works only if the points are arranged in the form of a grid and the problem which we are working on gives more priority to the distance between the points only along with the grids, but not the geometric distance.*/
+                return Math.Abs(a[0] - b[0]) + Math.Abs(a[1] - b[1]);
+            }
+        }
+        
         public static void runTest()
         {
+            SquirrelSimulation.MinDistance(3, 3, new int[] { 2, 2 }, new int[] { 2, 1 }, new int[][] { new int[] { 0, 0 }, new int[] { 1, 2} });
+            //[4,-10],[-1,3],[4,-3],[-3,3]
+            RestoretheArrayFromAdjacentPairs.RestoreArray(new int[][] { new int[] { 4, -10 }, new int[] { -1, 3 }, new int[] { 4, -3 }, new int[] { -3, 3 } });
+
+            PalindromePartitioningIV.CheckPartitioning("aazfcvvvuqhxcsyqvjmewpotbgczdxohxspaxrztiuakpvfmsoztlmyqwlwbmvrtdjjrsgzdzxuuesbiicjwgahwydckxinoncrgzsqahamzykirewnekylyjvnjjvwkejsjrevpdabcqnnxvxsibyftopjipwfgrzzqwnawtbwevvsadcckfixnxifkccdasvvewbtwanwqzzrgfwpijpotfybisxvxnnqcbadpverjsjekwvjjnvjylykenwerikyzmahaqszgrcnonixkcdywhagwjciibseuuxzdzgsrjjdtrvmbwlwqymltzosmfvpkauitzrxapsxhoxdzcgbtopwemjvqyscxhquvvvcfzaarelbkxtlpqdomvpmufxibdbvrskmwwszslvyvimpahgcznvmkwpztiiiiiitzpwkmvnzcghapmivyvlszswwmksrvbdbixfumpvmodqpltxkblercxauwizscedkrdzunjhvwlhkscwnfbfnwcskhlwvhjnuzdrkdecsziwuaxc");
+
+            MinimizeDeviationinArray.MinimumDeviation(new int[] { 2, 10, 8 });
+
             BasicCalculatorII.Calculate("3-2+1");
 
             ShortestPalindrome.GetShortestPalindrome("aacecaaa");

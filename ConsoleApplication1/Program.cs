@@ -456,10 +456,20 @@ namespace ConsoleApplication1
             return sb.ToString();
         }
 
+        class DescendingComparer : IComparer<int>
+        {
+            public int Compare(int x, int y)
+            {
+                return y.CompareTo(this);
+            }
+        }
+
         static void Main(string[] args)
         {
             try
             {
+                
+
                 //GraphExercise.runTest();
                 ArrayExercise.runTest();
                 RecursionExercise.runTest();
