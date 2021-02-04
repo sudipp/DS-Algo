@@ -2557,48 +2557,28 @@ namespace ConsoleApplication1
         {
             public static bool CheckPartitioning(string s)
             {
-                int l = 1, r = 1;
-
-                while (l < s.Length - 2)
+                //O(n^2)
+                for(int i = 2; i < s.Length; i++)
                 {
-                    while (r < s.Length - 1)
+                    if(isPalindrome(s, i, s.Length - 1)) //3rd palindrome check
                     {
-                        bool b1 = isPalindrome(s, l, r);
-                        if (b1)
+                        for(int j = 1; j < i; j++)
                         {
-                            //Console.WriteLine("1");
-                            if (isPalindrome(s, 0, l - 1) && isPalindrome(s, r + 1, s.Length - 1))
+                            if (isPalindrome(s, j, i - 1) && isPalindrome(s, 0, j - 1))
                                 return true;
                         }
-                        r++;
                     }
-
-                    l++;
-                    r = l;
                 }
                 return false;
             }
-
             static bool isPalindrome(string s, int l, int r)
             {
-
-                //string subStr = s.Substring(0, l + 1) + new string(s.Substring(l + 1, r - l - 1).Reverse().ToArray()) + s.Substring(r, s.Length - r);
-                //Console.WriteLine("check " + new string(s.Substring(l + 1, r - l - 1).Reverse().ToArray()));
-
-                string subStrRev = new string(s.Substring(l, r - l + 1).Reverse().ToArray());
-                if (s.IndexOf(subStrRev, l) == l)
-                    return true;
-                return false;
-
-                string subStr = s.Substring(0, l) + new string(s.Substring(l, r - l + 1).Reverse().ToArray()) + s.Substring(r + 1, s.Length - r - 1);
-                Console.WriteLine(l + ":" + r + " check " + new string(s.Substring(l, r - l + 1).Reverse().ToArray()));
-
-                if (s.StartsWith(subStr))
+                while(l < r)
                 {
-                    Console.WriteLine("got it");
-                    return true;
+                    if (s[l] != s[r])
+                        return false;
                 }
-                return false;
+                return true;
             }
         }
 

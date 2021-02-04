@@ -468,12 +468,9 @@ namespace ConsoleApplication1
         {
             try
             {
-                
-
                 //GraphExercise.runTest();
                 ArrayExercise.runTest();
                 RecursionExercise.runTest();
-
 
                 
                 FullJustify(new string[] { "What", "must", "be", "acknowledgment", "shall", "be" }, 16);
