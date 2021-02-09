@@ -1607,6 +1607,80 @@ namespace ConsoleApplication1
             }
         }
 
+        //210. Course Schedule II
+        class CourseScheduleII
+        {
+            public static int[] FindOrder(int numCourses, int[][] prerequisites)
+            {
+                //bool isPossible = true;
+                Dictionary<int, IList<int>> adjList = new Dictionary<int, IList<int>>();
+                int[] indegree = new int[numCourses];
+                int[] topologicalOrder = new int[numCourses];
+
+                // Create the adjacency list representation of the graph
+                for (int i = 0; i < prerequisites.Length; i++)
+                {
+                    int dest = prerequisites[i][0];
+                    int src = prerequisites[i][1];
+
+                    if (!adjList.ContainsKey(src))
+                    {
+                        adjList.Add(src, new List<int>());
+                    }
+
+                    IList<int> lst = adjList[src];
+                    lst.Add(dest);
+                    //adjList.put(src, lst);
+
+                    // Record in-degree of each vertex
+                    indegree[dest] += 1;
+                }
+
+                // Add all vertices with 0 in-degree to the queue
+                Queue<int> q = new Queue<int>();
+                for (int i = 0; i < numCourses; i++)
+                {
+                    if (indegree[i] == 0)
+                    {
+                        q.Enqueue(i);
+                    }
+                }
+
+                int j = 0;
+                // Process until the Q becomes empty
+                while (q.Any())
+                {
+                    int node = q.Dequeue();
+                    topologicalOrder[j++] = node;
+
+                    // Reduce the in-degree of each neighbor by 1
+                    if (adjList.ContainsKey(node))
+                    {
+                        foreach (int neighbor in adjList[node])
+                        {
+                            indegree[neighbor]--;
+
+                            // If in-degree of a neighbor becomes 0, add it to the Q
+                            if (indegree[neighbor] == 0)
+                            {
+                                q.Enqueue(neighbor);
+                            }
+                        }
+                    }
+                }
+
+                // Check to see if topological sort is possible or not.
+                if (j == numCourses)
+                {
+                    return topologicalOrder;
+                }
+
+                return new int[0];
+            }
+
+        }
+
+
         public static void runTest()
         {
             PathWithMinimumEffort.MinimumEffortPath(new int[3][] { new int[] { 1, 2, 2 }, new int[] { 3, 8, 2 },new int[] { 5, 3, 5 } });

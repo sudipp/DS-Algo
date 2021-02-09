@@ -2670,15 +2670,250 @@ namespace ConsoleApplication1
                 return totalDistnace - maxDistance;
             }
 
-            public int Distance(int[] a, int[] b)
+            public static int Distance(int[] a, int[] b)
             {
                 /*Manhattan distance - generally works only if the points are arranged in the form of a grid and the problem which we are working on gives more priority to the distance between the points only along with the grids, but not the geometric distance.*/
                 return Math.Abs(a[0] - b[0]) + Math.Abs(a[1] - b[1]);
             }
         }
-        
+
+        // 1353. Maximum Number of Events That Can Be Attended
+        public class MaximumNumberofEventsThatCanBeAttended
+        {
+            class Pair : IComparable<Pair>
+            {
+                public int Index;
+                public int Val;
+
+                public Pair(int idx, int val)
+                {
+                    this.Index = idx;
+                    this.Val = val;
+                }
+
+                public int CompareTo(Pair other)
+                {
+                    // Two nodes are equal only when their indices are same 
+                    if (this.Index == other.Index)
+                    {
+                        return 0;
+                    }
+                    else if (this.Val == other.Val)
+                    {
+                        return this.Index.CompareTo(other.Index);
+                    }
+                    else
+                    {
+                        return this.Val.CompareTo(other.Val);
+                    }
+                }
+            }
+
+            class DuplicateAllowed : IComparer<int>
+            {
+                public int Compare(int x, int y)
+                {
+                    if (x == y)
+                        return 1;
+                    else
+                        return x.CompareTo(y);
+                }
+            }
+
+            public static int MaxEvents(int[][] events)
+            {
+                SortedSet<Pair> minQ = new SortedSet<Pair>();
+                Array.Sort(events,
+                    delegate (int[] a, int[] b)
+                    {
+                        return a[0].CompareTo(b[0]);
+                    }
+                );
+                int result = 0, i = 0;
+                for (int d = 1; d <= 100000; d ++)
+                {
+                    //remove old
+                    while (minQ.Any() && minQ.Min.Val < d)
+                        minQ.Remove(minQ.Min);
+
+                    while (i < events.Length && events[i][0] == d)
+                    {
+                        minQ.Add(new Pair(i, events[i][1]));
+                        i++;
+                    }
+
+                    if (minQ.Any())
+                    {
+                        minQ.Remove(minQ.Min);
+                        result++;
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        //1754. Largest Merge Of Two Strings
+        public class LargestMergeOfTwoStrings
+        {
+            public static string LargestMerge(string word1, string word2)
+            {
+                int w1 = 0, w2 = 0;
+                StringBuilder sb = new StringBuilder();
+                while (w1 < word1.Length && w2 < word2.Length)
+                {
+                    if (word1[w1] > word2[w2])
+                        sb.Append(word1[w1++]);
+                    else if (word1[w1] < word2[w2])
+                        sb.Append(word2[w2++]);
+                    else
+                    {
+                        int w11 = w1, w22 = w2;
+                        while (w11 < word1.Length && w22 < word2.Length)
+                        {
+                            if (word1[w11] > word2[w22])
+                            {
+                                sb.Append(word1[w1++]);
+                                break;
+                            }
+                            else if (word1[w11] < word2[w22])
+                            {
+                                sb.Append(word2[w2++]);
+                                break;
+                            }
+                            else
+                            {
+                                w11++;
+                                w22++;
+
+                                //once we reach end of a string.
+                                if (w11 == word1.Length || w22 == word2.Length)
+                                {
+                                    int pendingW1 = word1.Length - w11;
+                                    int pendingW2 = word2.Length - w22;
+                                    //check whose pending length is bigger
+                                    if (pendingW1 >= pendingW2)
+                                        sb.Append(word1[w1++]);
+                                    else if (pendingW2 > pendingW1)
+                                        sb.Append(word2[w2++]);
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                while (w1 < word1.Length)
+                    sb.Append(word1[w1++]);
+
+                while (w2 < word2.Length)
+                    sb.Append(word2[w2++]);
+
+                return sb.ToString();
+            }
+        }
+
+        //621	Task Scheduler
+        class TaskScheduler
+        {
+            class Task : IComparable<Task>
+            {
+                public char Id;
+                public int Index;
+                public int Count;
+                public int CoolDown;
+                public Task(char id, int idx, int count, int coolDown)
+                {
+                    Id = id;
+                    Index = idx;
+                    Count = count;
+                    CoolDown = coolDown;
+                }
+
+                public int CompareTo(Task x)
+                {
+                    if (this.Index == x.Index)
+                        return 0;
+                    else
+                    {
+                        if(x.Count == Count)
+                        {
+                            if (CoolDown == x.CoolDown)
+                                return Index.CompareTo(x.Index);
+                            else
+                                return CoolDown.CompareTo(x.CoolDown);
+                        }
+                        else
+                        {
+                            return x.Count.CompareTo(Count);
+                        }
+                    }
+                }
+            }
+
+            public static int LeastInterval(char[] tasks, int n)
+            {
+                Dictionary<char, int> TaskFrequency = new Dictionary<char, int>();
+                foreach (char c in tasks)
+                {
+                    if (!TaskFrequency.ContainsKey(c))
+                        TaskFrequency.Add(c, 0);
+                    TaskFrequency[c]++;
+                }
+
+                int index = 0, result = 0;
+                SortedSet<Task> maxQ = new SortedSet<Task>();
+                foreach (char c in TaskFrequency.Keys)
+                {
+                    maxQ.Add(new Task(c, index++, TaskFrequency[c], 0));
+                }
+
+                IList<Task> tmp = new List<Task>();
+                while (maxQ.Any())
+                {
+                    Task t = maxQ.Min;
+                    maxQ.Remove(t);
+
+                    //Inserting cooling time (t.CoolDown)
+                    result += (t.CoolDown + 1);
+
+                    tmp.Clear();
+                    while (maxQ.Any())
+                    {
+                        Task minT = maxQ.Min;
+                        maxQ.Remove(minT);
+
+                        //reduce any cooldown
+                        minT.CoolDown -= (minT.CoolDown >= t.CoolDown + 1) ? t.CoolDown + 1 : 0;
+                        
+                        tmp.Add(minT);
+                    }
+
+                    t.Count--;
+                    if (t.Count > 0)
+                    {
+                        t.CoolDown = n;
+                        tmp.Add(t);
+                    }
+
+                    foreach (Task t2 in tmp)
+                        maxQ.Add(t2);
+                }
+
+                return result;
+            }
+        }
+
         public static void runTest()
         {
+            TaskScheduler.LeastInterval(new char[] {'A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'D', 'D', 'E'}, 2);
+
+            LargestMergeOfTwoStrings.LargestMerge("uuurr", "urrrur");
+
+            MaximumNumberofEventsThatCanBeAttended.MaxEvents(new int[][] { new int[]{ 1, 2 }, new int[] { 2,3 }, new int[] { 3,4 }, new int[] { 1,2 }});
+
+
             SquirrelSimulation.MinDistance(3, 3, new int[] { 2, 2 }, new int[] { 2, 1 }, new int[][] { new int[] { 0, 0 }, new int[] { 1, 2} });
             //[4,-10],[-1,3],[4,-3],[-3,3]
             RestoretheArrayFromAdjacentPairs.RestoreArray(new int[][] { new int[] { 4, -10 }, new int[] { -1, 3 }, new int[] { 4, -3 }, new int[] { -3, 3 } });
