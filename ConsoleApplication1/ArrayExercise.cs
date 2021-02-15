@@ -861,9 +861,10 @@ namespace ConsoleApplication1
                 //int count1 = 0;
 
                 //Initially Add Sum 0 with 1 occurance
-                dp.Add(0, new List<int>() { 1 }); //to handle the case when sub-array with sum S starts from index 0
-                                                  //dp1.Add(0, 1);
+                dp.Add(0, new List<int>() { -1 }); //to handle the case when sub-array with sum S starts from index 0
+                //dp1.Add(0, 1);
 
+                
                 for (int i = 0; i < nums.Length; i++)
                 {
                     cumSum += nums[i];
@@ -874,7 +875,7 @@ namespace ConsoleApplication1
                         for (int j = 0; j < lstInx.Count; j++)
                         {
                             count++;
-                            //Console.WriteLine("[" + (lstInx[j] + 1) + ", " + i + "]" + " - Length : " + (i - lstInx[j]));    
+                            Console.WriteLine("[" + (lstInx[j] + 1) + ", " + i + "]" + " - Length : " + (i - lstInx[j]));    
                         }
                     }
 
@@ -2905,8 +2906,107 @@ namespace ConsoleApplication1
             }
         }
 
+        //https://leetcode.com/problems/split-array-largest-sum/
+        public class SplitArrayLargestSum
+        {
+            //410. Split Array Largest Sum
+            /*public static int SplitArray(int[] nums, int m)
+            {
+                int[] minMaxSum = new int[1];
+                minMaxSum[0] = int.MaxValue;
+
+                int sumLeft = 0;
+                for (int x = 0; x < nums.Length; x++)
+                    sumLeft += nums[x];
+
+                Helper(nums, m, 0, sumLeft, minMaxSum);
+
+                return minMaxSum[0];
+            }
+
+            private static int Helper(int[] nums, int m, int idx, int sumLeft, int[] minMaxSum)
+            {
+                if (m <= 1)
+                {
+                    return sumLeft;
+                }
+
+                int maxSum = 0;
+                int sum = 0;
+                for (int i = idx; i < nums.Length - m + 1; i++)
+                {
+                    //if (i + 1 >= nums.Length)
+                    //    return sumLeft;
+
+                    sum += nums[i];
+                    int subArraySum = Helper(nums, m - 1, i + 1, sumLeft - sum, minMaxSum);
+                    
+                    maxSum = Math.Max(subArraySum, sum);
+                    //minMaxSum[0] = Math.Min(minMaxSum[0], maxSum);
+                }
+                minMaxSum[0] = Math.Min(minMaxSum[0], maxSum);
+                return maxSum;
+            }*/
+
+            static int result = int.MaxValue;
+            public static int SplitArray(int[] nums, int m)
+            {
+                //int[] minMaxSum = new int[1];
+                //minMaxSum[0] = int.MaxValue;
+
+                int sumLeft = 0;
+                for (int x = 0; x < nums.Length; x++)
+                    sumLeft += nums[x];
+
+                if (m == 1)
+                    return sumLeft;
+
+                int[,,] memo = new int[nums.Length, m + 1, sumLeft + 1];
+                int v = Helper(nums, m, 0, sumLeft, 0, memo);
+
+                return result;
+            }
+
+            private static int Helper(int[] nums, int m, int idx, int sumLeft, int maxSoFarInGroup, int[,,] memo)
+            {
+                if (m <= 1)
+                {
+                    result = Math.Min(result, Math.Max(sumLeft, maxSoFarInGroup));
+                    return sumLeft;
+                }
+                //if(memo[idx, m, sumLeft] != 0) 
+                //    return memo[idx, m, sumLeft];
+
+                int maxSum = 0;
+                int sum = 0;
+                for (int i = idx; i < nums.Length - m + 1; i++)
+                {
+                    sum += nums[i];
+                    int subArraySum = Helper(nums, m - 1, i + 1, sumLeft - sum, Math.Max(sum, maxSoFarInGroup), memo);
+                    maxSum = Math.Max(subArraySum, sum);
+
+                    //Console.WriteLine(maxSum);
+                    //if (firstGroup)
+                    //{
+                        //Console.WriteLine(maxSum);
+                        //result = Math.Min(result, maxSum);
+                    //}
+                }
+                //Console.WriteLine(sum +":"+ maxSum);
+                memo[idx, m, sumLeft] = maxSum;
+
+                return maxSum;
+            }
+        }
+
         public static void runTest()
         {
+            SplitArrayLargestSum.SplitArray(new int[] { 7,2,5,10,8,2,10}, 5 );
+
+            CountSubarraySumEqualsK.CountSubarraySum(new int[] { 0, 1, 2, 3, -2, -1, 0 }, 3);
+
+            SplitArrayLargestSum.SplitArray(new int[] { 7, 2, 5, 10, 8}, 2);
+
             TaskScheduler.LeastInterval(new char[] {'A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C', 'D', 'D', 'E'}, 2);
 
             LargestMergeOfTwoStrings.LargestMerge("uuurr", "urrrur");
