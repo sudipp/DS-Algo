@@ -952,7 +952,46 @@ namespace ConsoleApplication1
             }
         }
 
+        //784. Letter Case Permutation
+        class LetterCasePermutation
+        {
+            public static IList<string> Generate(string S)
+            {
+                IList<string> result = new List<string>();
+                Helper(S, 0, new StringBuilder(), result);
 
+                return result;
+            }
+
+            static void Helper(string s, int idx, StringBuilder sb, IList<string> result)
+            {
+                if (idx == s.Length)
+                {
+                    result.Add(sb.ToString());
+                    return;
+                }
+
+                if (char.IsLetter(s[idx]))
+                {
+                    if (char.IsLower(s[idx]))
+                        sb.Append(char.ToUpper(s[idx]));
+                    else
+                        sb.Append(char.ToLower(s[idx]));
+                    Helper(s, idx + 1, sb, result);
+                    sb.Remove(sb.Length - 1, 1);
+
+                    sb.Append(s[idx]);
+                    Helper(s, idx + 1, sb, result);
+                    sb.Remove(sb.Length - 1, 1);
+                }
+                else
+                {
+                    sb.Append(s[idx]);
+                    Helper(s, idx + 1, sb, result);
+                    sb.Remove(sb.Length - 1, 1);
+                }
+            }
+        }
 
 
         public class Solution

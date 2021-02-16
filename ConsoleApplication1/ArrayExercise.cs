@@ -2999,8 +2999,125 @@ namespace ConsoleApplication1
             }
         }
 
+
+        class P : IComparable<P>
+        {
+            public int I;
+            public int V;
+            public P(int v, int i)
+            {
+                V = v;
+                I = i;
+            }
+
+            public int CompareTo(P o)
+            {
+                if (I == o.I)
+                    return 0;
+                else
+                {
+                    return I.CompareTo(o.I);
+                }
+            }
+        }
+
+        public static IList<int> KillProcess(IList<int> pid, IList<int> ppid, int kill)
+        {
+            P[] arr = new P[pid.Count];
+            for (int i = 0; i < pid.Count; i++)
+                arr[i] = new P(pid[i], ppid[i]);
+
+            Array.Sort(arr);
+
+            IList<int> result = new List<int>();
+            int killIndex = getIndex(pid, kill);
+            int killParentIndex = (ppid[killIndex] != 0) ? getIndex(pid, ppid[killIndex]) : -1;
+
+            Queue<Tuple<int, int, int>> queue = new Queue<Tuple<int, int, int>>();
+            queue.Enqueue(new Tuple<int, int, int>(kill, killIndex, killParentIndex));
+            while (queue.Any())
+            {
+                Tuple<int, int, int> temp = queue.Dequeue();
+                int k = temp.Item1;
+                int ki = temp.Item2;
+                int kpi = temp.Item3;
+
+                result.Add(k);
+                FindNextLevelChildsforK1(arr, k, queue);
+
+                //FindNextLevelChildsforK(pid, ppid, k, ki, kpi + 1, ki, queue);
+                //FindNextLevelChildsforK(pid, ppid, k, ki, ki + 1, ppid.Count, queue);
+            }
+
+            //Traverse1(pid, ppid, 0, killIndex - 1, kill, killIndex, result);
+            //Traverse(pid, ppid, killParentIndex + 1, killIndex - 1, kill, killIndex, result);
+            //Traverse(pid, ppid, killIndex + 1, pid.Count - 1, kill, killIndex, result);
+            //Traverse(pid, ppid, killIndex + 1, 1, kill, killIndex, result);
+
+            //Traverse2(pid, ppid, killParentIndex + 1, killIndex - 1, kill, killIndex, result);
+            //Traverse2(pid, ppid, killIndex + 1, pid.Count - 1, kill, killIndex, result);
+
+            return result;
+        }
+
+        private static int getIndex(IList<int> pid, int p)
+        {
+            for (int pi = 0; pi < pid.Count; pi++)
+            {
+                if (pid[pi] == p)
+                    return pi;
+            }
+            return -1;
+        }
+
+        private static void FindNextLevelChildsforK(IList<int> pid, IList<int> ppid, int k, int ki, int l, int r, Queue<Tuple<int, int, int>> queue)
+        {
+            for (int pi = l; pi < r; pi++)
+            {
+                if (ppid[pi] == k)
+                    queue.Enqueue(new Tuple<int, int, int>(pid[pi], pi, ki));
+            }
+        }
+        private static void FindNextLevelChildsforK1(P[] arr, int k, Queue<Tuple<int, int, int>> queue)
+        {
+            int l = 0, r = arr.Length - 1;
+            while(l <= r)
+            {
+                int m = l + (r - l) / 2;
+                if (arr[m].I == k)
+                {
+                    int m1 = m;
+                    while (m1 - 1 >= 0 && arr[m1 - 1].I == k)
+                    {
+                        queue.Enqueue(new Tuple<int, int, int>(arr[m1 - 1].V, arr[m1 - 1].I, 1));
+                        m1 --;
+                    }
+                    queue.Enqueue(new Tuple<int, int, int>(arr[m].V, arr[m].I, 1));
+                    m1 = m;
+                    while (m1 + 1 <= r && arr[m1 + 1].I == k)
+                    {
+                        queue.Enqueue(new Tuple<int, int, int>(arr[m1 + 1].V, arr[m1 + 1].I, 1));
+                        m1 ++;
+                    }
+
+
+                    return;
+                }
+                else if(arr[m].I > k)
+                {
+                    r = m - 1;
+                }
+                else
+                {
+                    l = m + 1; 
+                }
+            }
+        }
+
         public static void runTest()
         {
+            KillProcess(new List<int>() {1,2,3,4,5 }, new List<int>() {0,1,1,1,1}, 1);
+
             SplitArrayLargestSum.SplitArray(new int[] { 7,2,5,10,8,2,10}, 5 );
 
             CountSubarraySumEqualsK.CountSubarraySum(new int[] { 0, 1, 2, 3, -2, -1, 0 }, 3);
@@ -3018,7 +3135,7 @@ namespace ConsoleApplication1
             //[4,-10],[-1,3],[4,-3],[-3,3]
             RestoretheArrayFromAdjacentPairs.RestoreArray(new int[][] { new int[] { 4, -10 }, new int[] { -1, 3 }, new int[] { 4, -3 }, new int[] { -3, 3 } });
 
-            PalindromePartitioningIV.CheckPartitioning("aazfcvvvuqhxcsyqvjmewpotbgczdxohxspaxrztiuakpvfmsoztlmyqwlwbmvrtdjjrsgzdzxuuesbiicjwgahwydckxinoncrgzsqahamzykirewnekylyjvnjjvwkejsjrevpdabcqnnxvxsibyftopjipwfgrzzqwnawtbwevvsadcckfixnxifkccdasvvewbtwanwqzzrgfwpijpotfybisxvxnnqcbadpverjsjekwvjjnvjylykenwerikyzmahaqszgrcnonixkcdywhagwjciibseuuxzdzgsrjjdtrvmbwlwqymltzosmfvpkauitzrxapsxhoxdzcgbtopwemjvqyscxhquvvvcfzaarelbkxtlpqdomvpmufxibdbvrskmwwszslvyvimpahgcznvmkwpztiiiiiitzpwkmvnzcghapmivyvlszswwmksrvbdbixfumpvmodqpltxkblercxauwizscedkrdzunjhvwlhkscwnfbfnwcskhlwvhjnuzdrkdecsziwuaxc");
+            PalindromePartitioningIV.CheckPartitioning( "aazfcvvvuqhxcsyqvjmewpotbgczdxohxspaxrztiuakpvfmsoztlmyqwlwbmvrtdjjrsgzdzxuuesbiicjwgahwydckxinoncrgzsqahamzykirewnekylyjvnjjvwkejsjrevpdabcqnnxvxsibyftopjipwfgrzzqwnawtbwevvsadcckfixnxifkccdasvvewbtwanwqzzrgfwpijpotfybisxvxnnqcbadpverjsjekwvjjnvjylykenwerikyzmahaqszgrcnonixkcdywhagwjciibseuuxzdzgsrjjdtrvmbwlwqymltzosmfvpkauitzrxapsxhoxdzcgbtopwemjvqyscxhquvvvcfzaarelbkxtlpqdomvpmufxibdbvrskmwwszslvyvimpahgcznvmkwpztiiiiiitzpwkmvnzcghapmivyvlszswwmksrvbdbixfumpvmodqpltxkblercxauwizscedkrdzunjhvwlhkscwnfbfnwcskhlwvhjnuzdrkdecsziwuaxc");
 
             MinimizeDeviationinArray.MinimumDeviation(new int[] { 2, 10, 8 });
 
