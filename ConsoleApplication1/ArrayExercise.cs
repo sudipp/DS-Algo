@@ -2961,164 +2961,171 @@ namespace ConsoleApplication1
                 if (m == 1)
                     return sumLeft;
 
-                int[,,] memo = new int[nums.Length, m + 1, sumLeft + 1];
+                int[,] memo = new int[nums.Length, m + 1];
                 int v = Helper(nums, m, 0, sumLeft, 0, memo);
 
                 return result;
             }
 
-            private static int Helper(int[] nums, int m, int idx, int sumLeft, int maxSoFarInGroup, int[,,] memo)
+            private static int Helper(int[] nums, int m, int idx, int sumLeft, int maxSoFarInGroup, int[,] memo)
             {
                 if (m <= 1)
                 {
                     result = Math.Min(result, Math.Max(sumLeft, maxSoFarInGroup));
                     return sumLeft;
                 }
-                //if(memo[idx, m, sumLeft] != 0) 
-                //    return memo[idx, m, sumLeft];
+                if(memo[idx, m] != 0)
+                {
+                    result = Math.Min(result, Math.Max(memo[idx, m], maxSoFarInGroup));
+                    return memo[idx, m];
+                }    
 
-                int maxSum = 0;
+                int minSum = int.MaxValue;
                 int sum = 0;
                 for (int i = idx; i < nums.Length - m + 1; i++)
                 {
                     sum += nums[i];
                     int subArraySum = Helper(nums, m - 1, i + 1, sumLeft - sum, Math.Max(sum, maxSoFarInGroup), memo);
-                    maxSum = Math.Max(subArraySum, sum);
-
-                    //Console.WriteLine(maxSum);
-                    //if (firstGroup)
-                    //{
-                        //Console.WriteLine(maxSum);
-                        //result = Math.Min(result, maxSum);
-                    //}
+                    minSum = Math.Min(minSum, Math.Max(subArraySum, sum));
                 }
-                //Console.WriteLine(sum +":"+ maxSum);
-                memo[idx, m, sumLeft] = maxSum;
+                memo[idx, m] = minSum;
 
-                return maxSum;
+                return minSum;
             }
         }
 
-
-        class P : IComparable<P>
+        public static int  NumberOfArithmeticSlices(int[] A)
         {
-            public int I;
-            public int V;
-            public P(int v, int i)
-            {
-                V = v;
-                I = i;
-            }
+            if (A.Length < 3)
+                return 0;
 
-            public int CompareTo(P o)
+            int count = 0, l = 0, r = 1, sequenceCount = 1, arithmDiff = A[l] - A[r];//Math.Abs(A[r] - A[l]);
+            while (r < A.Length)
             {
-                if (I == o.I)
-                    return 0;
-                else
+                //Console.WriteLine("r=" + r +":l=" + l + " Diff=" + arithmDiff + ", A[r]=" + A[r] + ", A[r - 1]=" + A[r - 1] + " *** D = " + Math.Abs(A[r] - A[r - 1]));
+
+                //if(Math.Abs(A[r] - A[r - 1]) == arithmDiff)
+                if (A[r - 1] - A[r] == arithmDiff)
                 {
-                    return I.CompareTo(o.I);
-                }
-            }
-        }
-
-        public static IList<int> KillProcess(IList<int> pid, IList<int> ppid, int kill)
-        {
-            P[] arr = new P[pid.Count];
-            for (int i = 0; i < pid.Count; i++)
-                arr[i] = new P(pid[i], ppid[i]);
-
-            Array.Sort(arr);
-
-            IList<int> result = new List<int>();
-            int killIndex = getIndex(pid, kill);
-            int killParentIndex = (ppid[killIndex] != 0) ? getIndex(pid, ppid[killIndex]) : -1;
-
-            Queue<Tuple<int, int, int>> queue = new Queue<Tuple<int, int, int>>();
-            queue.Enqueue(new Tuple<int, int, int>(kill, killIndex, killParentIndex));
-            while (queue.Any())
-            {
-                Tuple<int, int, int> temp = queue.Dequeue();
-                int k = temp.Item1;
-                int ki = temp.Item2;
-                int kpi = temp.Item3;
-
-                result.Add(k);
-                FindNextLevelChildsforK1(arr, k, queue);
-
-                //FindNextLevelChildsforK(pid, ppid, k, ki, kpi + 1, ki, queue);
-                //FindNextLevelChildsforK(pid, ppid, k, ki, ki + 1, ppid.Count, queue);
-            }
-
-            //Traverse1(pid, ppid, 0, killIndex - 1, kill, killIndex, result);
-            //Traverse(pid, ppid, killParentIndex + 1, killIndex - 1, kill, killIndex, result);
-            //Traverse(pid, ppid, killIndex + 1, pid.Count - 1, kill, killIndex, result);
-            //Traverse(pid, ppid, killIndex + 1, 1, kill, killIndex, result);
-
-            //Traverse2(pid, ppid, killParentIndex + 1, killIndex - 1, kill, killIndex, result);
-            //Traverse2(pid, ppid, killIndex + 1, pid.Count - 1, kill, killIndex, result);
-
-            return result;
-        }
-
-        private static int getIndex(IList<int> pid, int p)
-        {
-            for (int pi = 0; pi < pid.Count; pi++)
-            {
-                if (pid[pi] == p)
-                    return pi;
-            }
-            return -1;
-        }
-
-        private static void FindNextLevelChildsforK(IList<int> pid, IList<int> ppid, int k, int ki, int l, int r, Queue<Tuple<int, int, int>> queue)
-        {
-            for (int pi = l; pi < r; pi++)
-            {
-                if (ppid[pi] == k)
-                    queue.Enqueue(new Tuple<int, int, int>(pid[pi], pi, ki));
-            }
-        }
-        private static void FindNextLevelChildsforK1(P[] arr, int k, Queue<Tuple<int, int, int>> queue)
-        {
-            int l = 0, r = arr.Length - 1;
-            while(l <= r)
-            {
-                int m = l + (r - l) / 2;
-                if (arr[m].I == k)
-                {
-                    int m1 = m;
-                    while (m1 - 1 >= 0 && arr[m1 - 1].I == k)
+                    /*if(sequenceCount >= 2)
                     {
-                        queue.Enqueue(new Tuple<int, int, int>(arr[m1 - 1].V, arr[m1 - 1].I, 1));
-                        m1 --;
-                    }
-                    queue.Enqueue(new Tuple<int, int, int>(arr[m].V, arr[m].I, 1));
-                    m1 = m;
-                    while (m1 + 1 <= r && arr[m1 + 1].I == k)
-                    {
-                        queue.Enqueue(new Tuple<int, int, int>(arr[m1 + 1].V, arr[m1 + 1].I, 1));
-                        m1 ++;
-                    }
-
-
-                    return;
-                }
-                else if(arr[m].I > k)
-                {
-                    r = m - 1;
+                        Console.WriteLine("******** r=" + r +":l=" + l + " Diff=" + arithmDiff + ", A[r]=" + A[r] + ", A[r - 1]=" + A[r - 1] + " *** D = " + Math.Abs(A[r] - A[r - 1]));
+                    }*/
+                    sequenceCount++;
+                    r++;
                 }
                 else
                 {
-                    l = m + 1; 
+                    //if(sequenceCount > 2)
+
+                    //if(r - l - 1 >= 3)//sequenceCount >= 3)
+                    if (sequenceCount >= 3)
+                    {
+                        Console.WriteLine("======" + r + ":l=" + l + ":Diff=" + arithmDiff + ":A[r] = " + A[r] + ": A[r - 1] = " + A[r - 1]);
+                        count += numberOfSlices(r - l);
+                    }
+
+                    l = r - 1;
+                    
+                    //arithmDiff = (r < A.Length) ? Math.Abs(A[r] - A[l]) : int.MaxValue;
+                    arithmDiff = (r < A.Length) ? A[l] - A[r] : 0;
+                    //r++;
+                    sequenceCount = 1;
+
+                    Console.WriteLine("======" + r + ":l=" + l + ":Diff=" + arithmDiff);
+
                 }
             }
+
+            if(sequenceCount >= 3)
+            //if(r - l - 1 >= 3)
+                count += numberOfSlices(r - l);
+            
+
+            return count;
+        }
+
+        private static int numberOfSlices(int n)
+        {
+            Console.WriteLine(n + ":****");
+
+            if (n < 3) return 0;
+            if (n == 3) return 1;
+            int innerSlices = numberOfSlices(n - 1);
+            return innerSlices + (n - 2);
+        }
+
+        public static bool CanPartitionKSubsets(int[] nums, int k1)
+        {
+            int total = 0;
+            IList<int> lst = new List<int>();
+            foreach (int item in nums)
+            {
+                lst.Add(item);
+                total += item;
+            }
+
+            //Console.WriteLine(total);
+
+            if (total % k1 != 0)
+                return false;
+
+            int partSum = total / k1;
+
+            for (int x = 1; x < k1; x++)
+            {
+                bool[,] dp = new bool[lst.Count + 1, partSum + 1];
+
+                for (int r = 0; r <= lst.Count; r++)
+                    dp[r, 0] = true;
+
+                for (int r = 1; r <= lst.Count; r++)
+                {
+                    for (int c = 1; c <= partSum; c++)
+                    {
+                        if (c >= nums[r - 1])
+                        {
+                            dp[r, c] = dp[r - 1, c] //exclude
+                                || dp[r - 1, c - nums[r - 1]]; //include
+                        }
+                        else
+                        {
+                            dp[r, c] = dp[r - 1, c];
+                        }
+
+                        //if (dp[r, c])
+                        //{
+                        //    lst.RemoveAt(r - 1);
+                            //hs.Add(r - 1);
+                        //}
+                    }
+                }
+
+                //Console.WriteLine(dp[nums.Length, partSum]);
+                for(int j=0; j < dp.GetLength(0); j++)
+                {
+                    for (int k = 0; k < dp.GetLength(1); k++)
+                    {
+                        Console.Write(dp[j, k] + ", ");
+                    }
+                    Console.WriteLine();
+                }
+
+                if (!dp[nums.Length, partSum])
+                    return false;
+
+            }
+            return true;
+
         }
 
         public static void runTest()
         {
-            KillProcess(new List<int>() {1,2,3,4,5 }, new List<int>() {0,1,1,1,1}, 1);
+            CanPartitionKSubsets(new int[] { 4, 3, 2, 3, 5, 2, 1 }, 4);
 
-            SplitArrayLargestSum.SplitArray(new int[] { 7,2,5,10,8,2,10}, 5 );
+            NumberOfArithmeticSlices(new int[] { 27, 2, -32, 38, -21, 27, -44, 34, -31, -5, -2, -20, 7, -31, 14, 5, 30, -12, -23, -10, 13, 28, -19, 21, -45, 15, -33, 16, 47, -23, -25, -22, 45, 43, -4, 14, -46, 36, 11, -21, -19, 35, 47, 39, 29, -41, -9, -34, 29, -11, -43, -18, 45, -5, 12, 0, 14, -41, 48, -11, 10, 22, -15, 12, -35, 42, 5, -2, -8, 31, -23, 45, -17, 25, -21, -12, -6, -2, 0, -21, 33, 7, -35, -6, 43, 10, -38, -12, 40, 10, -9, 18, -31, 18, -1, 31, -9, -17, 2, -12, -38, -16, 40, -46, 26, -44, 38, 39, 10, -4, 10, -17, -24, -21, 28, 40, -5, -33, -23, 8, -3, 8, -9, -25, -38, 23, -50, 15, 25, -30, 46, 12, -6, 39, 28, -1, -48, 38, 28, -44, -9, -22, 13, -21, 3, -10, 24, -33, -13, 35, 18, 3, -49, -45, 23, 19, 15, 0, -9, -1, -17, -39, -50, -3, 33, 32, -32, 41, -44, -23, 42, -5, -42, -10, 46, -28, 8, -23, 38, 13, 30, 6, 46, 7, -45, 21, 5, -28, -10, 36, 6, -36, 33, -31, 15, -41, 15, 11, -14, -27, -27, -22, 5, -12, -34, 27, -6, 39, 36, -13, 2, -2, -41, 39, -29, -1, -29, 5, 22, 12, -16, 22, 13, 16, -10, 6, 41, -29, 12, -24, -3, -29, -7, 31, -8, -36, 2, -49, -6, -2, -48, -11, 5, 43, 49, 48, -30, 18, 34, -27, 6, 22, 32, -42, -36, 18, 42, -33, -44, -18, -43, -12, -11});
+
+            SplitArrayLargestSum.SplitArray(new int[] { 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13 }, 5 );
 
             CountSubarraySumEqualsK.CountSubarraySum(new int[] { 0, 1, 2, 3, -2, -1, 0 }, 3);
 
