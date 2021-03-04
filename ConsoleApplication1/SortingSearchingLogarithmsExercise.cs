@@ -798,8 +798,8 @@ namespace ConsoleApplication1
             {
                 //O(N^2)
 
-                int[] min = new int[n + 1];
-                int[] max = new int[n + 1];
+                int[] left = new int[n + 1];
+                int[] right = new int[n + 1];
 
                 for (int i = 0; i <= n; i++)
                 {
@@ -808,55 +808,104 @@ namespace ConsoleApplication1
 
                     if (l <= r)
                     {
-                        min[i] = l;
-                        max[i] = r;
+                        left[i] = l;
+                        right[i] = r;
                     }
-                    else
+                    else if(l > r)
                     {
-                        min[i] = r;
-                        max[i] = l;
+                        left[i] = r;
+                        right[i] = l;
                     }
                 }
 
-                int maxValIndex = GetMaxWithMaxMinIndex(max, min, n);
+                int maxValIndex = GetMaxWithMaxMinIndex(left, right, n);
 
                 if (maxValIndex == -1)
                     return -1;
 
                 int minRequired = 1;
-                int maxMinVal = min[maxValIndex];
-                while (maxMinVal > 0)
+                int MinleftRange = left[maxValIndex];
+                int MaxRightRange = left[maxValIndex];
+
+                while (MinleftRange > 0)
+                {
+                    if (left[maxValIndex - 1] == right[maxValIndex - 1])
+                    {
+                        maxValIndex--;
+                        continue;
+                    }
+
+                    minRequired++;
+                    int leftBoundary = left[maxValIndex - 1];
+                    for (int i = maxValIndex - 1; i > leftBoundary; i--)
+                    {
+                        if (right[i] >= MaxRightRange && left[i] <= MinleftRange)
+                        {
+                            maxValIndex = i;
+                            MinleftRange = Math.Min(MinleftRange, left[i]);
+                            MaxRightRange = Math.Min(MaxRightRange, right[i]);
+                        }
+                    }
+                    maxValIndex --;
+                }
+
+
+                for (int i = maxValIndex - 1; i >= 0; i--)
+                {
+                    if(right[i] >= MinleftRange && left[i] <= MaxRightRange)
+                    {
+                        minRequired++;
+                        MinleftRange = left[i];
+                        MaxRightRange = right[i];
+                    }
+                }
+
+                if (MinleftRange > 0)
+                    return -1;
+
+
+                /*
+
+                while (MinleftRange > 0)
                 {
                     minRequired++;
 
-                    int originalmaxMinVal = maxMinVal;
-                    int maxVal = min[maxValIndex];
-                    for (int i = maxValIndex - 1; i >= 0; i--)
+                    int originalmaxMinVal = MinleftRange;
+                    int MaxRightRange = left[maxValIndex];
+
+
+
+
+
+                    //for (int i = maxValIndex - 1; i >= 0; i--)
+                    for (int i = maxValIndex - 1; i >= MinleftRange; i--)
                     {
-                        if (max[i] >= maxVal && min[i] <= maxMinVal)
+                        if (right[i] >= MaxRightRange && left[i] <= MinleftRange)
                         {
                             maxValIndex = i;
-                            maxMinVal = min[i];
+                            MinleftRange = left[i];
                         }
                     }
+                    //if (originalmaxMinVal == MinleftRange)
+                    //    maxValIndex = MaxRightRange;
 
-                    if (originalmaxMinVal == maxMinVal)
-                        return -1;
+                    //if (originalmaxMinVal == maxMinVal)
+                    //    return -1;
                 }
-
+                */
                 return minRequired;
             }
 
-            private static int GetMaxWithMaxMinIndex(int[] max, int[] min, int n)
+            private static int GetMaxWithMaxMinIndex(int[] left, int[] right, int n)
             {
                 int maxValIndex = -1;
                 int minMost = int.MaxValue;
-                for (int i = 0; i < max.Length; i++)
+                for (int i = 0; i < right.Length; i++)
                 {
-                    if (max[i] >= (n) && min[i] <= minMost)
+                    if (right[i] >= (n) && left[i] <= minMost)
                     {
                         maxValIndex = i;
-                        minMost = min[i];
+                        minMost = left[i];
                     }
                 }
                 return maxValIndex;
@@ -1647,6 +1696,8 @@ namespace ConsoleApplication1
 
         public static void runTest()
         {
+            MinTapsToOpenToWaterAGarden.MinTaps(7, new int[] { 1, 2, 1, 0, 2, 1, 0, 1 });
+
             CutRibbons.greatestLength(new int[] { 1, 2, 3, 4, 9 }, 5);
 
             //FindtheClosestPalindrome.NearestPalindromic("14");

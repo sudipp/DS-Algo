@@ -464,13 +464,52 @@ namespace ConsoleApplication1
             }
         }
 
+        public class MinTaps
+        {
+            public static int MinTaps1(int n, int[] ranges)
+            {
+                int[] reach = new int[n + 1];
+                for (int j = 0; j < ranges.Length; j++)
+                {
+                    int left = Math.Max(0, j - ranges[j]);
+                    int right = Math.Min(n, j + ranges[j]);
+
+                    reach[left] = Math.Max(reach[left], right);
+                }
+
+                int count = 1;
+                int coverage = reach[0], newCoverage = reach[0];
+                int i = 1;
+                while (coverage < n) // keep going till n, once we reach n, exit the process
+                {
+                    bool foundBiggerCoverage = false;
+                    for (; i <= coverage; i++)
+                    {
+                        if (reach[i] > coverage) 
+                        {
+                            //pick the max bigger coverage
+                            newCoverage = Math.Max(newCoverage, reach[i]);
+                            foundBiggerCoverage = true;
+                        }
+                    }
+                    if (!foundBiggerCoverage)
+                        return -1;
+
+                    coverage = newCoverage;
+                    count++;
+                }
+                return count;
+            }
+        }
 
         static void Main(string[] args)
         {
             try
             {
-                
+                MinTaps.MinTaps1(3, new int[] { 0, 0, 0, 0 });
 
+
+                SortingSearchingLogarithmsExercise.runTest();
                 //GraphExercise.runTest();
                 ArrayExercise.runTest();
                 RecursionExercise.runTest();

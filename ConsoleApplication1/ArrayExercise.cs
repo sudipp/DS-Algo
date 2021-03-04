@@ -3119,8 +3119,137 @@ namespace ConsoleApplication1
 
         }
 
+
+        public class ValidateStackSequences
+        {
+            public static bool Validate(int[] pushed, int[] popped)
+            {
+                int pushedIndex = 0;
+                Stack<int> stack = new Stack<int>();
+                for (int i = 0; i < popped.Length; i++)
+                {
+                    int lastPopped = popped[i];
+                    if(stack.Count == 0)
+                    {
+                        while (pushedIndex < pushed.Length - 1 && pushed[pushedIndex] != lastPopped)
+                        {
+                            stack.Push(pushed[pushedIndex]);
+                            pushedIndex++;
+                        }
+                        if (pushedIndex <= pushed.Length - 1)
+                            stack.Push(pushed[pushedIndex++]);
+
+                        if (stack.Pop() != lastPopped)
+                            return false;
+                    }
+                    else
+                    {
+                        if (stack.Peek() == lastPopped)
+                            stack.Pop();
+                        else
+                        {
+                            while (pushedIndex < pushed.Length - 1 && pushed[pushedIndex] != lastPopped)
+                            {
+                                stack.Push(pushed[pushedIndex]);
+                                pushedIndex++;
+                            }
+                            if(pushedIndex <= pushed.Length - 1)
+                                stack.Push(pushed[pushedIndex++]);
+
+                            if (stack.Pop() != lastPopped)
+                                return false;
+                        }
+                    }
+                }
+                return true;
+
+
+                int popStIndex = -1, popEndIndex = -1;
+                
+
+                for (int i = 0; i < popped.Length; i++)
+                {
+                    int lastPopped = popped[i];
+
+                    if(popStIndex == -1)
+                    {
+                        //start the process. to pop we must push
+                        while (pushedIndex < pushed.Length - 1 && pushed[pushedIndex] != lastPopped)
+                            pushedIndex++;
+
+                        if (popStIndex == -1)
+                            popStIndex = pushedIndex;
+                        popEndIndex = pushedIndex;
+                    }
+                    else if (popStIndex == 0)
+                    {
+                        //stack is empty... //push to pop
+                        while (pushedIndex < pushed.Length - 1 && pushed[pushedIndex] != lastPopped)
+                            pushedIndex++;
+
+                        if (pushedIndex == pushed.Length - 1 && pushed[pushedIndex] != lastPopped)
+                            return false;
+                        else
+                            popEndIndex = pushedIndex;
+                    }
+                    else //stack not empty... we have 2 options
+                    {
+                        //either pop
+                        if (popStIndex - 1 >= 0 && pushed[popStIndex - 1] == lastPopped)
+                            popStIndex--;
+                        else
+                        {
+                            //push to pop
+                            while (pushedIndex < pushed.Length - 1 && pushed[pushedIndex] != lastPopped)
+                                pushedIndex++;
+
+                            if (pushedIndex == pushed.Length - 1 && pushed[pushedIndex - 1] != lastPopped)
+                                return false;
+                            else
+                                popEndIndex = pushedIndex;
+                        }
+                    }
+                    continue;
+
+
+                    if (popStIndex != -1)
+                    {
+                        // search for lastPopped in pushed 
+                        //if not found, move popEndIndex forward
+                        if (popStIndex - 1 >= 0 && pushed[popStIndex - 1] == lastPopped)
+                            popStIndex--;
+                        else
+                        {
+                            if (pushedIndex < pushed.Length - 1)
+                            {
+                                while (pushedIndex < pushed.Length - 1 && pushed[pushedIndex] != lastPopped)
+                                    pushedIndex++;
+                                
+                                popEndIndex = pushedIndex;
+                            }
+                            else
+                                return false;
+                        }
+                    }
+                    else
+                    {
+                        while (pushed[pushedIndex] != lastPopped)
+                            pushedIndex++;
+
+                        if (popStIndex == -1)
+                            popStIndex = pushedIndex;
+                        popEndIndex = pushedIndex;
+                    }
+                }
+                return (popStIndex == 0);
+            }
+        }
+
         public static void runTest()
         {
+            ValidateStackSequences.Validate(new int[] { 1,2,3,4,5 }, new int[] { 4, 5, 3, 2, 1 });
+
+
             CanPartitionKSubsets(new int[] { 4, 3, 2, 3, 5, 2, 1 }, 4);
 
             NumberOfArithmeticSlices(new int[] { 27, 2, -32, 38, -21, 27, -44, 34, -31, -5, -2, -20, 7, -31, 14, 5, 30, -12, -23, -10, 13, 28, -19, 21, -45, 15, -33, 16, 47, -23, -25, -22, 45, 43, -4, 14, -46, 36, 11, -21, -19, 35, 47, 39, 29, -41, -9, -34, 29, -11, -43, -18, 45, -5, 12, 0, 14, -41, 48, -11, 10, 22, -15, 12, -35, 42, 5, -2, -8, 31, -23, 45, -17, 25, -21, -12, -6, -2, 0, -21, 33, 7, -35, -6, 43, 10, -38, -12, 40, 10, -9, 18, -31, 18, -1, 31, -9, -17, 2, -12, -38, -16, 40, -46, 26, -44, 38, 39, 10, -4, 10, -17, -24, -21, 28, 40, -5, -33, -23, 8, -3, 8, -9, -25, -38, 23, -50, 15, 25, -30, 46, 12, -6, 39, 28, -1, -48, 38, 28, -44, -9, -22, 13, -21, 3, -10, 24, -33, -13, 35, 18, 3, -49, -45, 23, 19, 15, 0, -9, -1, -17, -39, -50, -3, 33, 32, -32, 41, -44, -23, 42, -5, -42, -10, 46, -28, 8, -23, 38, 13, 30, 6, 46, 7, -45, 21, 5, -28, -10, 36, 6, -36, 33, -31, 15, -41, 15, 11, -14, -27, -27, -22, 5, -12, -34, 27, -6, 39, 36, -13, 2, -2, -41, 39, -29, -1, -29, 5, 22, 12, -16, 22, 13, 16, -10, 6, 41, -29, 12, -24, -3, -29, -7, 31, -8, -36, 2, -49, -6, -2, -48, -11, 5, 43, 49, 48, -30, 18, 34, -27, 6, 22, 32, -42, -36, 18, 42, -33, -44, -18, -43, -12, -11});
