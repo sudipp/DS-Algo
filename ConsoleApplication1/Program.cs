@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.Security.Cryptography;
 
 namespace ConsoleApplication1
 {
@@ -174,7 +175,7 @@ namespace ConsoleApplication1
 
         public class Solution
         {
-            
+
             public static IList<int> FindSubstring(string s, string[] words)
             {
                 IList<int> result = new List<int>();
@@ -192,7 +193,7 @@ namespace ConsoleApplication1
                 }
 
                 for (int l = 0; l <= s.Length - totalChars; l++)
-                {  
+                {
                     //O(m - n) time complexity, where m is length of s, n is the length of all word
                     Dictionary<string, int> tempMap = new Dictionary<string, int>(tMap);
 
@@ -200,7 +201,7 @@ namespace ConsoleApplication1
                     while (!IsWinValid(tempMap) && r < totalChars)
                     {
                         string str = s.Substring(l + r, words[0].Length);
-                        if(tempMap.ContainsKey(str))
+                        if (tempMap.ContainsKey(str))
                         {
                             if (tempMap[str] > 0)
                                 tempMap[str]--;
@@ -307,7 +308,7 @@ namespace ConsoleApplication1
             }
 
             IList<IList<string>> result = new List<IList<string>>();
-            foreach(string key in ans.Keys)
+            foreach (string key in ans.Keys)
                 result.Add(ans[key]);
             return result;
         }
@@ -317,7 +318,7 @@ namespace ConsoleApplication1
             int s = newInterval[0], e = newInterval[1];
             IList<int[]> left = new List<int[]>();
             IList<int[]> right = new List<int[]>();
-            
+
             for (int i = 0; i < intervals.Length; i++)
             {
                 if (intervals[i][1] < s) //interval end is less than new S
@@ -421,7 +422,7 @@ namespace ConsoleApplication1
                             if (stack.Count > 0)
                                 stack.Pop();
                         }
-                        else if(pathSegment != ".")
+                        else if (pathSegment != ".")
                             stack.Push(pathSegment);
                     }
                     start = i + 1;
@@ -485,7 +486,7 @@ namespace ConsoleApplication1
                     bool foundBiggerCoverage = false;
                     for (; i <= coverage; i++)
                     {
-                        if (reach[i] > coverage) 
+                        if (reach[i] > coverage)
                         {
                             //pick the max bigger coverage
                             newCoverage = Math.Max(newCoverage, reach[i]);
@@ -502,10 +503,411 @@ namespace ConsoleApplication1
             }
         }
 
+        public class GenerateTrees
+        {
+            public static IList<TreeNode> GenerateTrees1(int n)
+            {
+                int[] nums = new int[n];
+                for (int i = 0; i < n; i++)
+                    nums[i] = i + 1;
+
+                IList<TreeNode>[,] memo = new List<TreeNode>[n, n];
+
+                return BuildTree(nums, 0, n - 1, memo);
+            }
+
+            private static IList<TreeNode> BuildTree(int[] nums, int l, int r, IList<TreeNode>[,] memo)
+            {
+                int size = r - l + 1;
+
+                if (size == 0)
+                {
+                    return new List<TreeNode>();
+                }
+                else if (size == 1)
+                {
+                    IList<TreeNode> tempLst = new List<TreeNode>();
+                    tempLst.Add(new TreeNode(nums[l]));
+                    return tempLst;
+                }
+                if (size == 2)
+                {
+                    IList<TreeNode> tempLst = new List<TreeNode>();
+
+                    //2 tree possible - (2)\ 1   or  2 /(1)
+                    TreeNode temp = new TreeNode(nums[l]);
+                    temp.right = new TreeNode(nums[r]);
+                    tempLst.Add(temp);
+
+                    temp = new TreeNode(nums[r]);
+                    temp.left = new TreeNode(nums[l]);
+                    tempLst.Add(temp);
+
+                    return tempLst;
+                }
+
+                if (memo[l, r] != null)
+                    return (memo[l, r]);
+
+                List<TreeNode> treeList = new List<TreeNode>();
+                for (int i = l; i <= r; i++)
+                {
+                    //keep "i" at root and get left and right unique BST and multiply them 
+                    TreeNode newHead = new TreeNode(i + 1);
+
+                    IList<TreeNode> leftTrees = BuildTree(nums, l, i - 1, memo);
+                    IList<TreeNode> rightTrees = BuildTree(nums, i + 1, r, memo);
+
+                    if (leftTrees.Count == 0)
+                    {
+                        foreach (var right in rightTrees)
+                        {
+                            newHead.right = right;
+                            treeList.Add(Clone(newHead));
+                        }
+                    }
+                    else
+                    {
+                        foreach (var left in leftTrees)
+                        {
+                            newHead.left = left;
+                            if (rightTrees.Count == 0)
+                                treeList.Add(Clone(newHead));
+                            else
+                            {
+                                foreach (var right in rightTrees)
+                                {
+                                    newHead.right = right;
+                                    treeList.Add(Clone(newHead));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return memo[l, r] = treeList;
+            }
+
+            private static TreeNode Clone(TreeNode head)
+            {
+                if (head == null)
+                    return null;
+
+                TreeNode newHead = new TreeNode(head.val);
+                newHead.left = Clone(head.left);
+                newHead.right = Clone(head.right);
+
+                return newHead;
+            }
+        }
+        
+        public class ClosestCost1
+        {
+            public static int ClosestCost(int[] baseCosts, int[] toppingCosts, int target)
+            {
+                //return MaxToppingPrice(baseCosts, toppingCosts, 0, target, 0);
+
+                int closetDesertPrice = int.MaxValue;
+                for (int i = 0; i < baseCosts.Length; i++)
+                {
+                    int maxPriceSoFar = MaxToppingPrice(toppingCosts, baseCosts[i], target, 0);
+
+                    if (Math.Abs(target - closetDesertPrice) > Math.Abs(target - maxPriceSoFar))
+                        closetDesertPrice = maxPriceSoFar;
+                    else if (Math.Abs(target - closetDesertPrice) == Math.Abs(target - maxPriceSoFar))
+                        closetDesertPrice = Math.Min(closetDesertPrice, maxPriceSoFar);
+                }
+                return closetDesertPrice;
+            }
+            
+            private static int MaxToppingPrice(int[] toppingCosts, int sum, int target, int idx)
+            {
+                if (sum >= target)
+                    return sum;
+
+                int maxTopPrice = sum;
+                for (int j = idx; j < toppingCosts.Length; j++)
+                {
+                    int k = 1;
+                    while (k <= 2)
+                    {
+                        int innerMaxToppingPrice = MaxToppingPrice(toppingCosts, sum + (toppingCosts[j] * k), target, j + 1);
+
+                        if (Math.Abs(target - innerMaxToppingPrice) < Math.Abs(target - maxTopPrice))
+                            maxTopPrice = innerMaxToppingPrice;
+                        else if (Math.Abs(target - innerMaxToppingPrice) == Math.Abs(target - maxTopPrice))
+                            maxTopPrice = Math.Min(maxTopPrice, innerMaxToppingPrice);
+
+                        k++;
+                    }
+                }
+                return maxTopPrice;
+            }
+        }
+
+
+        public class GetCollisionTimes
+        {
+            class Pair : IComparable<Pair>
+            {
+                public int Index;
+                public int Pos;
+                public int Speed;
+                public Pair(int idx, int pos, int speed)
+                {
+                    Index = idx;
+                    Pos = pos;
+                    Speed = speed;
+                }
+
+                public int CompareTo(Pair o)
+                {
+                    if (this.Index == o.Index)
+                        return 0;
+                    else
+                    {
+                        if (this.Pos == o.Pos)
+                            return this.Speed.CompareTo(o.Speed);
+                        else
+                            return this.Pos.CompareTo(o.Pos);
+                    }
+                }
+            }
+
+            public static double[] GetCollisionTimes1(int[][] cars)
+            {
+                double[] result = new double[cars.Length];
+
+                SortedSet<Pair> minQ = new SortedSet<Pair>();
+                for (int i = 0; i < cars.Length; i++)
+                    minQ.Add(new Pair(i, cars[i][0] + cars[i][1], cars[i][1]));
+
+                double clock = 1;
+                while (true)
+                {
+                    Dictionary<int, Pair> collions = new Dictionary<int, Pair>();
+                    int minFleetSpeed = int.MaxValue;
+                    Pair min = null;
+                    foreach(Pair p in minQ)
+                    {
+                        if (min == null)
+                            min = p;
+                        else
+                        {
+                            if(min.Pos == p.Pos) //collision
+                            {
+                                if(!collions.ContainsKey(p.Index))
+                                    collions.Add(p.Index, p);
+                                if (!collions.ContainsKey(min.Index))
+                                    collions.Add(min.Index, min);
+
+                                minFleetSpeed = Math.Min(minFleetSpeed, p.Speed);
+                                minFleetSpeed = Math.Min(minFleetSpeed, min.Speed);
+                            }
+                        }
+                    }
+
+                    if(collions.Count > 0)
+                    {
+                        //merge
+                        //minFleetSpeed
+                    }
+
+                    //SortedDictionary<char, int> dict = new SortedDictionary<char, int>(new SortByValue<char, int>());
+
+                }
+
+                return result;
+            }
+
+        }
+
+        public static IList<int> FindDuplicates(int[] nums)
+        {
+            IList<int> duplicates = new List<int>();
+            //cycle sort -  O(N)
+            int start = 0;
+            while (start < nums.Length)
+            {
+                if (nums[start] != start + 1)
+                {
+                    int temp = nums[nums[start] - 1];
+                    if (temp == nums[start])
+                    {
+                        start++;
+                        continue;
+                    }
+                    nums[nums[start] - 1] = nums[start];
+                    nums[start] = temp;
+                }
+                else
+                    start++;
+            }
+
+            for(int i = 0; i < nums.Length; i++)
+                if (nums[i] != i + 1)
+                    duplicates.Add(nums[i]);
+            
+            return duplicates;
+        }
+
+        public static IList<IList<string>> PalindromePartition(string s)
+        {
+
+            //Understand the matrix
+            //https://www.youtube.com/watch?v=XmSOWnL6T_I
+
+            IList<IList<string>> palindromes = new List<IList<string>>();
+            int n = s.Length, count = 0;
+
+            int[][] memo1 = new int[n][];
+            for (int i = 0; i < n; i++)
+            {
+                memo1[i] = new int[n];
+                memo1[i][i] = 1;
+                count++;
+                //palindromes.Add(new string(s[i], 1));
+
+                if (palindromes.Count == 0) palindromes.Add(new List<string>());
+                palindromes[palindromes.Count - 1].Add(new string(s[i], 1));
+            }
+
+            int top = 0, bottom = 0;
+
+            //start from 2 length palindromes
+            for (int len = 1; len < n; len++)
+            {
+                for (int i = 0; i < n - len; i++)
+                {
+                    int j = i + len;
+                    if (s[i] == s[j] && memo1[i + 1][j - 1] == j - i - 1)
+                    {
+                        memo1[i][j] = 2 + memo1[i + 1][j - 1];
+                        count++;
+
+                        palindromes.Add(new List<string>());
+                        
+                        top = i - 1;
+                        while (top >= 0)
+                        {
+                            if (memo1[top][top] > 0)
+                            {
+                                int left = (top - memo1[top][top] + 1);
+                                palindromes[palindromes.Count - 1].Add(s.Substring(left, memo1[top][top]));
+                            }
+                            top--;
+                        }
+
+                        palindromes[palindromes.Count - 1].Add(s.Substring(i, j - i + 1));
+                        //palindromes.Add(s.Substring(i, j - i + 1));
+
+                        bottom = j + 1;  
+                        while(bottom < n)
+                        {
+                            if (memo1[bottom][bottom] > 0)
+                            {
+                                int left = (bottom - memo1[bottom][bottom] + 1);
+                                palindromes[palindromes.Count - 1].Add(s.Substring(left, memo1[bottom][bottom]));
+                            }
+                            bottom ++;
+                        }
+                    }
+                    else
+                    {
+                        memo1[i][j] = 0;
+                    }
+                }
+            }
+
+            for (int c = 1; c < n; c++)
+            {
+                //sliding window
+                int l = 0, r = n - c - 1, c1 = c, c2 = 1;
+                IList<Tuple<int, int>> leftCount = new List<Tuple<int, int>>();
+                IList<Tuple<int, int>> rightCount = new List<Tuple<int, int>>();
+                while (l <= r)
+                {
+                    int sizeL = memo1[l][c1];
+                    if(sizeL > 0)
+                    {
+                        leftCount.Add(new Tuple<int, int>(c1 - sizeL + 1, sizeL));
+                        if(leftCount.Count > 1)
+                        {
+                            palindromes.Add(new List<string>());
+                            palindromes[palindromes.Count - 1].Add(s.Substring(l, memo1[top][top]));
+                        }
+                    }
+
+                    int sizeR = memo1[r][n - c2];
+                    if (sizeR > 0)
+                    {
+                        rightCount.Add(new Tuple<int, int>(n - c2 - sizeR + 1, sizeR));
+                        if(rightCount.Count > 1)
+                        {
+
+                        }
+                    }
+                    c1 ++;
+                    c2 ++;
+                    l ++;
+                    r --;
+                }
+            }
+
+            return palindromes;
+        }
+
+        static long DFS(int[] nums, int idx, long[] dp)
+        {
+            long MOD = 1000000007;
+            if (dp[idx] != 0)
+                return dp[idx];
+
+            long treeCount = 1; //each elemnet could be tree itself
+            for (int j = 0; j < nums.Length; j++)
+            {
+                if (nums[idx] % nums[j] == 0)
+                {
+                    int right = nums[idx] / nums[j];
+                    for (int k = 0; k < nums.Length; k++)
+                    {
+                        if (nums[k] == right)
+                        {
+                            treeCount += (DFS(nums, j, dp) * DFS(nums, k, dp)) % MOD;
+                            break;
+                        }
+                    }
+                }
+            }
+            return dp[idx] = treeCount;
+        }
+
+        
         static void Main(string[] args)
         {
             try
             {
+                
+                PalindromePartition("madamzmadam");
+
+                FindDuplicates(new int[] { 4, 3, 2, 7, 8, 2, 3, 1 });
+
+
+                GetCollisionTimes.GetCollisionTimes1(new int[4][]{ new int[2] { 1, 2 }, new int[2] { 2, 1 },new int[2] { 4, 3 },new int[2] { 7, 2 }});
+
+
+                //1,7], toppingCosts = [3, 4], target = 10
+                //[3,10], toppingCosts = [2,5], target = 9
+                //[10], toppingCosts = [1], target = 1
+                ClosestCost1.ClosestCost(new int[] { 1,7 }, new int[] { 3,4 }, 10);
+
+                ClosestCost1.ClosestCost(new int[] {3,10 }, new int[] {2,5 }, 9);
+                ClosestCost1.ClosestCost(new int[] {10 }, new int[] {1 }, 1);
+
+                ClosestCost1.ClosestCost(new int[] {8,4,4,5,8}, new int[] {3,10,9,10,8,10,10,9,3 }, 6);
+
+                GenerateTrees.GenerateTrees1(5);
+
                 MinTaps.MinTaps1(3, new int[] { 0, 0, 0, 0 });
 
 

@@ -53,8 +53,32 @@ namespace ConsoleApplication1
         }
     }
 
+    public class NumTrees
+    {
+        //95. Unique Binary Search Trees II
+        public static int NumTrees1(int n)
+        {
+            return DFS(n, 1);
+        }
 
+        static int DFS(int n, int idx)
+        {
+            if (n == 0 || n == 1)
+                return 1;
+            if (n == 2)
+                return 2;
 
+            int count = 0;
+            for (int i = idx; i <= n; i++)
+            {
+                int left = DFS(i - idx, 1);
+                int right = DFS(n - i, 1);
+                count += (left * right);
+            }
+            return count;
+        }
+    }
+    
     public class TreeExercise
     {
         //1379. Find a Corresponding Node of a Binary Tree in a Clone of That Tree

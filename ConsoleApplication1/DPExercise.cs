@@ -3290,66 +3290,245 @@ namespace ConsoleApplication1
             {
                 return 0;
             }
+        }
 
-            /*
-             public int minDifficulty(int[] jobDifficulty, int d) {
-        int n = jobDifficulty.length;
-        if (n < d) {
-            return -1;
-        }
-        return dfs(0, d, jobDifficulty, new int[n][d+1]);
-    }
-    private int dfs(int index, int d, int[] a, int[][] memo) { // Time: O(d * N^2 ), Space: O(d * N)
-        int dayMax = a[index];
-        if (d == 1) {
-            for (int i = index + 1; i < a.length; i++) {
-                dayMax = Math.max(dayMax, a[i]);
-            }
-            return dayMax;
-        }
-        if (memo[index][d] != 0) {
-            return memo[index][d];
-        }
-        int minSum = Integer.MAX_VALUE;
-        dayMax = 0;
-        for (int i = index; i <= a.length - d; i++) {  // n
-            dayMax = Math.max(dayMax, a[i]);
-            minSum = Math.min(minSum, dayMax + dfs(i + 1, d - 1, a, memo));
-        }
-        return memo[index][d] = minSum;
-    } 
-    public int minDifficulty(int[] jobDifficulty, int d) {
-        int n = jobDifficulty.length;
-        if (n < d) {
-            return -1;
-        }
-        // dp[i][j]: min difficulty given days[0..i] and jobs[0..j]
-        int[][] dp = new int[d][n];
-        // initial condition
-        dp[0][0] = jobDifficulty[0];
-        for (int j = 1; j < n; j++) {
-            dp[0][j] = Math.max(dp[0][j - 1], jobDifficulty[j]);
-        }
-        // regular case
-        
-        // dp[i][j] = min( dp[i-1][k-1] + max(jobDifficulty[k..j]) ), where k: i..j
-        
-        for (int i = 1; i < d; i++) {
-            for (int j = i; j < n; j++) {
-                int maxDifficulty = jobDifficulty[j];
-                dp[i][j] = dp[i - 1][j - 1] + maxDifficulty;
-                for (int k = j - 1; k >= i; k--) {
-                    maxDifficulty = Math.max(maxDifficulty, jobDifficulty[k]);
-                    dp[i][j] = Math.min(dp[i][j], dp[i-1][k-1] + maxDifficulty);
+        class newDP
+        {
+
+
+
+            public static int LongestCommonSubstring(string text1, string text2)
+            {
+                /*
+                    ""	a	b	c	d	e
+                --------------------------
+                ""|	0	0	0	0	0	0
+                a |	0   1   0	0	0	0
+                b |	0	0	2   0   0	0
+                e |	0	0	0	0	0   1
+                */
+                int[][] memo = new int[text1.Length + 1][];
+                for (int i = 0; i < text1.Length + 1; i++)
+                    memo[i] = new int[text2.Length + 1];
+
+                int longestCommonSubstring = 0;
+
+                //#this code is a lot like longest common subsequence(only else condition is different). 
+                for (int r = 0; r < text1.Length + 1; r++)
+                {
+                    for (int c = 0; c < text2.Length + 1; c++)
+                    {
+                        if (r == 0 || c == 0)
+                            memo[r][c] = 0;
+                        else if (text1[r - 1] == text2[c - 1]) //same character
+                            memo[r][c] = 1 + memo[r - 1][c - 1];
+                        else
+                            memo[r][c] = 0;  //no match so we must reset it to mark NOT contineous
+
+                        longestCommonSubstring = Math.Max(longestCommonSubstring, memo[r][c]);
+                    }
                 }
+                return longestCommonSubstring;
             }
-        }
-        return dp[d - 1][n - 1];
-    }    
 
-            */
-        }
+            public static int CountPalindromicSubstrings(string s)
+            {
+                IList<string> palindromes = new List<string>();
+                int n = s.Length, count = 0;
 
+                int[][] memo1 = new int[n][];
+                for (int i = 0; i < n; i++)
+                {
+                    memo1[i] = new int[n];
+                    memo1[i][i] = 1;
+                    count++;
+                    palindromes.Add(new string(s[i], 1));
+                }
+
+                //start from 2 length palindromes
+                for (int len = 1; len < n; len++)
+                {
+                    for (int i = 0; i < n - len; i++)
+                    {
+                        int j = i + len;
+                        if (s[i] == s[j] && memo1[i + 1][j - 1] == j - i - 1)
+                        {
+                            memo1[i][j] = 2 + memo1[i + 1][j - 1];
+                            count++;
+
+                            palindromes.Add(s.Substring(i, j - i + 1));
+                        }
+                        else
+                        {
+                            memo1[i][j] = 0;
+                        }
+                    }
+                }
+
+                return count;
+            }
+
+            public static int LongestPalindromeSubseq(string s)
+            {
+                IList<string> palindromes = new List<string>();
+                int n = s.Length, LongestPalindromeLen = 0;
+                string LongestPalindrome = null;
+
+                int[][] memo1 = new int[n][];
+                for (int i = 0; i < n; i++)
+                {
+                    memo1[i] = new int[n];
+                    memo1[i][i] = 1;
+
+                    palindromes.Add(new string(s[i], 1));
+
+                    //if (LongestPalindrome == null)
+                    //    LongestPalindrome = new string(s[i], 1);
+                }
+
+                //start from 2 length palindromes
+                for (int len = 1; len < n; len++)
+                {
+                    for (int i = 0; i < n - len; i++)
+                    {
+                        int j = i + len;
+                        if (s[i] == s[j])// && memo1[i + 1][j - 1] == j - i - 1)
+                        {
+                            memo1[i][j] = 2 + memo1[i + 1][j - 1];
+
+                            /*palindromes.Add(s.Substring(i, j - i + 1));
+
+                            LongestPalindromeLen = Math.Max(LongestPalindromeLen, j - i + 1);
+
+                            if (j - i + 1 > LongestPalindrome.Length)
+                                LongestPalindrome = s.Substring(i, j - i + 1);*/
+                        }
+                        else
+                        {
+                            memo1[i][j] = Math.Max(memo1[i + 1][j], memo1[i][j - 1]);
+                        }
+                    }
+                }
+
+                return memo1[0][n - 1];
+
+            }
+
+            public static int LongestRepeatingSubsequence(string s)
+            {
+                /*
+                    ""	a	b	c	d	e
+                --------------------------
+                ""|	0	0	0	0	0	0
+                a |	0   1   0	0	0	0
+                b |	0	0	2   0   0	0
+                e |	0	0	0	0	0   1
+                */
+                int[][] memo = new int[s.Length + 1][];
+                for (int i = 0; i < s.Length + 1; i++)
+                    memo[i] = new int[s.Length + 1];
+
+                //#this code is a lot like longest common subsequence(only else condition is different). 
+                for (int r = 0; r < s.Length + 1; r++)
+                {
+                    for (int c = 0; c < s.Length + 1; c++)
+                    {
+                        if (r == 0 || c == 0)
+                            memo[r][c] = 0;
+                        else if (s[r - 1] == s[c - 1] && r != c) //same character, but not same index
+                            memo[r][c] = 1 + memo[r - 1][c - 1];
+                        else
+                            memo[r][c] = Math.Max(memo[r - 1][c], memo[r][c - 1]);
+                    }
+                }
+
+                //build the string *****
+                IList<char> lcsChars = new List<char>();
+                int i1 = memo.Length - 1, j1 = memo[0].Length - 1;
+                while (i1 >= 1 && j1 >= 1)
+                {
+                    if (s[i1 - 1] == s[j1 - 1] && i1 != j1)
+                    {
+                        lcsChars.Insert(0, s[i1 - 1]);
+                        i1--;
+                        j1--;
+                    }
+                    else
+                    {
+                        if (memo[i1 - 1][j1] > memo[i1][j1 - 1])
+                            i1--;
+                        else
+                            j1--;
+                    }
+                }
+                Console.WriteLine(new string(lcsChars.ToArray()));
+
+                return memo[s.Length][s.Length];
+            }
+
+            public static int LongestCommonSubsequence(string text1, string text2)
+            {
+                /*
+                    ""	a	b	c	d	e
+                --------------------------
+                ""|	0	0	0	0	0	0
+                a |	0  (1) (1)	1	1	1
+                c |	0	1	1  (2) (2)	2
+                e |	0	1	1	2	2  (3)
+                */
+                int[][] memo1 = new int[text1.Length + 1][];
+                for (int i = 0; i < text1.Length + 1; i++)
+                    memo1[i] = new int[text2.Length + 1];
+
+                for (int r = 0; r < text1.Length + 1; r++)
+                {
+                    for (int c = 0; c < text2.Length + 1; c++)
+                    {
+                        if (r == 0 || c == 0)
+                            memo1[r][c] = 0;
+                        else if (text1[r - 1] == text2[c - 1]) //same character
+                            memo1[r][c] = 1 + memo1[r - 1][c - 1];
+                        else
+                            memo1[r][c] = Math.Max(memo1[r - 1][c], memo1[r][c - 1]);
+                    }
+                }
+
+                return memo1[text1.Length][text2.Length];
+            }
+
+            public static bool SequencePatternMatching(string text1, string text2)
+            {
+                //Q. is text1 a subsequence of string text2????
+
+                /*
+                    ""	a	b	c	d	e
+                --------------------------
+                ""|	0	0	0	0	0	0
+                a |	0  (1) (1)	1	1	1
+                c |	0	1	1  (2) (2)	2
+                e |	0	1	1	2	2  (3)
+                */
+                int[][] memo1 = new int[text1.Length + 1][];
+                for (int i = 0; i < text1.Length + 1; i++)
+                    memo1[i] = new int[text2.Length + 1];
+
+                for (int r = 0; r < text1.Length + 1; r++)
+                {
+                    for (int c = 0; c < text2.Length + 1; c++)
+                    {
+                        if (r == 0 || c == 0)
+                            memo1[r][c] = 0;
+                        else if (text1[r - 1] == text2[c - 1]) //same character
+                            memo1[r][c] = 1 + memo1[r - 1][c - 1];
+                        else
+                            memo1[r][c] = Math.Max(memo1[r - 1][c], memo1[r][c - 1]);
+                    }
+                }
+
+                return memo1[text1.Length][text2.Length] == text1.Length;
+            }
+
+        }
 
         public static void runTest()
         {
