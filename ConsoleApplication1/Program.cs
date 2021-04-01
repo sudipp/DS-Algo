@@ -194,7 +194,7 @@ namespace ConsoleApplication1
 
                 for (int l = 0; l <= s.Length - totalChars; l++)
                 {
-                    //O(m - n) time complexity, where m is length of s, n is the length of all word
+                    //O(m - n) time complexity, where m is Length of s, n is the Length of all word
                     Dictionary<string, int> tempMap = new Dictionary<string, int>(tMap);
 
                     int r = 0;
@@ -600,7 +600,7 @@ namespace ConsoleApplication1
                 return newHead;
             }
         }
-        
+
         public class ClosestCost1
         {
             public static int ClosestCost(int[] baseCosts, int[] toppingCosts, int target)
@@ -619,7 +619,7 @@ namespace ConsoleApplication1
                 }
                 return closetDesertPrice;
             }
-            
+
             private static int MaxToppingPrice(int[] toppingCosts, int sum, int target, int idx)
             {
                 if (sum >= target)
@@ -688,15 +688,15 @@ namespace ConsoleApplication1
                     Dictionary<int, Pair> collions = new Dictionary<int, Pair>();
                     int minFleetSpeed = int.MaxValue;
                     Pair min = null;
-                    foreach(Pair p in minQ)
+                    foreach (Pair p in minQ)
                     {
                         if (min == null)
                             min = p;
                         else
                         {
-                            if(min.Pos == p.Pos) //collision
+                            if (min.Pos == p.Pos) //collision
                             {
-                                if(!collions.ContainsKey(p.Index))
+                                if (!collions.ContainsKey(p.Index))
                                     collions.Add(p.Index, p);
                                 if (!collions.ContainsKey(min.Index))
                                     collions.Add(min.Index, min);
@@ -707,7 +707,7 @@ namespace ConsoleApplication1
                         }
                     }
 
-                    if(collions.Count > 0)
+                    if (collions.Count > 0)
                     {
                         //merge
                         //minFleetSpeed
@@ -744,10 +744,10 @@ namespace ConsoleApplication1
                     start++;
             }
 
-            for(int i = 0; i < nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
                 if (nums[i] != i + 1)
                     duplicates.Add(nums[i]);
-            
+
             return duplicates;
         }
 
@@ -774,7 +774,7 @@ namespace ConsoleApplication1
 
             int top = 0, bottom = 0;
 
-            //start from 2 length palindromes
+            //start from 2 Length palindromes
             for (int len = 1; len < n; len++)
             {
                 for (int i = 0; i < n - len; i++)
@@ -786,7 +786,7 @@ namespace ConsoleApplication1
                         count++;
 
                         palindromes.Add(new List<string>());
-                        
+
                         top = i - 1;
                         while (top >= 0)
                         {
@@ -801,15 +801,15 @@ namespace ConsoleApplication1
                         palindromes[palindromes.Count - 1].Add(s.Substring(i, j - i + 1));
                         //palindromes.Add(s.Substring(i, j - i + 1));
 
-                        bottom = j + 1;  
-                        while(bottom < n)
+                        bottom = j + 1;
+                        while (bottom < n)
                         {
                             if (memo1[bottom][bottom] > 0)
                             {
                                 int left = (bottom - memo1[bottom][bottom] + 1);
                                 palindromes[palindromes.Count - 1].Add(s.Substring(left, memo1[bottom][bottom]));
                             }
-                            bottom ++;
+                            bottom++;
                         }
                     }
                     else
@@ -828,10 +828,10 @@ namespace ConsoleApplication1
                 while (l <= r)
                 {
                     int sizeL = memo1[l][c1];
-                    if(sizeL > 0)
+                    if (sizeL > 0)
                     {
                         leftCount.Add(new Tuple<int, int>(c1 - sizeL + 1, sizeL));
-                        if(leftCount.Count > 1)
+                        if (leftCount.Count > 1)
                         {
                             palindromes.Add(new List<string>());
                             palindromes[palindromes.Count - 1].Add(s.Substring(l, memo1[top][top]));
@@ -842,15 +842,15 @@ namespace ConsoleApplication1
                     if (sizeR > 0)
                     {
                         rightCount.Add(new Tuple<int, int>(n - c2 - sizeR + 1, sizeR));
-                        if(rightCount.Count > 1)
+                        if (rightCount.Count > 1)
                         {
 
                         }
                     }
-                    c1 ++;
-                    c2 ++;
-                    l ++;
-                    r --;
+                    c1++;
+                    c2++;
+                    l++;
+                    r--;
                 }
             }
 
@@ -882,12 +882,217 @@ namespace ConsoleApplication1
             return dp[idx] = treeCount;
         }
 
+
+        public class PalindromeTrie
+        {
+            class TrieNode
+            {
+                internal TrieNode[] children = new TrieNode[26];
+                internal int wordIndex = -1;
+                internal List<int> restIsPalindrome;
+                internal char C;
+                internal TrieNode(char c1)
+                {
+                    C = c1;
+                    restIsPalindrome = new List<int>();
+                }
+            }
+
+            TrieNode root = new TrieNode(' ');
+            int n;
+            IList<IList<int>> res = new List<IList<int>>();
+
+            public IList<IList<int>> PalindromePairs(string[] words)
+            {
+                n = words.Length;
+
+                for (int i = 0; i < n; i++)
+                    Add(words[i], i);
+
+                for (int i = 0; i < n; i++)
+                    Search(words[i], i);
+
+                return res;
+            }
+
+            private void Search(string word, int wordIndex)
+            {
+                TrieNode cur = root;
+                char[] chs = word.ToCharArray();
+                for (int i = 0; i < chs.Length; i++)
+                {
+                    int j = chs[i] - 'a';
+                    if (cur.wordIndex != -1 && isPalindrome(chs, i, chs.Length - 1))
+                    {
+                        res.Add(new int[] { wordIndex, cur.wordIndex }.ToList());
+                    }
+                    if (cur.children[j] == null)
+                        return;
+                    cur = cur.children[j];
+                }
+
+                // aaaa
+                if (cur.wordIndex != -1 && cur.wordIndex != wordIndex)
+                {
+                    res.Add(new int[] { wordIndex, cur.wordIndex }.ToList());
+                }
+
+                foreach (int j in cur.restIsPalindrome)
+                {
+                    res.Add(new int[] { wordIndex, j }.ToList());
+                }
+            }
+
+            private void Add(string word, int wordIndex)
+            {
+                TrieNode cur = root;
+                char[] chs = word.ToCharArray();
+                for (int i = chs.Length - 1; i >= 0; i--)
+                {
+                    int j = chs[i] - 'a';
+                    if (isPalindrome(chs, 0, i))
+                        cur.restIsPalindrome.Add(wordIndex);
+
+                    if (cur.children[j] == null)
+                        cur.children[j] = new TrieNode(chs[i]);
+
+                    cur = cur.children[j];
+                }
+
+                cur.wordIndex = wordIndex;
+            }
+
+            private bool isPalindrome(char[] chs, int i, int j)
+            {
+                while (i < j)
+                {
+                    if (chs[i++] != chs[j--]) return false;
+                }
+                return true;
+            }
+        }
+
+        public static int[] FrequencySort(int[] nums)
+        {
+            //100 elements
+            //Counting SORT
+
+            //Count Frequency
+            int[] freq = new int[4];
+            for (int i = 0; i < nums.Length; i++)
+                freq[nums[i]]++;
+
+            for (int i = 1; i < freq.Length; i++)
+                freq[i] = freq[i] + freq[i - 1];
+
+            for (int i = freq.Length - 2; i >= 0; i--)
+                freq[i + 1] = freq[i];
+            freq[0] = 0;
+
+            int[] result = new int[nums.Length];
+            for (int i = 0; i < nums.Length; i++)
+            {
+                result[freq[nums[i]]] = nums[i];
+                freq[nums[i]]++;
+            }
+
+            return result;
+        }
+        public static int MincostTickets(int[] days, int[] costs)
+        {
+            //https://uplevel.interviewkickstart.com/resource/library-video-877   4:41
+            //Look at last day.. how could i travel??? by 1-day pass, 7day pass or 30 days pass
+            //It is having optimal sub structure
+
+            //dp[i] = min cost to travel till "i"th day.
+
+            int[] dp = new int[days.Length];
+            dp[0] = costs.Min(); //for 1 day travel pick the cheapest price
+            for (int i = 1; i < days.Length; i++)
+            {
+                //cost for 1day pass
+                int passCost1Day = costs[0] + dp[i - 1];
+
+                //check buying a 7day pass covers previous 6 days of travel
+                int prevDay = i - 1;                
+                while (prevDay >= 0 && days[prevDay] >= days[i] - 6)
+                    prevDay--;
+
+                //cost for 7day pass
+                int passCost7Day = costs[1];
+                if (prevDay >= 0)
+                    passCost7Day += dp[prevDay];
+
+                //check buying a 30day pass covers previous 29 days of travel
+                prevDay = i - 1;
+                while (prevDay >= 0 && days[prevDay] >= days[i] - 29)
+                    prevDay--;
+
+                //cost for 30day pass
+                int passCost30Day = costs[2];
+                if (prevDay >= 0)
+                    passCost30Day += dp[prevDay];
+
+                dp[i] = Math.Min(passCost1Day,
+                                 Math.Min(passCost7Day, passCost30Day));
+            }
+            return dp[days.Length - 1];
+        }
+
+        class BoxSorter : IComparer<int[]>
+        {
+            public int Compare(int[] a, int[] b)
+            {
+                if(a[0] != b[0])
+                    return a[0].CompareTo(b[0]);
+                else if(a[1] != b[1])
+                    return b[1].CompareTo(a[1]);
+                else
+                    return a[0].CompareTo(b[0]);
+
+                /*if (a[0] == b[0] && a[1] == b[1])
+                    return 0;
+
+                else if (a[0] < b[0] && a[1] < b[1])
+                    return -1;
+                else
+                    return 1;*/
+            }
+        }
+
+
         
         static void Main(string[] args)
         {
             try
             {
-                
+                List<string> logs = new List<string>();
+                logs.Add("345366 899212 45");
+                logs.Add("029323 382391 23");
+                logs.Add("382391 345366 15");
+                logs.Add("029323 382391 77");
+                logs.Add("345366 382391 23");
+                logs.Add("029323 345366 13");
+                logs.Add("382391 382391 23");
+                Amazon.getUserWithLogMoreThanThreshold(logs, 3);
+
+                MincostTickets(new int[] {1,2,3,4,6,8,9,10,13,14,16,17,19,21,24,26,27,28,29 }, new int[] { 3,14,50});
+
+                FrequencySort(new int[] { 2, 3, 1, 3, 2});
+
+                PalindromeTrie pt = new PalindromeTrie();
+                pt.PalindromePairs(new string[] { "pidus", "lllsudip" });
+
+
+                int[] prices11 = new int[10];
+                int[][][] dp11 = new int[prices11.Length + 1][][];
+                for (int d = 0; d < prices11.Length + 1; d++)
+                {
+                    dp11[d] = new int[2][];
+                    for (int d11 = 0; d11 < dp11[d].Length; d11++)
+                        dp11[d][d11] = new int[2];
+                }
+
                 PalindromePartition("madamzmadam");
 
                 FindDuplicates(new int[] { 4, 3, 2, 7, 8, 2, 3, 1 });
@@ -1308,10 +1513,10 @@ namespace ConsoleApplication1
 
 
                 ShortestDistance(rooms);
-                //int length = "12345".Length;
-                //int[,] memo = new int[length, length];
-                //for (int x = 0; x < length; x++)
-                //    for (int y = 0; y < length; y++)
+                //int Length = "12345".Length;
+                //int[,] memo = new int[Length, Length];
+                //for (int x = 0; x < Length; x++)
+                //    for (int y = 0; y < Length; y++)
                 //        memo[x, y] = -1;
 
                 //subarraySum(new int[] { 1 }, 0);
@@ -1479,7 +1684,7 @@ namespace ConsoleApplication1
                     {
 
                     }
-                    //return​​ new​​ Pair<Integer>(map[c_sum[i]+1,​​i);
+                    //return​​ new​​ Pair<int>(map[c_sum[i]+1,​​i);
                     else
                         d1.Add(c_sum[i], i);
                 }
@@ -3427,7 +3632,7 @@ namespace ConsoleApplication1
 
                 string word = temp.Key;
 
-                //if we have reached the end word return the ladder length
+                //if we have reached the end word return the ladder Length
                 if (word.Equals(endWord))
                 {
                     return temp.Value;

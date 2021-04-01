@@ -1407,6 +1407,75 @@ namespace ConsoleApplication1
             }
         }
 
+        //1136. Parallel Courses
+        class ParallelCourses
+        {
+            //https://leetcode.com/problems/parallel-courses/
+            public static int MinimumSemesters(int n, int[][] relations)
+            {
+                Dictionary<int, IList<int>> adjList = new Dictionary<int, IList<int>>();
+                int[] indegree = new int[n + 1];
+
+                for (int i = 1; i <= n; i++)
+                    adjList.Add(i, new List<int>());
+
+                // Create the adjacency list representation of the graph
+                for (int i = 0; i < relations.Length; i++)
+                {
+                    int dest = relations[i][1];
+                    int src = relations[i][0];
+
+                    adjList[src].Add(dest);
+
+                    // Record in-degree of each vertex
+                    indegree[dest] += 1;
+                }
+
+                // Add all vertices with 0 in-degree to the queue
+                Queue<int> q = new Queue<int>();
+                for (int i = 1; i <= n; i++)
+                    if (indegree[i] == 0)
+                        q.Enqueue(i);
+
+                if (q.Count == 0)
+                    return -1;
+
+                int depth = 0;
+                // Process until the Q becomes empty
+                while (q.Any())
+                {
+                    int count = q.Count;
+
+                    while (count-- > 0)
+                    {
+                        int node = q.Dequeue();
+
+                        // Reduce the in-degree of each neighbor by 1
+                        if (adjList.ContainsKey(node))
+                        {
+                            foreach (int neighbor in adjList[node])
+                            {
+                                indegree[neighbor]--;
+
+                                // If in-degree of a neighbor becomes 0, add it to the Q
+                                if (indegree[neighbor] == 0)
+                                    q.Enqueue(neighbor);
+                            }
+
+                            adjList.Remove(node);
+                        }
+                    }
+                    depth++;
+                }
+
+                //if all nodes are not visited
+                if (adjList.Count != 0)
+                    return -1;
+
+                return depth;
+            }
+        }
+
         class CriticalNetworkConnections
         {
             public static List<int[]> Get(int n, List<int[]> connections)
