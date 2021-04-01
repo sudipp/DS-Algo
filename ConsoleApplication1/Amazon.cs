@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace ConsoleApplication1
 {
@@ -36,6 +37,35 @@ namespace ConsoleApplication1
             string[] users = userId.ToArray();
             Array.Sort(users);
             return users;
+        }
+
+        //Most Common Word with Exclusion List
+        //https://algo.monster/problems/most_common_word
+        public static string mostCommonWord(string paragraph, List<string> banned)
+        {
+            Dictionary<string, int> map = new Dictionary<string, int>();
+            Regex regex = new Regex("\\w+");
+            foreach(Match m in regex.Matches(paragraph))
+            {
+                string word = m.Groups[0].Value.ToLower();
+                if (!banned.Contains(word))
+                {
+                    if (!map.ContainsKey(word)) map.Add(word, 1);
+                    map[word] ++;
+                }
+            }
+
+            string mxWord = null;
+            int count = int.MinValue;
+            foreach(string key in map.Keys)
+            {
+                if (count <= map[key])
+                    continue;
+
+                count = map[key];
+                mxWord = key;
+            }
+            return mxWord;
         }
     }
 }

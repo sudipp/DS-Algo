@@ -1060,12 +1060,67 @@ namespace ConsoleApplication1
             }
         }
 
+        public static int[] MovesToStamp(string stamp, string target)
+        {
+            IList<int> stampIndicies = new List<int>();
+            //"abca", target = "aabcaca"
+            int TotalCharReplaceCount = target.Length;
+            while (TotalCharReplaceCount > 0)
+            {
+                int[] stIdxNToBReplacedQty = GetStartStampIndex(target, stamp);
+                int i = stIdxNToBReplacedQty[0];
+                int charsToBeReplacedByThisStamping = stIdxNToBReplacedQty[1];
 
-        
+                if (i == -1) return new int[] { };
+                else
+                {   
+                    target = target.Remove(i, stamp.Length)
+                        .Insert(i, new string('?', stamp.Length));
+
+                    stampIndicies.Add(stIdxNToBReplacedQty[0]);
+
+                    TotalCharReplaceCount -= charsToBeReplacedByThisStamping;
+                }
+            }
+
+            return stampIndicies.Reverse().ToArray();// Array.Reverse(stampIndicies.ToArray());
+        }
+
+        static int[] GetStartStampIndex(string target, string stamp)
+        {
+            int[] stIdxNToBReplacedQty = new int[2] { -1, 0};
+            for(int i = 0; i <= target.Length - stamp.Length; i++)
+            {
+                bool matchFound = true;
+                int charsToBeReplacedByThisStamping = 0;
+                for (int j = 0; j < stamp.Length; j++)
+                {
+                    if (target[i + j] != '?')
+                        charsToBeReplacedByThisStamping ++;
+
+                    if (target[i + j] != '?' && target[i + j] != stamp[j])
+                    {
+                        matchFound = false;
+                        break;
+                    }
+                }
+
+                if (matchFound && charsToBeReplacedByThisStamping > 0)
+                {
+                    stIdxNToBReplacedQty[0] = i;
+                    stIdxNToBReplacedQty[1] = charsToBeReplacedByThisStamping;
+                    break;
+                }
+            }
+            return stIdxNToBReplacedQty;
+        }
+
         static void Main(string[] args)
         {
             try
             {
+                MovesToStamp("abca", "aabcaca");
+
                 List<string> logs = new List<string>();
                 logs.Add("345366 899212 45");
                 logs.Add("029323 382391 23");
