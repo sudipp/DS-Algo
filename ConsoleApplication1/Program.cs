@@ -1117,8 +1117,22 @@ namespace ConsoleApplication1
 
         static void Main(string[] args)
         {
-            try
-            {
+            try {
+                //Amazon.getTimes(4, new List<int>(new int[] { 0, 0, 1, 6 }), new List<int>(new int[] { 0, 1, 1, 0 }));
+                /*Amazon.topMentioned(2, new List<string>(new string[] { "gatsby", "american", "novel" }),
+                    new List<string>(new string[] { "The opening of The Great Gatsby -- its first 3-4 pages -- ranks among the best of any novel in the English language." ,
+                        "It is masterful, some may say the great American novel.",
+                         "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald"
+                    }));*/
+                //Amazon.substrings("aabcdbcd", 3);
+                //s = , ranges = [[0, 4], [1, 6]]
+
+                var lst23 = new List<List<int>>();
+                lst23.Add(new List<int>(new int[] { 0,3 }));
+                //lst23.Add(new List<int>(new int[] { 2,12 }));
+                Amazon.numberOfItems("|**|***|", lst23);
+
+
                 MovesToStamp("abca", "aabcaca");
 
                 List<string> logs = new List<string>();
