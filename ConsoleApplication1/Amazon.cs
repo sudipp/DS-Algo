@@ -247,6 +247,7 @@ namespace ConsoleApplication1
 
         //algo.monster/problems/number_of_islands
 
+
         //https://algo.monster/problems/items_in_containers
         public static List<int> numberOfItems(string s, List<List<int>> ranges)
         {
@@ -272,5 +273,35 @@ namespace ConsoleApplication1
             }
             return res;
         }
+
+
+        //https://algo.monster/problems/pairs_of_songs
+        //https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60
+        public static int numPairsDivisibleBy60(List<int> time)
+        {
+            //30,20, 30,40,40
+            for (int i = 0; i < time.Count; i++)
+                time[i] = time[i] % 60;
+
+
+
+            int count = 0;
+            Dictionary<int, int> dict = new Dictionary<int, int>();
+            //Now Count Subset Sum = 60
+            for (int i = 0; i < time.Count; i++)
+            {
+                if (time[i] == 0 && dict.ContainsKey(0))
+                    count += dict[0];
+                else if (time[i] > 0 && dict.ContainsKey(60 - time[i]))
+                    count += dict[60 - time[i]];
+
+                if (!dict.ContainsKey(time[i]))
+                    dict.Add(time[i], 1);
+                else
+                    dict[time[i]]++;
+            }
+            return count;
+        }
+
     }
 }
