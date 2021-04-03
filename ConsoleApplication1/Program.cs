@@ -1038,86 +1038,12 @@ namespace ConsoleApplication1
             }
             return dp[days.Length - 1];
         }
-
-        class BoxSorter : IComparer<int[]>
-        {
-            public int Compare(int[] a, int[] b)
-            {
-                if(a[0] != b[0])
-                    return a[0].CompareTo(b[0]);
-                else if(a[1] != b[1])
-                    return b[1].CompareTo(a[1]);
-                else
-                    return a[0].CompareTo(b[0]);
-
-                /*if (a[0] == b[0] && a[1] == b[1])
-                    return 0;
-
-                else if (a[0] < b[0] && a[1] < b[1])
-                    return -1;
-                else
-                    return 1;*/
-            }
-        }
-
-        public static int[] MovesToStamp(string stamp, string target)
-        {
-            IList<int> stampIndicies = new List<int>();
-            //"abca", target = "aabcaca"
-            int TotalCharReplaceCount = target.Length;
-            while (TotalCharReplaceCount > 0)
-            {
-                int[] stIdxNToBReplacedQty = GetStartStampIndex(target, stamp);
-                int i = stIdxNToBReplacedQty[0];
-                int charsToBeReplacedByThisStamping = stIdxNToBReplacedQty[1];
-
-                if (i == -1) return new int[] { };
-                else
-                {   
-                    target = target.Remove(i, stamp.Length)
-                        .Insert(i, new string('?', stamp.Length));
-
-                    stampIndicies.Add(stIdxNToBReplacedQty[0]);
-
-                    TotalCharReplaceCount -= charsToBeReplacedByThisStamping;
-                }
-            }
-
-            return stampIndicies.Reverse().ToArray();// Array.Reverse(stampIndicies.ToArray());
-        }
-
-        static int[] GetStartStampIndex(string target, string stamp)
-        {
-            int[] stIdxNToBReplacedQty = new int[2] { -1, 0};
-            for(int i = 0; i <= target.Length - stamp.Length; i++)
-            {
-                bool matchFound = true;
-                int charsToBeReplacedByThisStamping = 0;
-                for (int j = 0; j < stamp.Length; j++)
-                {
-                    if (target[i + j] != '?')
-                        charsToBeReplacedByThisStamping ++;
-
-                    if (target[i + j] != '?' && target[i + j] != stamp[j])
-                    {
-                        matchFound = false;
-                        break;
-                    }
-                }
-
-                if (matchFound && charsToBeReplacedByThisStamping > 0)
-                {
-                    stIdxNToBReplacedQty[0] = i;
-                    stIdxNToBReplacedQty[1] = charsToBeReplacedByThisStamping;
-                    break;
-                }
-            }
-            return stIdxNToBReplacedQty;
-        }
-
+        
         static void Main(string[] args)
         {
             try {
+
+
                 //Amazon.getTimes(4, new List<int>(new int[] { 0, 0, 1, 6 }), new List<int>(new int[] { 0, 1, 1, 0 }));
                 /*Amazon.topMentioned(2, new List<string>(new string[] { "gatsby", "american", "novel" }),
                     new List<string>(new string[] { "The opening of The Great Gatsby -- its first 3-4 pages -- ranks among the best of any novel in the English language." ,
@@ -1127,13 +1053,27 @@ namespace ConsoleApplication1
                 //Amazon.substrings("aabcdbcd", 3);
                 //s = , ranges = [[0, 4], [1, 6]]
 
-                var lst23 = new List<List<int>>();
+                /*var lst23 = new List<List<int>>();
                 lst23.Add(new List<int>(new int[] { 0,3 }));
-                //lst23.Add(new List<int>(new int[] { 2,12 }));
                 Amazon.numberOfItems("|**|***|", lst23);
+                */
 
 
-                MovesToStamp("abca", "aabcaca");
+                //Amazon.autoScale(new List<int>(new int[] { 80, 10, 20, 30, 50 }), 100000001);
+
+                var lstA = new List<List<int>>();
+
+                lstA.Add(new List<int>(new int[] { 1, 3 }));
+                lstA.Add(new List<int>(new int[] { 2, 5 }));
+                lstA.Add(new List<int>(new int[] { 3, 7 }));
+    lstA.Add(new List<int>(new int[] { 4, 10 }));
+                var lstB = new List<List<int>>();
+                lstB.Add(new List<int>(new int[] { 1, 2 }));
+                lstB.Add(new List<int>(new int[] { 2, 3 }));
+                lstB.Add(new List<int>(new int[] { 3, 4 }));
+    lstB.Add(new List<int>(new int[] { 4, 5 }));
+                Amazon.getPairs(lstA, lstB, 10);
+
 
                 List<string> logs = new List<string>();
                 logs.Add("345366 899212 45");

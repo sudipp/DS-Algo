@@ -282,9 +282,7 @@ namespace ConsoleApplication1
             //30,20, 30,40,40
             for (int i = 0; i < time.Count; i++)
                 time[i] = time[i] % 60;
-
-
-
+            
             int count = 0;
             Dictionary<int, int> dict = new Dictionary<int, int>();
             //Now Count Subset Sum = 60
@@ -292,7 +290,7 @@ namespace ConsoleApplication1
             {
                 if (time[i] == 0 && dict.ContainsKey(0))
                     count += dict[0];
-                else if (time[i] > 0 && dict.ContainsKey(60 - time[i]))
+                else if (dict.ContainsKey(60 - time[i]))
                     count += dict[60 - time[i]];
 
                 if (!dict.ContainsKey(time[i]))
@@ -303,5 +301,79 @@ namespace ConsoleApplication1
             return count;
         }
 
+
+        //https://algo.monster/problems/amazon_oa_autoscale_policy
+        public static int autoScale(List<int> averageUtils, int numInstances)
+        {
+            /*
+             Average utilization > 60%: Double the number of instances if the doubled value does not exceed 2 * 10^8. This is an action. If the number of instances exceeds this limit on doubling, perform no action.
+             Average utilization < 25%: Halve the number of instances if the number of instances is greater than 1 (take ceil if the number is not an integer). This is also an action. If the number of instances is 1, take no action.
+             25% <= Average utilization <= 60%: No action.
+             Once any action is taken, the system will stop polling for 10 seconds. During that time, the number of instances does not change.
+            */
+
+            int i = 0;
+            while (i < averageUtils.Count)
+            {
+                if(averageUtils[i] > 60 && (numInstances * 2) <= 200000000)
+                {
+                    numInstances *= 2;
+                    //stop polling for next 10 seconds
+                    i += 10;
+                }
+                else if (averageUtils[i] < 25 && numInstances > 1)
+                {
+                    numInstances = (int) Math.Ceiling((double)numInstances / 2);
+                    //stop polling for next 10 seconds
+                    i += 10;
+                }
+                i++;
+            }
+            return numInstances;
+        }
+
+        //https://algo.monster/problems/optimal_utilization
+        //leetcode.com/discuss/interview-question/373202/Amazon-or-OA-2019-or-Optimal-Utilization/391917
+        public static List<List<int>> getPairs(List<List<int>> a, List<List<int>> b, int target)
+        {
+            //a = [[1, 8], [2, 7], [3, 14]], b = [[1, 5], [2, 10], [3, 14]], target = 20,
+            //Output: [[3, 1]]
+
+            SortedDictionary<int, IList<Tuple<int, int>>> minQ = new SortedDictionary<int, IList<Tuple<int, int>>>();
+            foreach (List<int> lstA in a)
+            {
+                foreach (List<int> lstB in b)
+                {
+                    int diff = target - lstA[1] - lstB[1];
+                    if (diff >= 0 && (minQ.Count == 0 || (minQ.Count > 0 && diff <= minQ.First().Key)))
+                    {
+                        if (!minQ.ContainsKey(diff))
+                            minQ.Add(diff, new List<Tuple<int, int>>());
+                            
+                        minQ[diff].Add(new Tuple<int, int>(lstA[0], lstB[0]));
+
+                        //we will store only value which is closer to target i.e diff closer to 0, remove other differences
+                        if (minQ.Count > 1)
+                            minQ.Remove(minQ.Last().Key);
+                    }                    
+                }
+            }
+
+            List<List<int>> result = new List<List<int>>();
+            foreach (int k in minQ.Keys)
+            {
+                foreach(Tuple<int, int> t in minQ[k])
+                    result.Add(new List<int>(new int[] { t.Item1, t.Item2 }));
+            }
+            return result;
+        }
+
+
+        //algo.monster/problems/min_cost_to_connect_all_nodes
+        public static int minCostToConnectNodes(int n, List<List<int>> edges, List<List<int>> costs)
+        {
+            //Minimum Cost to Connect All Nodes (Minimum Spanning Tree I)
+            return 0;
+        }
     }
 }
