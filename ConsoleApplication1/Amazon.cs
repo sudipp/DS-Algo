@@ -375,5 +375,13 @@ namespace ConsoleApplication1
             //Minimum Cost to Connect All Nodes (Minimum Spanning Tree I)
             return 0;
         }
+
+
+        //https://algo.monster/problems/five_star_sellers
+        public static int fiveStarReviews(List<List<int>> ratings, int threshold)
+        {
+            // WRITE YOUR BRILLIANT CODE HERE
+            return 0;
+        }
     }
 }

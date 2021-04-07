@@ -998,52 +998,34 @@ namespace ConsoleApplication1
 
             return result;
         }
-        public static int MincostTickets(int[] days, int[] costs)
+
+        class FrequencySorter : IComparer<int>
         {
-            //https://uplevel.interviewkickstart.com/resource/library-video-877   4:41
-            //Look at last day.. how could i travel??? by 1-day pass, 7day pass or 30 days pass
-            //It is having optimal sub structure
-
-            //dp[i] = min cost to travel till "i"th day.
-
-            int[] dp = new int[days.Length];
-            dp[0] = costs.Min(); //for 1 day travel pick the cheapest price
-            for (int i = 1; i < days.Length; i++)
+            public int Compare(int x, int y)
             {
-                //cost for 1day pass
-                int passCost1Day = costs[0] + dp[i - 1];
-
-                //check buying a 7day pass covers previous 6 days of travel
-                int prevDay = i - 1;                
-                while (prevDay >= 0 && days[prevDay] >= days[i] - 6)
-                    prevDay--;
-
-                //cost for 7day pass
-                int passCost7Day = costs[1];
-                if (prevDay >= 0)
-                    passCost7Day += dp[prevDay];
-
-                //check buying a 30day pass covers previous 29 days of travel
-                prevDay = i - 1;
-                while (prevDay >= 0 && days[prevDay] >= days[i] - 29)
-                    prevDay--;
-
-                //cost for 30day pass
-                int passCost30Day = costs[2];
-                if (prevDay >= 0)
-                    passCost30Day += dp[prevDay];
-
-                dp[i] = Math.Min(passCost1Day,
-                                 Math.Min(passCost7Day, passCost30Day));
+                throw new NotImplementedException();
             }
-            return dp[days.Length - 1];
         }
+
+
         
+
+        public static int TitleToNumber(string s)
+        {
+            int result = 0;
+            foreach (char c in s)
+            {
+                int d = c - 'A' + 1;
+                result = result * 26 + d;
+            }
+            return result;
+        }
+
         static void Main(string[] args)
         {
             try {
 
-
+                TitleToNumber("AB");
                 //Amazon.getTimes(4, new List<int>(new int[] { 0, 0, 1, 6 }), new List<int>(new int[] { 0, 1, 1, 0 }));
                 /*Amazon.topMentioned(2, new List<string>(new string[] { "gatsby", "american", "novel" }),
                     new List<string>(new string[] { "The opening of The Great Gatsby -- its first 3-4 pages -- ranks among the best of any novel in the English language." ,
@@ -1066,12 +1048,12 @@ namespace ConsoleApplication1
                 lstA.Add(new List<int>(new int[] { 1, 3 }));
                 lstA.Add(new List<int>(new int[] { 2, 5 }));
                 lstA.Add(new List<int>(new int[] { 3, 7 }));
-    lstA.Add(new List<int>(new int[] { 4, 10 }));
+                lstA.Add(new List<int>(new int[] { 4, 10 }));
                 var lstB = new List<List<int>>();
                 lstB.Add(new List<int>(new int[] { 1, 2 }));
                 lstB.Add(new List<int>(new int[] { 2, 3 }));
                 lstB.Add(new List<int>(new int[] { 3, 4 }));
-    lstB.Add(new List<int>(new int[] { 4, 5 }));
+                lstB.Add(new List<int>(new int[] { 4, 5 }));
                 Amazon.getPairs(lstA, lstB, 10);
 
 
@@ -1085,7 +1067,7 @@ namespace ConsoleApplication1
                 logs.Add("382391 382391 23");
                 Amazon.getUserWithLogMoreThanThreshold(logs, 3);
 
-                MincostTickets(new int[] {1,2,3,4,6,8,9,10,13,14,16,17,19,21,24,26,27,28,29 }, new int[] { 3,14,50});
+                //MincostTickets(new int[] {1,2,3,4,6,8,9,10,13,14,16,17,19,21,24,26,27,28,29 }, new int[] { 3,14,50});
 
                 FrequencySort(new int[] { 2, 3, 1, 3, 2});
 
