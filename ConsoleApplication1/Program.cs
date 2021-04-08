@@ -976,6 +976,7 @@ namespace ConsoleApplication1
         {
             try {
                 Microsoft.SemiAlternateSubstring("baaabbabbb");
+                Microsoft.SemiAlternateSubstring("aababababbbabbababb");
 
                 Microsoft.longestValidString("aabbaabbaabbaaa");
 

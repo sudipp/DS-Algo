@@ -340,13 +340,12 @@ namespace ConsoleApplication1
         //Longest Semi-Alternating Substring
         public static int SemiAlternateSubstring(string str)
         {
-            //baaabbabbb
-
             if (str.Length < 3)
                 return str.Length;
 
             int oA = str[0] == 'a' ? 1 : 0;
             int oB = (oA == 1) ? 0 : 1;
+            int l = 0, maxLength = 0;
             for (int i = 1; i < str.Length; i++)
             {
                 if (str[i] == str[i - 1])
@@ -356,11 +355,18 @@ namespace ConsoleApplication1
                     else if (str[i] == 'b')
                         oB++;
 
-                    //if any exceeds
-                    if (oA > 3 || oB > 3)
+                    //if any exceeds 2, caclulate max length
+                    if (oA == 3 || oB == 3)
                     {
-                        //return str.Substring(0, i);
-                        maxLength = Math.Max(maxLength, r - l + 1);
+                        if(str[i] == 'a')
+                            oA --;
+                        else if(str[i] == 'b')
+                            oB--;
+
+                        maxLength = Math.Max(maxLength, i - l);
+
+                        //set l to prior 'index
+                        l = i - 1;
                     }
                 }
                 else
@@ -368,32 +374,8 @@ namespace ConsoleApplication1
                     oA = str[i] == 'a' ? 1 : 0;
                     oB = (oA == 1) ? 0 : 1;
                 }
-
             }
-
-
-
-            //sliding window
-            Dictionary<char, int> occurance = new Dictionary<char, int>();
-            occurance.Add('a', 0);
-            occurance.Add('b', 0);
-
-            int l = 0, r = 0, maxLength = 0;
-            while( r < s.Length)
-            {
-                occurance[s[r]] ++;
-
-                while (occurance['a'] > 2 || occurance['b'] > 2)
-                {
-                    occurance[s[l]] --;
-                    l++;
-                }
-
-                maxLength = Math.Max(maxLength, r - l + 1);
-                r++;
-            }
-
-            return maxLength;
+            return (l == 0) ? str.Length : maxLength;
         }
     }
 }
