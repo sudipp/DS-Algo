@@ -975,6 +975,13 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             try {
+                Microsoft.maxInserts("aab");
+                Microsoft.maxInserts("aba");
+                Microsoft.maxInserts("aabab");
+                Microsoft.maxInserts("dog");
+                Microsoft.maxInserts("baaaa");
+                Microsoft.maxInserts("aababaa");
+
                 Microsoft.SemiAlternateSubstring("baaabbabbb");
                 Microsoft.SemiAlternateSubstring("aababababbbabbababb");
 

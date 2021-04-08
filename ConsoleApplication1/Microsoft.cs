@@ -312,8 +312,8 @@ namespace ConsoleApplication1
             if (str.Length == 0) return "";
 
             int oA = str[0] == 'a' ? 1 : 0;
-            int oB = (oA == 1 ) ? 0 : 1;
-            for(int i = 1; i < str.Length; i++)
+            int oB = str[0] == 'b' ? 1 : 0;
+            for (int i = 1; i < str.Length; i++)
             {
                 if(str[i] == str [i-1])
                 {
@@ -329,7 +329,7 @@ namespace ConsoleApplication1
                 else
                 {
                     oA = str[i] == 'a' ? 1 : 0;
-                    oB = (oA == 1) ? 0 : 1;
+                    oB = str[i] == 'b' ? 1 : 0;
                 }
             }
             return str;
@@ -344,7 +344,7 @@ namespace ConsoleApplication1
                 return str.Length;
 
             int oA = str[0] == 'a' ? 1 : 0;
-            int oB = (oA == 1) ? 0 : 1;
+            int oB = str[0] == 'b' ? 1 : 0;
             int l = 0, maxLength = 0;
             for (int i = 1; i < str.Length; i++)
             {
@@ -372,10 +372,59 @@ namespace ConsoleApplication1
                 else
                 {
                     oA = str[i] == 'a' ? 1 : 0;
-                    oB = (oA == 1) ? 0 : 1;
+                    oB = str[i] == 'b' ? 1 : 0;
                 }
             }
             return (l == 0) ? str.Length : maxLength;
+        }
+
+
+        //https://algo.monster/problems/max_inserts_to_obtain_string_without_3_consecutive_a
+        //Max Inserts to Obtain String Without 3 Consecutive 'a'
+        public static int maxInserts(string str)
+        {
+            int maxInsert = 0;
+            int oA = str[0] == 'a' ? 1 : 0;
+
+            //start has possible 2 padding, if first char is not 'a'
+            if (str[0] != 'a') 
+                maxInsert += 2;
+            
+            for (int i = 1; i < str.Length; i++)
+            {
+                if (str[i] == str[i - 1])
+                {
+                    if (str[i] == 'a')
+                        oA++;
+
+                    //detect invalid string, return -1
+                    if (oA == 3)
+                        return -1;
+                }
+                else
+                {
+                    //except cuurent character != 'a', it will check for previous possible insert of character 'a'
+                    if (str[i] != 'a') //current is not 'a'
+                        maxInsert += (2 - oA);
+                    
+                    oA = str[i] == 'a' ? 1 : 0;
+                }
+            }
+
+            //if (oA < 2) 
+            //end has possible padding
+            maxInsert += (2 - oA);
+
+            return maxInsert;
+        }
+
+
+        //https://algo.monster/problems/concatenated_string_length_with_unique_characters
+        //Concatenated String Length with unique Characters
+        public static int maxLength(string[] args)
+        {
+            // WRITE YOUR BRILLIANT CODE HERE
+            return 1;
         }
     }
 }
