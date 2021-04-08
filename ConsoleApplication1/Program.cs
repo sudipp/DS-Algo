@@ -972,60 +972,22 @@ namespace ConsoleApplication1
             }
         }
 
-        public static int[] FrequencySort(int[] nums)
-        {
-            //100 elements
-            //Counting SORT
-
-            //Count Frequency
-            int[] freq = new int[4];
-            for (int i = 0; i < nums.Length; i++)
-                freq[nums[i]]++;
-
-            for (int i = 1; i < freq.Length; i++)
-                freq[i] = freq[i] + freq[i - 1];
-
-            for (int i = freq.Length - 2; i >= 0; i--)
-                freq[i + 1] = freq[i];
-            freq[0] = 0;
-
-            int[] result = new int[nums.Length];
-            for (int i = 0; i < nums.Length; i++)
-            {
-                result[freq[nums[i]]] = nums[i];
-                freq[nums[i]]++;
-            }
-
-            return result;
-        }
-
-        class FrequencySorter : IComparer<int>
-        {
-            public int Compare(int x, int y)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-
-        
-
-        public static int TitleToNumber(string s)
-        {
-            int result = 0;
-            foreach (char c in s)
-            {
-                int d = c - 'A' + 1;
-                result = result * 26 + d;
-            }
-            return result;
-        }
-
         static void Main(string[] args)
         {
             try {
+                Microsoft.SemiAlternateSubstring("baaabbabbb");
 
-                TitleToNumber("AB");
+                Microsoft.longestValidString("aabbaabbaabbaaa");
+
+                Microsoft.minSteps(new int[] { 5, 2, 1 });
+                Microsoft.minSteps(new int[] { 5, 5 ,2 ,2 ,1, 1 });
+                Microsoft.minSteps(new int[] { 5, 5, 1 });
+                Microsoft.minSteps(new int[] { 5, 5 ,5 ,5 ,1 });
+                Microsoft.minSteps(new int[] { 3, 2, 2 });
+
+                Microsoft.minStep("BAAABAB");
+
+                //TitleToNumber("AB");
                 //Amazon.getTimes(4, new List<int>(new int[] { 0, 0, 1, 6 }), new List<int>(new int[] { 0, 1, 1, 0 }));
                 /*Amazon.topMentioned(2, new List<string>(new string[] { "gatsby", "american", "novel" }),
                     new List<string>(new string[] { "The opening of The Great Gatsby -- its first 3-4 pages -- ranks among the best of any novel in the English language." ,
@@ -1068,9 +1030,7 @@ namespace ConsoleApplication1
                 Amazon.getUserWithLogMoreThanThreshold(logs, 3);
 
                 //MincostTickets(new int[] {1,2,3,4,6,8,9,10,13,14,16,17,19,21,24,26,27,28,29 }, new int[] { 3,14,50});
-
-                FrequencySort(new int[] { 2, 3, 1, 3, 2});
-
+                
                 PalindromeTrie pt = new PalindromeTrie();
                 pt.PalindromePairs(new string[] { "pidus", "lllsudip" });
 
