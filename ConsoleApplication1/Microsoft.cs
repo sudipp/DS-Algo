@@ -9,6 +9,8 @@ namespace ConsoleApplication1
     class Microsoft
     {
         //1304. Find N Unique Integers Sum up to Zero
+        //Unique Integers That Sum Up To 0
+        //https://algo.monster/problems/unique_integers_that_sum_up_to_0
         public static int[] SumZero(int n)
         {
             int[] res = new int[n];
@@ -252,6 +254,7 @@ namespace ConsoleApplication1
             int n = str.Length;
             char[] s = str.ToCharArray();
             int count = 0;
+
             for (int i = 0; i < n / 2; i++)
             {
                 int left = i;
@@ -423,8 +426,241 @@ namespace ConsoleApplication1
         //Concatenated String Length with unique Characters
         public static int maxLength(string[] args)
         {
-            // WRITE YOUR BRILLIANT CODE HERE
-            return 1;
+            // "co", "di", "ity"
+            byte[] char_bits_vector = new byte[26];
+            int result = 0;
+
+            foreach (string str in args)
+            {
+                byte[] char_bits = new byte[26];
+
+                // set bits corresponding to chars in the string.
+                foreach (char c in str) 
+                    char_bits[c - 'a'] = 1;
+                
+                // How many bits were set.
+                int bit_num = char_bits.Count(c=> c == 1);
+                // the string contains duplicate characters so 
+                // don't process it
+                if (bit_num < str.Length)
+                    continue;
+                
+                // Check if current word has common letters with 
+                // already processed strings
+                if (char_bits_vector.Intersect(char_bits).Count() > 0)
+                    continue;
+
+                char_bits_vector = char_bits_vector.Union(char_bits).ToArray();
+
+                // add length of the current string to the result
+                result = Math.Max(result, char_bits_vector.Count(c => c == 1));
+
+                /*
+                for (int i = char_bits_vector.Length - 1; i >= 0; i--)
+                {
+                    var c_b = char_bits_vector[i];
+                    // if two bitsets have common 1 bits i.e. 
+                    // if two strings have common letters don't 
+                    // process current string
+
+                    //if ((char_bits_vector[i] == char_bits[i]))
+                    //    continue;
+                    if ((c_b & char_bits).any()) continue;
+
+                    // if current string has unique letters add 
+                    // to the vector a bitset where 
+                    // all bits corresponding to letters of the current 
+                    // string are set to 1.
+                    char_bits_vector.push_back(c_b | char_bits);
+                    
+                    // add length of the current string to the result
+                    result = max<int>(result, c_b.count() + bit_num);
+                }*/
+            }
+
+
+
+            //Recursion .... 
+            int maxLen = 0;
+            StringBuilder sb = new StringBuilder();
+            maxLen = DFS(args, 0, 0, sb);
+            return maxLen;
         }
+
+        private static int DFS(string[] args, int idx, int prevLen, StringBuilder path)//string path)
+        {
+            //will the new path turn duplicate?? return 0 length
+            if (!isUnique(path.ToString()))
+                return 0;
+            if (idx == args.Length)
+                return prevLen;
+
+            int localMax = prevLen;
+            for(int i = idx; i < args.Length; i++)
+            {
+                if (!isUnique(args[i]))
+                    continue;
+
+                int id = path.Length;
+                path.Append(args[i]);
+
+                localMax = Math.Max(localMax, DFS(args, i + 1, prevLen + args[i].Length, path));
+
+                path.Remove(id, args[i].Length);
+            }
+            return localMax;
+        }
+
+        private static bool isUnique(string str)
+        {
+            char[] chars = str.ToCharArray();
+            Array.Sort(chars);
+            for (int i = 1; i < chars.Length; i++)
+            {
+                if (chars[i] == chars[i - 1])
+                    return false;
+            }
+            return true;
+        }
+
+
+        //https://algo.monster/problems/largest_k_positive_and_negative
+        //Largest K such that both K and -K exist in array
+        public static int largestK(int[] nums)
+        {
+            int largest = 0;
+            HashSet<int> hs = new HashSet<int>();
+            for(int i = 0; i < nums.Length; i++)
+            {
+                if (hs.Contains(nums[i] * -1))
+                    largest = Math.Max(largest, Math.Abs(nums[i]));
+                else
+                    hs.Add(nums[i]);
+            }
+            return largest;
+        }
+
+        //Min Adj Swaps to Group Red Balls
+        //https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together/
+        //https://algo.monster/problems/min_adj_swaps_to_group_red_balls
+        public static int minAdjSwap(string str)
+        {
+            //https://molchevskyi.medium.com/best-solutions-for-microsoft-interview-tasks-min-swaps-to-group-red-balls-aedd07dc5cd2
+            //using 2 pointers - idea : We can get minimum swap when we will shrink towards middle from both side 
+
+            int countR = 0, totalR = 0;
+            foreach (char c in str)
+                if(c == 'R') countR++;
+            totalR = countR;
+
+            int min = 0;
+            int l = 0, r = str.Length - 1;
+            while( l < r)
+            {
+                //find first 'R' from left
+                while (l < str.Length && str[l] != 'R')
+                    l++;
+            
+                //find first 'R' from right
+                while (r > 0 && str[r] != 'R')
+                    r--;
+                
+                //count number of 'W' between l and r.
+                countR = countR - 2;
+                int countW = r - l - 1 - countR;
+                /*
+                for(int l1 = l + 1; l1 < r; l1++)
+                {
+                    if(str[l1] == 'W')
+                        countW++;
+                }*/
+
+                min += countW;
+                l++;
+                r--;
+            }
+
+            if (totalR == 0) return 0; //no 'R' available
+            else if (totalR == 1) return -1; //with 1 'R'
+
+            return min;
+        }
+
+
+        //Particle Velocity
+        //https://algo.monster/problems/particle_velocity
+
+
+
+        private static int CompareHeights(Tuple<int, int> h1, Tuple<int, int> h2)
+        {
+            if (h1.Item1 == h2.Item1) //item1 is building indicies are same
+                return 0;
+            else
+            {
+                if (h1.Item2 == h2.Item2) //height same, sort by x or indicies
+                    return h1.Item1.CompareTo(h2.Item1);
+                else
+                    return h2.Item2.CompareTo(h1.Item2); //higher height comes first
+            }
+        }
+
+        public IList<IList<int>> GetSkyline(int[][] buildings)
+        {
+            //https://www.youtube.com/watch?v=W2afZs9DYYA
+            Tuple<int, int, int, int>[] events = new Tuple<int, int, int, int>[buildings.Length * 2];
+            int j = 0;
+            for (int i = 0; i < buildings.Length; i++)
+            {
+                //tuple stores - x-start/x-end, height, event type(0/1), building Index
+                events[j++] = new Tuple<int, int, int, int>(buildings[i][0], buildings[i][2], 0, i); //0 - start event
+                events[j++] = new Tuple<int, int, int, int>(buildings[i][1], buildings[i][2], 1, i); //1 - end event
+            }
+            Array.Sort(events, (t1, t2) => {
+                //sort by x - coordinate (start/end)
+                return t1.Item1.CompareTo(t2.Item1);
+            });
+
+            //Comparison<Tuple<int, int>> heightComparison = new Comparison<Tuple<int, int>>(CompareHeights);
+
+            int n = events.Length;
+            SortedSet<Tuple<int, int>> active_heights = new SortedSet<Tuple<int, int>>(Comparer<Tuple<int, int>>
+                .Create(CompareHeights)
+            );
+            //add 0 as valid height
+            active_heights.Add(new Tuple<int, int>(-1, 0));
+
+            j = 0;
+            IList<IList<int>> ans = new List<IList<int>>();
+            while (j < n)
+            {
+                int cur_x = events[j].Item1;
+
+                //process all events with same x together
+                while (j < n && events[j].Item1 == cur_x)
+                {
+                    var evnt = events[j];
+                    int height = evnt.Item2;
+                    int evnt_type = evnt.Item3;
+                    int index = evnt.Item4;
+
+                    if (evnt_type == 0) //start event
+                        active_heights.Add(new Tuple<int, int>(index, height)); //we will add this height into pool
+                    else //end event
+                        active_heights.Remove(new Tuple<int, int>(index, height)); //remove the height from pool
+
+                    j++;
+                }
+
+                //higest height
+                int higestHeight = active_heights.First().Item2;
+
+                //check if the height has changed
+                if (ans.Count == 0 || ans.Last()[1] != higestHeight)
+                    ans.Add(new List<int>(new int[] { cur_x, higestHeight }));
+            }
+            return ans;
+        }
+
     }
 }
