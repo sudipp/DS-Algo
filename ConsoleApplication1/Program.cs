@@ -976,6 +976,8 @@ namespace ConsoleApplication1
         {
             try {
 
+                Microsoft.SmallestSubsequence("cbacdcbc");
+
                 IList<int[]> building = new List<int[]>();
                 building.Add(new int[3] { 0, 3, 3 });
                 building.Add(new int[3] { 1, 5, 3 });

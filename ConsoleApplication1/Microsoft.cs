@@ -592,6 +592,8 @@ namespace ConsoleApplication1
 
 
 
+        
+
         private static int CompareHeights(Tuple<int, int> h1, Tuple<int, int> h2)
         {
             if (h1.Item1 == h2.Item1) //item1 is building indicies are same
@@ -604,8 +606,7 @@ namespace ConsoleApplication1
                     return h2.Item2.CompareTo(h1.Item2); //higher height comes first
             }
         }
-
-        public IList<IList<int>> GetSkyline(int[][] buildings)
+        public static IList<IList<int>> GetSkyline(int[][] buildings)
         {
             //https://www.youtube.com/watch?v=W2afZs9DYYA
             Tuple<int, int, int, int>[] events = new Tuple<int, int, int, int>[buildings.Length * 2];
@@ -662,5 +663,43 @@ namespace ConsoleApplication1
             return ans;
         }
 
+        //https://leetcode.com/problems/smallest-subsequence-of-distinct-characters
+        public static string SmallestSubsequence(string s)
+        {
+            //find character fequencies
+            int[] freq = new int[26];
+            foreach (char c in s)
+                freq[c - 'a']++;
+
+            //is the char used already.. to ensure no duplicate
+            int[] usedChar = new int[26];
+
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in s)
+            {
+                if (usedChar[c - 'a'] == 1) //already used it
+                    continue;
+
+                //reduce frequency
+                freq[c - 'a']--;
+
+                if (sb.Length > 0)
+                {
+                    char topC = sb[sb.Length - 1];
+                    while (sb.Length > 0 && freq[topC - 'a'] > 0 && topC > c)
+                    {
+                        usedChar[topC - 'a'] = 0;
+                        freq[topC - 'a']++;
+                        sb.Remove(sb.Length - 1, 1);
+
+                        if(sb.Length > 0)
+                            topC = sb[sb.Length - 1];
+                    }
+                }
+                sb.Append(c);
+                usedChar[c - 'a'] = 1;
+            }
+            return sb.ToString();
+        }
     }
 }
