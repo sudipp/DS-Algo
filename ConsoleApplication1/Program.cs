@@ -971,10 +971,19 @@ namespace ConsoleApplication1
                 return true;
             }
         }
-        
+
         static void Main(string[] args)
         {
             try {
+
+                Microsoft.fairIndex(new int[]{4, -1, 0, 3}, new int[]{-2, 5, 0, 3});
+                Microsoft.fairIndex(new int[] { 2, -2, -3, 3 }, new int[] { 0, 0, 4, -4});
+
+                Microsoft.minSteps(new int[] { 5, 2, 1 });
+                Microsoft.minSteps(new int[] { 5, 5, 2, 2, 1, 1 });
+                Microsoft.minSteps(new int[] { 5, 5, 1 });
+                Microsoft.minSteps(new int[] { 5, 5, 5, 5, 1 });
+                Microsoft.minSteps(new int[] { 3, 2, 2 });
 
                 Microsoft.SmallestSubsequence("cbacdcbc");
 
@@ -1011,11 +1020,7 @@ namespace ConsoleApplication1
 
                 Microsoft.longestValidString("aabbaabbaabbaaa");
 
-                Microsoft.minSteps(new int[] { 5, 2, 1 });
-                Microsoft.minSteps(new int[] { 5, 5 ,2 ,2 ,1, 1 });
-                Microsoft.minSteps(new int[] { 5, 5, 1 });
-                Microsoft.minSteps(new int[] { 5, 5 ,5 ,5 ,1 });
-                Microsoft.minSteps(new int[] { 3, 2, 2 });
+                
 
                 Microsoft.minStep("BAAABAB");
 

@@ -135,6 +135,7 @@ namespace ConsoleApplication1
         //1647. Minimum Deletions to Make Character Frequencies Unique
         public int MinDeletions(string s)
         {
+            //Step1 : get char occurance
             int maxFrequency = 0;
             Dictionary<char, int> dict = new Dictionary<char, int>();
             foreach (char c in s)
@@ -145,7 +146,7 @@ namespace ConsoleApplication1
                 maxFrequency = Math.Max(maxFrequency, dict[c]);
             }
 
-            //create afrequency array.. and store characters under those frequency
+            //Step2 : store character by frequencies.. so char with same freqeuncty will be togther,
             List<char>[] frequencies = new List<char>[maxFrequency + 1];
             for (int i = 0; i < frequencies.Length; i++)
                 frequencies[i] = new List<char>();
@@ -153,6 +154,9 @@ namespace ConsoleApplication1
             foreach (char c in dict.Keys)
                 frequencies[dict[c]].Add(c);
 
+            //Step 3: From highest frequencies onwards check if there are more than 1 char with same frequency, then 
+            //remove 1 frequency of first character.. this char 'c' will be moved to next lower frequency. 
+            //We will keep on checking all frequencies for char occurance. we will terminate at index 1.
             int deletion = 0;
             for (int i = frequencies.Length - 1; i >= 1; i--)
             {
@@ -175,6 +179,9 @@ namespace ConsoleApplication1
         //https://algo.monster/problems/min_steps_to_make_piles_equal_height
         public static int minSteps(int[] nums)
         {
+            //https://leetcode.com/discuss/interview-question/364618/
+
+            //Step1 : get char frequency
             Dictionary<int, int> numFrequency = new Dictionary<int, int>();
             foreach (int i in nums)
             {
@@ -183,6 +190,7 @@ namespace ConsoleApplication1
             }
             //order by the Number descending
             numFrequency.OrderByDescending(o => o.Key);
+
             int[] keys = new int[numFrequency.Keys.Count];
             numFrequency.Keys.CopyTo(keys, 0);
 
@@ -541,7 +549,6 @@ namespace ConsoleApplication1
         }
 
         //Min Adj Swaps to Group Red Balls
-        //https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together/
         //https://algo.monster/problems/min_adj_swaps_to_group_red_balls
         public static int minAdjSwap(string str)
         {
@@ -586,13 +593,53 @@ namespace ConsoleApplication1
             return min;
         }
 
+        //Minimum Swaps to Group All 1's Together
+        //https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together/
+        public static int MinSwaps(int[] data)
+        {
+            //leetcode.com/problems/minimum-swaps-to-group-all-1s-together/discuss/355506/JavaSliding-window-O(n)-with-detailed-explanation-very-easy-to-understand
+
+            //sliding window **** make a window of size (number of 1 in array)
+            int windowSize = 0; //number of 1 is widnwo size
+            foreach (int i in data)
+                if (i == 1) windowSize++;
+
+            int max1InWindow = int.MinValue;
+
+            int count1 = 0;
+            //count number of 1 in window while moving towards rights
+            for (int i = 0; i < windowSize; i++)
+                if (data[i] == 1) count1++;
+
+            int j = 0;
+            while (j < data.Length - windowSize)
+            {
+                //Store the maximum number of 1 in a window
+                max1InWindow = Math.Max(max1InWindow, count1);
+
+                //slide foward
+                if (data[j] == 1)
+                    count1--;
+
+                j++;
+                if (data[j + windowSize - 1] == 1)
+                    count1++;
+
+                //the window with max numebr of 1 will give smallest swap
+                max1InWindow = Math.Max(max1InWindow, count1);
+            }
+
+            //this is min swap
+            return windowSize - max1InWindow;
+        }
+
 
         //Particle Velocity
         //https://algo.monster/problems/particle_velocity
 
 
 
-        
+
 
         private static int CompareHeights(Tuple<int, int> h1, Tuple<int, int> h2)
         {
@@ -700,6 +747,130 @@ namespace ConsoleApplication1
                 usedChar[c - 'a'] = 1;
             }
             return sb.ToString();
+        }
+
+
+        //Jump Game
+        //https://algo.monster/problems/jump_game
+        public static bool jumpGame(List<int> arr, int start)
+        {
+            if (start >= 0 && start < arr.Count && arr[start] != -1)
+            {
+                int jump = arr[start];
+                arr[start] = -1; //mark index 'start' as Visited.. so we dont use DFS on this.
+                return jump == 0 || jumpGame(arr, start + jump) || jumpGame(arr, start - jump);
+            }
+            return false;
+        }
+
+
+        //https://leetcode.com/problems/string-to-integer-atoi/submissions/
+        public int MyAtoi(string str)
+        {
+            long res = 0;
+
+            var sign = 1;
+            str = str.Trim();
+            if (string.IsNullOrEmpty(str)) return 0;
+
+            int index = 0;
+
+            if (str[0] == '+' || str[0] == '-')
+            {
+                sign = (str[0] == '+') ? 1 : -1;
+                index++;
+            }
+
+            while (index < str.Length)
+            {
+                if (char.IsNumber(str[index]))
+                {
+                    res = res * 10 + str[index] - '0';
+                    if (res * sign > int.MaxValue) return int.MaxValue;
+                    if (res * sign < int.MinValue) return int.MinValue;
+                }
+                else
+                {
+                    break;
+                }
+                index++;
+            }
+            return (int)res * sign;
+        }
+
+        //https://leetcode.com/problems/excel-sheet-column-number/
+        //171. Excel Sheet Column Number
+        public int TitleToNumber(string s)
+        {
+            //https://www.youtube.com/watch?v=g-l4UpF62x0&list=RDCMUCMn3_305DqmTylxJPFA8OJA&start_radio=1&t=6
+            int result = 0;
+            int mul = 1;
+            for (int i = s.Length - 1; i >= 0; i--)
+            {
+                result += mul * (s[i] - 'A' + 1);
+                mul *= 26;
+            }
+            /*foreach(char c in s)
+            {
+                int d = c - 'A' + 1;
+                result = result * 26 + d;
+            }*/
+            return result;
+        }
+
+        //https://leetcode.com/problems/excel-sheet-column-title/
+        public string ConvertToTitle(int n)
+        {
+            StringBuilder result = new StringBuilder();
+            while (n > 0)
+            {
+                n--;
+                result.Insert(0, (char)('A' + (n % 26)));
+                n /= 26;
+            }
+
+            return result.ToString();
+        }
+
+        //Widest Path Without Trees
+        //https://algo.monster/problems/widest_path_without_trees
+        public static int widestPath(List<int> x, List<int> y)
+        {
+            // WRITE YOUR BRILLIANT CODE HERE
+            return 0;
+        }
+
+        //Fair Indexes
+        //https://algo.monster/problems/fair_indexes
+        public static int fairIndex(int[] a, int[] b)
+        {
+            if (a.Length > b.Length)
+                fairIndex(b, a);
+
+            int sumA = 0, sumB = 0;
+            for (int i = 0; i < a.Length; i ++) sumA += a[i];
+            for (int i = 0; i < b.Length; i ++) sumB += b[i];
+
+            if (sumA != sumB)
+                return 0;
+            
+            int count = 0;
+            int sumAL = a[0], sumAR = sumA - a[0], sumBL = b[0], sumBR = sumB - b[0];
+            for (int i = 1; i < a.Length; i++)
+            {
+                if (sumAL == sumAR && sumAR == sumBL && sumBL == sumBR)
+                    count++;
+
+                if (i < a.Length)
+                {
+                    sumAL += a[i];
+                    sumAR -= a[i];
+                    sumBL += b[i];
+                    sumBR -= b[i];
+                }
+            }
+
+            return count;
         }
     }
 }
