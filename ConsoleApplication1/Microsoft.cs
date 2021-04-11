@@ -129,6 +129,25 @@ namespace ConsoleApplication1
 
         //https://algo.monster/problems/max_network_rank
         //Max Network Rank
+        public static int maxNetworkRank(int[] A, int[] B, int N)
+        {
+            int[] cities = new int[N + 1];
+            //calculate in and out degree by cities
+            for(int i = 0; i < A.Length; i++)
+            {
+                cities[A[i]] ++;
+                cities[B[i]] ++;
+            }
+
+            int maxRank = 0;
+            for (int i = 0; i < A.Length; i++)
+            {
+                // - 1, to count direct link between cities only once.
+                maxRank = Math.Max(maxRank, cities[A[i]] + cities[B[i]] - 1);
+            }
+            return maxRank;
+        }
+
 
 
         //https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/

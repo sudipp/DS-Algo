@@ -975,6 +975,9 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             try {
+                Microsoft.maxNetworkRank(new int[] { 1, 2, 3, 3 }, new int[]{ 2,3,1,4}, 4);
+
+
                 Microsoft.particleVelocity(new int[] { -1, 1, 3, 3, 3, 2, 3, 2, 1, 0 });
 
                 Microsoft.widestPath(new List<int>(new int[] { 5, 5, 5, 7, 7, 7 }), new List<int>(new int[] { 3, 4, 5, 1, 3, 7 }));
