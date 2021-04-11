@@ -836,8 +836,26 @@ namespace ConsoleApplication1
         //https://algo.monster/problems/widest_path_without_trees
         public static int widestPath(List<int> x, List<int> y)
         {
+            if (x.Count == 1 || y.Count == 1) return 0;
+
+            SortedSet<int> xDistance = new SortedSet<int>();
+            foreach (int xc in x)
+                xDistance.Add(xc);
+            
+            int maxWidth = 0;
+            int xl = xDistance.Min, xr = 0;
+            xDistance.Remove(xDistance.Min);
+            while (xDistance.Count > 0)
+            {
+                xr = xDistance.Min;
+                maxWidth = Math.Max(maxWidth, xr - xl);
+
+                xl = xr;
+                xDistance.Remove(xDistance.Min);
+            }
+
             // WRITE YOUR BRILLIANT CODE HERE
-            return 0;
+            return maxWidth;
         }
 
         //Fair Indexes
