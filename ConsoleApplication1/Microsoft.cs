@@ -301,9 +301,8 @@ namespace ConsoleApplication1
 
         //https://algo.monster/problems/lexicographically_smallest_string
         //Lexicographically Smallest String
-        public static string LexicographicallySmallestString(String str)
+        public static string LexicographicallySmallestString(string str)
         {
-            // WRITE YOUR BRILLIANT CODE HERE
             int i = 0;
             int s_size = str.Length;
             for (; i < s_size - 1; ++i)
@@ -636,10 +635,25 @@ namespace ConsoleApplication1
 
         //Particle Velocity
         //https://algo.monster/problems/particle_velocity
+        public static int particleVelocity(int[] particles)
+        {
+            // [-1, 1, 3, 3, 3, 2, 3, 2, 1, 0]
+            if (particles.Length < 3) return -1;
+            int numStable = 0;
+            for (int i = 0; i < particles.Length - 2; i ++)
+            {
+                for(int j = i + 1; j < particles.Length - 1; j++)
+                {
+                    if (particles[i + 1] - particles[i] == particles[j + 1] - particles[j])
+                        numStable += 1;
+                    else
+                        break;
+                }
+            }
 
-
-
-
+            return numStable;
+        }
+        
 
         private static int CompareHeights(Tuple<int, int> h1, Tuple<int, int> h2)
         {

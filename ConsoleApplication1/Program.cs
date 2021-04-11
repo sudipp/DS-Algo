@@ -975,6 +975,8 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             try {
+                Microsoft.particleVelocity(new int[] { -1, 1, 3, 3, 3, 2, 3, 2, 1, 0 });
+
                 Microsoft.widestPath(new List<int>(new int[] { 5, 5, 5, 7, 7, 7 }), new List<int>(new int[] { 3, 4, 5, 1, 3, 7 }));
                 Microsoft.widestPath(new List<int>(new int[] { 6, 10, 1, 4, 3 }), new List<int>(new int[] { 2, 5, 3, 1, 6 }));
                 Microsoft.widestPath(new List<int>(new int[] { 4, 1, 5, 4 }), new List<int>(new int[] { 4, 5, 1, 3 }));
