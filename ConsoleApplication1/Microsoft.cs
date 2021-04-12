@@ -91,6 +91,8 @@ namespace ConsoleApplication1
             }
         }
 
+        //Min Deletions to Make Frequency of Each Letter Unique
+        //https://molchevskyi.medium.com/best-solutions-for-microsoft-interview-tasks-min-deletions-to-make-frequency-of-each-letter-unique-16adb3ec694e
 
         //Min Deletions To Obtain String in Right Format
         //https://algo.monster/problems/min_deletions_to_obtain_string_in_right_format
@@ -149,9 +151,10 @@ namespace ConsoleApplication1
         }
 
 
-
+        //https://molchevskyi.medium.com/best-solutions-for-microsoft-interview-tasks-min-deletions-to-make-frequency-of-each-letter-unique-16adb3ec694e
         //https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/
         //1647. Minimum Deletions to Make Character Frequencies Unique
+        //Min Deletions to Make Frequency of Each Letter Unique
         public int MinDeletions(string s)
         {
             //Step1 : get char occurance
@@ -923,5 +926,67 @@ namespace ConsoleApplication1
 
             return count;
         }
+
+        //Plane Seat Reservation
+        //1386. Cinema Seat Allocation
+        //https://leetcode.com/problems/cinema-seat-allocation/submissions/
+        public static int MaxNumberOfFamilies(int n, int[][] reservedSeats)
+        {
+            Array.Sort(reservedSeats, (i1, i2) => {
+                return i1[0].CompareTo(i2[0]);
+            });
+
+            int lastRowBooked = reservedSeats[0][0];
+            int maxTicket = 0;
+            int r = 0;
+
+            //for rows which are not booked at start
+            if (lastRowBooked > 1)
+                maxTicket += (lastRowBooked - 1) * 2;
+
+            while (r < reservedSeats.Length)
+            {
+                bool asile1 = true, asile21 = true, asile22 = true, asile3 = true;
+
+                while (lastRowBooked == -1 || r < reservedSeats.Length && lastRowBooked == reservedSeats[r][0])
+                {
+                    lastRowBooked = reservedSeats[r][0];
+                    int seat = reservedSeats[r][1];
+
+                    if (seat >= 2 && seat <= 3)
+                        asile1 = false;
+                    if (seat >= 8 && seat <= 9)
+                        asile3 = false;
+                    if (seat >= 4 && seat <= 5)
+                        asile21 = false;
+                    if (seat >= 6 && seat <= 7)
+                        asile22 = false;
+
+                    r++;
+                }
+
+                if (asile1 && asile21 && asile22 && asile3)
+                    maxTicket += 2;
+                else if (asile1 && asile21 || asile3 && asile22)
+                    maxTicket += 1;
+                else if (asile21 && asile22)
+                    maxTicket += 1;
+
+                //for rows which are not booked in between 
+                if (r < reservedSeats.Length && reservedSeats[r][0] - lastRowBooked > 1)
+                    maxTicket += (reservedSeats[r][0] - lastRowBooked - 1) * 2;
+
+                //update lastRowBooked
+                if (r < reservedSeats.Length)
+                    lastRowBooked = reservedSeats[r][0];
+            }
+
+            //for rows which are not booked 
+            if (n > lastRowBooked)
+                maxTicket += (n - lastRowBooked) * 2;
+
+            return maxTicket;
+        }
+
     }
 }

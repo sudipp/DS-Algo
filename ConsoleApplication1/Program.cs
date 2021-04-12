@@ -972,9 +972,25 @@ namespace ConsoleApplication1
             }
         }
 
+
+        
         static void Main(string[] args)
         {
             try {
+                int[][] booked22 = new int[1][] { new int[] { 2,3 }};
+
+
+                int[][] booked2 = new int[3][] { new int[] { 2,1 },
+                    new int[] { 1,8}, new int[] {2,6 }};
+
+                int[][] booked1 = new int[4][] { new int[] { 4,3 },
+                    new int[] { 1,4}, new int[] { 4,6 }, new int[]{ 1,7}};
+
+                int[][] booked = new int[6][] { new int[] { 1, 2 },
+                    new int[] { 1, 3 }, new int[] { 1, 8 }, new int[]{ 2,6}, new int[]{ 3, 1 }, new int[]{ 3,10} };
+                
+                Microsoft.MaxNumberOfFamilies(3, booked22);
+
                 Microsoft.maxNetworkRank(new int[] { 1, 2, 3, 3 }, new int[]{ 2,3,1,4}, 4);
 
 
