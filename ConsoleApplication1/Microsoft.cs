@@ -988,5 +988,94 @@ namespace ConsoleApplication1
             return maxTicket;
         }
 
+        //Maximum possible value by inserting '5'
+        public static int MaxPossibleByInsertingFive(int number)
+        {
+            string n1 = Math.Abs(number).ToString();
+            int i = 0;
+            while(i < n1.Length)
+            {
+                if (5.CompareTo(n1[i] - '0') >= 0 && number > -1) //positive
+                    return int.Parse(n1.Substring(0, i) + '5' + n1.Substring(i, n1.Length - i)) * (number < 0 ? -1 : 1);
+                else if (5.CompareTo(n1[i] - '0') <= 0 && number < 0) //negative
+                    return int.Parse('5' + n1.Substring(i, n1.Length - i)) * (number < 0 ? -1 : 1);
+                i++;
+            }
+            return int.Parse(n1 + '5') * (number < 0 ? -1 : 1);
+        }
+
+        //https://leetcode.com/discuss/interview-question/963586/Microsoft-or-OA-or-Codility
+        /*
+         * A string is considered balanced when every letter in the string appears both in uppercase and lowercase
+For example, CATattac is balanced (a, c, t occur in both cases). Madam is not (a, d only appear in lowercase).
+Write a function that given a string returns the shortest balanced substring of that string.
+Can this be solved with a sliding window approach?
+Update:
+More examples
+“azABaabza” returns “ABaab”
+“TacoCat” returns -1 (not balanced)
+“AcZCbaBz” returns the entire string
+         */
+
+        public static string GetShortestBalancedSubstring(string str)
+        {
+            int l = 0, r = 0;
+            Dictionary<char, int> cap = new Dictionary<char,int>();
+            Dictionary<char, int> low = new Dictionary<char, int>();
+            while (l <= r && r < str.Length)
+            {
+                char c = str[r];
+                //once immbalanced keep growing the window till we get shortest balanced..
+                //once we balanced, try to shink from left.. to find the shorest
+                if (char.IsUpper(c))
+                {
+                    if (!cap.ContainsKey(c)) cap.Add(c, 0);
+                    cap[c]++;
+                }
+                else
+                {
+                    if (!low.ContainsKey(c)) low.Add(c, 0);
+                    low[c]++;
+                }
+                
+                //balanced ?? shink from left
+                while(isDictionaryBalanced(cap, low))
+                {
+                    c = str[l];
+                    if (char.IsUpper(c))
+                    {
+                        cap[c] --;
+                        if (cap[c] == 0) cap.Remove(c);
+                    }
+                    else
+                    {
+                        low[c]--;
+                        if (low[c] == 0) low.Remove(c);
+                    }
+                    l++;
+                }
+                r++;
+            }
+
+            if (l == r)
+                return "-1";
+            return str.Substring(l, r - l);
+        }
+        private static bool isDictionaryBalanced(Dictionary<char, int> cap, Dictionary<char, int> low)
+        {
+//            “azABaabza” returns “ABaab”
+//“TacoCat” returns - 1(not balanced)
+//“AcZCbaBz” returns the entire string
+
+            //if (cap.Keys.Count != low.Keys.Count)
+            //    return false;
+            foreach (char key in cap.Keys)
+            {
+                if (!low.ContainsKey(key))// || cap[key] != low[key])
+                    return false;
+            }
+            return true;
+        }
+
     }
 }

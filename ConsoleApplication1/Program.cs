@@ -972,11 +972,222 @@ namespace ConsoleApplication1
             }
         }
 
+        private static int Descending(int i, int j)
+        {
+            return j.CompareTo(i);
+        }
 
-        
+        class T :IComparable<int>
+        {
+            int IComparable<int>.CompareTo(int other)
+            {
+                throw new NotImplementedException();
+            }
+        }
+        class T1 : IComparer<int>
+        {
+            int IComparer<int>.Compare(int x, int y)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        internal class Cell //: IComparable<Cell>
+        {
+            public int row { get { return _row; } }
+            public int col { get { return _col; } }
+            public int height { get { return _height; } }
+
+            int _row = 0, _col = 0, _height = 0;
+            public Cell(int r, int c, int h)
+            {
+                _row = r;
+                _col = c;
+                _height = h;
+            }
+
+            public int CompareTo(Cell other)
+            {
+                return this.height.CompareTo(other.height);
+            }
+        }
+
+        private static int DescendingCell(Cell i, Cell j)
+        {
+            return j.height.CompareTo(i.height);
+        }
+
+
+        public static int solveKnapsack(int[] profits, int[] weights, int capacity)
+        {
+            // basic checks
+            if (capacity <= 0 || profits.Length == 0 || weights.Length != profits.Length)
+                return 0;
+
+            int n = profits.Length;
+            int[, ] dp = new int[n + 1, capacity + 1];
+
+            // populate the capacity=0 columns, with '0' capacity we have '0' profit
+            for (int i = 0; i <= n; i++)
+                dp[i, 0] = 0;
+
+            // process all sub-arrays for all the capacities
+            for (int i = 1; i <= n; i++)
+            {
+                for (int c = 1; c <= capacity; c++)
+                {
+                    int profit1 = 0, profit2 = 0;
+                    // include the item, if it is not more than the capacity
+                    if (weights[i - 1] <= c)
+                        profit1 = profits[i - 1] + dp[i - 1, c - weights[i - 1]];
+                    // exclude the item
+                    profit2 = dp[i - 1, c];
+                    // take maximum
+                    dp[i, c] = Math.Max(profit1, profit2);
+                }
+            }
+
+            int totalProfit = dp[weights.Length, capacity];
+            for (int i = weights.Length; i >= 0; i--)
+            {
+                if (totalProfit != dp[i, capacity])
+                {
+                    //System.out.print(" " + weights[i]);
+                    capacity -= weights[i];
+                    totalProfit -= profits[i];
+                }
+            }
+
+
+            // maximum profit will be at the bottom-right corner.
+            return dp[n, capacity];
+        }
+
+        public static int MaxProfit(int[] prices)
+        {
+
+            //Video - https://www.youtube.com/watch?v=MyqDgMy-Kew
+            //***************************************************
+            // k = 2 transactions allowed... initially we don't hold the stock
+            //***************************************************
+            //We need to consider, if we hold a stock or not.. 
+
+            //if we hold(1) stack, we can sell or hold/wait it
+            //if we dont hold(0) stock, we can buy or wait
+            //f(i,0,2) = max profit on ith day with 0 sock on hand with max 2 transactions
+            //f(i,1,2) = max profit on ith day with 1 sock on hand with max 2 transactions
+            //So....
+            //**** To get 0 stock, we dont buy new OR we sold it whatever we had. 1 transaction is reduced *****
+            //f(i,0,k) = Max (f(i - 1,0,k), f(i - 1, 1, k-1) + prices[i - 1]) 
+            //**** To get 1 stock, we dont sell it OR we buy new *****
+            //f(i,1,k) = Max (f(i - 1,1,k), f(i - 1, 0, k) - prices[i - 1])
+
+            int k = 2; //k transactions
+            int[,,] dp = new int[prices.Length + 1, 2, k+1];
+
+            //base case...
+            for (int ki = 0; ki <= k; ki++)
+                dp[0, 0, ki] = 0;            //First day, profit 0, with holding '0' stock on hand, 
+
+            for (int ki = 0; ki <= k; ki++)
+                dp[0, 1, ki] = int.MinValue; //First day, "not possible" to earn profit holding a stock
+
+            for (int i = 1; i < dp.GetLength(0); i++)
+            {
+                for (int ki = 0; ki <= k; ki++)
+                {
+                    //sell or dont sell
+                    if (ki > 0) //atleast 1 Transaction is allowed
+                        dp[i, 0, ki] = Math.Max(dp[i - 1, 0, ki], dp[i - 1, 1, ki - 1] + prices[i - 1]);
+                    else
+                        dp[i, 0, ki] = Math.Max(dp[i - 1, 0, ki], 0); //no sell allowed with 0 Trans left
+
+                    //buy
+                    dp[i, 1, ki] = Math.Max(dp[i - 1, 1, ki], dp[i - 1, 0, ki] - prices[i - 1]);
+                }
+            }
+
+            //max profit on last day, with 0 stock on hand....
+            return dp[dp.GetLength(0) - 1, 0, k];
+        }
+
+
+        public int MaxProfit1(int[] prices)
+        {
+            //Many transactions allowed, but once we sell we have a cooldown... i.e we cant buy on next day. initially we don't hold the stock
+            //We need to consider, if we hold a stock or not.. or we are on coolDown or not
+            //cooldown matters once we sell something....
+
+            //if we hold(1) stack, we can sell or hold/wait it. (cooldown doesnt matter)
+            //if we dont hold(0) stock, we can buy (if ONLY we are not on COOLDOWN) or wait
+            //f(i, !own, cooldown) = max profit on ith day with 0 sock on hand with cooldown
+            //f(i, !own, !cooldown) = max profit on ith day with 0 sock on hand without cooldown
+
+            //Cooldown doedn't matter here as we hold stock... cooldown decides when we can buy stock
+            //f(i, own, cooldown) = max profit on ith day with 1 sock on hand with cooldown
+            //f(i, own, !cooldown) = max profit on ith day with 1 sock on hand without cooldown
+
+            //So....
+            //**** To make 0 stock, we dont buy new OR we sold it whatever we had. *****
+            //f(i,0, !cooldown) = Max (f(i - 1, 0, cooldown=true), f(i - 1, 1, cooldown=false) + prices[i - 1]) 
+            //f(i,0, cooldown)  = Max (f(i - 1, 0, cooldown=true), f(i - 1, 1, cooldown=false) + prices[i - 1]) 
+
+
+            //**** To make 1 stock, we dont sell it OR we buy new *****
+            //f(i,1, !cooldown) = Max (f(i - 1, 1, cooldown=false), f(i - 1 / 2, 0, cooldown=false) - prices[i - 1] )
+            //f(i,1, cooldown)  = Max (f(i - 1, 1, cooldown=false), 0) //with cooldown we cant buy stock so '0'
+
+            int cool = 1;
+            int noCool = 0;
+            int[,,] dp = new int[prices.Length + 1, 2, 2];
+            
+            //base case...
+            dp[0, 0, noCool] = 0;            //First day, profit 0, with holding '0' stock on hand
+            dp[0, 0, cool] = 0;
+            dp[0, 1, noCool] = int.MinValue; //First day, "not possible" to earn profit holding a stock 
+            dp[0, 1, cool] = int.MinValue;
+
+            for (int i = 1; i < dp.GetLength(0); i++)
+            {
+                //selling choices
+                dp[i, 0, noCool] = Math.Max(dp[i - 1, 0, cool], dp[i - 1, 1, noCool] + prices[i - 1]);
+                dp[i, 0, cool] = Math.Max(dp[i - 1, 0, cool], dp[i - 1, 1, noCool] + prices[i - 1]);
+
+                //buy choices
+                if (i >= 2) //sell after cooling i.e (i - 2)
+                    dp[i, 1, noCool] = Math.Max(dp[i - 1, 1, noCool], dp[i - 2, 0, noCool] - prices[i - 1]);
+                else
+                    dp[i, 1, noCool] = Math.Max(dp[i - 1, 1, noCool], dp[i - 1, 0, noCool] - prices[i - 1]);
+
+                dp[i, 1, cool] = Math.Max(dp[i - 1, 1, noCool], 0); //no buying possile for cooldown         
+            }
+
+            return dp[dp.Length - 1, 0, 0];
+
+        }
+
         static void Main(string[] args)
         {
-            try {
+            try
+            {
+                Microsoft.GetShortestBalancedSubstring("azABaabza");
+                Microsoft.MaxPossibleByInsertingFive(1234);
+                
+                solveKnapsack(new int[] { 1,6,10,16}, new int[] { 1,2,3,5}, 7);
+
+
+                int[] testLst = new int[10];
+
+                var sortedDictionary = new SortedDictionary<int, List<int>>(Comparer<int>.Create(Descending));// new T1());
+
+                Array.Sort(testLst, Comparer<int>.Create(Descending));
+
+                Array.Sort(testLst, (i, j) => { return j.CompareTo(i); });
+                
+                testLst.ToList().Sort((i, j) => { return j.CompareTo(i); });
+
+               
+
                 int[][] booked22 = new int[1][] { new int[] { 2,3 }};
 
 
