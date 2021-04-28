@@ -1170,6 +1170,15 @@ namespace ConsoleApplication1
         {
             try
             {
+                Microsoft.nonInterSectiongSegment(new int[] { 5,3,1,3,2,3 });
+                Microsoft.nonInterSectiongSegment(new int[] { 10, 1, 3, 1, 2, 2, 1, 0, 4 });
+                Microsoft.nonInterSectiongSegment(new int[] { 9,9,9,9,9 });
+
+                Microsoft.nonInterSectiongSegment(new int[] { 1, 5, 2, 4, 3, 3 });
+
+
+                Microsoft.readStream(@"c:\IK.txt");
+
                 Microsoft.GetShortestBalancedSubstring("azABaabza");
                 Microsoft.MaxPossibleByInsertingFive(1234);
                 

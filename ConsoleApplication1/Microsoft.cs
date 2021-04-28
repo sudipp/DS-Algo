@@ -1004,6 +1004,18 @@ namespace ConsoleApplication1
             return int.Parse(n1 + '5') * (number < 0 ? -1 : 1);
         }
 
+        public static long readStream(string path)
+        {
+            string[] lines = System.IO.File.ReadAllLines(path);
+            int count = 0;
+            System.Text.RegularExpressions.Regex regexp = new System.Text.RegularExpressions.Regex("\\w*");
+            foreach(string line in lines)
+            {
+                count += regexp.Matches(line).Count;
+            }
+            return count;
+        }
+
         //https://leetcode.com/discuss/interview-question/963586/Microsoft-or-OA-or-Codility
         /*
          * A string is considered balanced when every letter in the string appears both in uppercase and lowercase
@@ -1020,7 +1032,80 @@ More examples
         public static string GetShortestBalancedSubstring(string str)
         {
             int l = 0, r = 0;
-            Dictionary<char, int> cap = new Dictionary<char,int>();
+            Dictionary<char, List<int>> capList = new Dictionary<char, List<int>>();
+            Dictionary<char, List<int>> lowList = new Dictionary<char, List<int>>();
+            for (int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (char.IsUpper(c))
+                {
+                    if (!capList.ContainsKey(c)) capList.Add(c, new List<int>());
+                    capList[c].Add(i);
+                }
+                else
+                {
+                    if (!lowList.ContainsKey(c)) lowList.Add(c, new List<int>());
+                    lowList[c].Add(i);
+                }
+            }
+            Dictionary<char, List<int>> missOnEitherList = new Dictionary<char, List<int>>();
+            foreach(char key in capList.Keys)
+            {
+                if (!lowList.ContainsKey(key)) {
+                    if (!missOnEitherList.ContainsKey(key))
+                        missOnEitherList.Add(key, new List<int>());
+
+                    missOnEitherList[key].AddRange(capList[key]);
+                }
+            }
+            foreach (char key in lowList.Keys)
+            {
+                if (!capList.ContainsKey(key))
+                {
+                    if (!missOnEitherList.ContainsKey(key))
+                        missOnEitherList.Add(key, new List<int>());
+
+                    missOnEitherList[key].AddRange(lowList[key]);
+                }
+            }
+
+            int minStableLen = int.MaxValue;
+            string minStableString = "";
+            HashSet<char> cap = new HashSet<char>();
+            HashSet<char> low = new HashSet<char>();
+            while (l <= r && r < str.Length)
+            {
+                char c = str[r];
+                if(missOnEitherList.ContainsKey(c))
+                {
+                    cap.Clear();
+                    low.Clear();
+                    r ++;
+                    l = r;
+                }
+
+                //once immbalanced keep growing the window till we get shortest balanced..
+                //once we balanced, try to shink from left.. to find the shorest
+                if (char.IsUpper(c))
+                {
+                    if (!cap.Contains(c))
+                        cap.Add(c);
+                }
+                else
+                {
+                    if (!low.Contains(c))
+                        low.Add(c);
+                }
+                if (isDictionaryBalanced(cap, low) && minStableLen < r - l)
+                {
+                    minStableLen = r - l;
+                    minStableString = str.Substring(l, r - l);
+                }
+            }
+            return minStableString;
+            /*
+
+            Dictionary<char, int> cap = new Dictionary<char, int>();
             Dictionary<char, int> low = new Dictionary<char, int>();
             while (l <= r && r < str.Length)
             {
@@ -1056,10 +1141,11 @@ More examples
                 }
                 r++;
             }
-
+            
             if (l == r)
                 return "-1";
             return str.Substring(l, r - l);
+            */
         }
         private static bool isDictionaryBalanced(Dictionary<char, int> cap, Dictionary<char, int> low)
         {
@@ -1076,6 +1162,223 @@ More examples
             }
             return true;
         }
+        private static bool isDictionaryBalanced(HashSet<char> cap, HashSet<char> low)
+        {
+            foreach (char c in cap)
+            {
+                if (!low.Contains(c))
+                    return false;
+            }
+            foreach (char c in low)
+            {
+                if (!cap.Contains(c))
+                    return false;
+            }
+            return true;
+        }
+
+
+
+
+        public static int nonInterSectiongSegment(int[] arr)
+        {
+            int count = 0;
+            if (arr.Length < 2) return count;
+
+            int[] max = new int[1];
+            int sum = 0;
+            for (int i = 0; i < arr.Length - 1; i++)
+            {
+                sum = arr[i] + arr[i + 1];
+                DFS(arr, i + 2, sum, 2, max);
+            }
+            
+            return max[0];
+            /*
+            int max = int.MinValue;
+            for (int i = 0; i < arr.Length - 1; i++)
+            {
+                sum = arr[i] + arr[i + 1];
+                max = Math.Max(max, countSubSets(arr, i + 2, sum));
+            }
+            return max;*/
+        }
+
+        static int DFS(int[] arr, int idx, int sum, int c, int[] max)
+        {
+            if (idx >= arr.Length || c == 0)
+                return 0;// int.MinValue;
+
+            if (sum == 0)
+                return 1;
+
+            int count = 0;
+            //int max = int.MinValue;
+            for (int i = idx; i < arr.Length - 1; i++)
+            {
+                //exclude current
+                count += DFS(arr, i + 1, sum, c, max);
+                //include
+                count += DFS(arr, i + 1, sum - arr[i], c - 1, max);
+
+                //int s = arr[i] + arr[i + 1];
+                //if (s == sum)
+                //    count += 1;
+
+                //count += DFS(arr, i + 2, s, max);
+                //count += DFS(arr, i + 3, s, max);
+                max[0] = Math.Max(max[0], count);
+            }
+            return count;
+        }
+
+
+        private static int countSubSets(int[] num, int stIdx, int target)
+        {
+            Dictionary<int, int> map = new Dictionary<int, int>();
+            map.Add(target, 0);
+            map.Add(0, 0);
+
+            int res = 0;
+            int sum = 0;
+            for (int i = stIdx; i < num.Length; ++i)
+            {
+                sum += num[i];
+                if (map.ContainsKey(sum - target))
+                    res = Math.Max(res, map[sum - target] + 1);
+                
+                if(!map.ContainsKey(sum))
+                    map.Add(sum, res);
+                else
+                    map[sum] = res;
+            }
+
+            return res + 1;
+        }
+
+        public int countSubSets(int[] num, int sum)
+        {
+            //Build a table with (n+l)(sum+l) elements
+            int[,] dp = new int[num.Length + 1, sum + 1];
+
+            //Base case - we can exclude all "I" elements to get a subset sum of 0
+            for (int n = 0; n <= num.Length; n++)
+                dp[n, 0] = 1;
+
+            //Do a full traversal of the dependency DAG table now
+            for (int n = 1; n <= num.Length; n++)
+            {
+                for (int target = 1; target <= sum; target++)
+                {
+                    if (target >= num[n - 1])
+                        //exclude or include
+                        dp[n, target] = dp[n - 1, target]
+                             + dp[n - 1, target - num[n - 1]];
+                    else
+                        dp[n, target] = dp[n - 1, target];
+                }
+            }
+            return dp[num.Length, sum];
+        }
 
     }
+
+
+
+
+    public class Evaluator
+    {
+        Extractor extractor = null;
+        Stack<Exression> stack = null;
+        public Evaluator()
+        {
+            stack = new Stack<Exression>();
+            extractor = new Extractor();
+        }
+
+        public string Evaluate(string expression)
+        {
+            foreach (Exression exp in extractor.Extract(expression))
+                stack.Push(exp);
+
+            Exression result = EvaluateExpression();
+            return result.Format();
+        }
+
+        private Exression EvaluateExpression()
+        {
+            return null;
+        }
+    }
+
+    abstract class Exression {
+        public string Value;
+        public abstract string Format();
+    }
+
+    class Operator: Exression {
+        public Operator(string name) { this.Value = name; }
+
+        public override string Format()
+        {
+            return string.Format("{0}", this.Value);
+        }
+    }
+
+    class Whole : Exression {
+        public Whole(string val) { this.Value = val; }
+
+        public override string Format()
+        {
+            return string.Format("{0}", this.Value);
+        }
+    }
+    class Franction : Exression
+    {
+        public Franction(string val) { this.Value = val; }
+
+        public override string Format()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    class MixedFranction : Exression
+    {
+        public MixedFranction(string val) { this.Value = val; }
+
+        public override string Format()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    interface IExtractor
+    {
+        IList<Exression> Extract(string expression);
+    }
+    class Extractor : IExtractor
+    {
+        System.Text.RegularExpressions.Regex rgExp = new System.Text.RegularExpressions.Regex(@"[+-/*_\d]+");
+        HashSet<string> ops = new HashSet<string>(new string[] { "+", "-", "*", "/"});
+        public IList<Exression> Extract(string expression)
+        {
+            IList<Exression> expressions = new List<Exression>();
+            foreach(System.Text.RegularExpressions.Match m in rgExp.Matches(expression))
+            {
+                if (ops.Contains(m.Value))
+                    expressions.Add(new Operator(m.Value));
+                else if (m.Value.IndexOf("_") > -1 && m.Value.IndexOf("/") > -1)
+                    expressions.Add(new MixedFranction(m.Value));
+                else if (m.Value.IndexOf("/") > -1)
+                    expressions.Add(new Franction(m.Value));
+                else
+                    expressions.Add(new Whole(m.Value));
+            }
+
+            return expressions;
+        }
+    }
+
+
+    
 }
