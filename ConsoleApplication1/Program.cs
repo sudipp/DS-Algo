@@ -1170,6 +1170,7 @@ namespace ConsoleApplication1
         {
             try
             {
+                Microsoft.EvaluateBooleanExpression("");
                 Microsoft.nonInterSectiongSegment(new int[] { 5,3,1,3,2,3 });
                 Microsoft.nonInterSectiongSegment(new int[] { 10, 1, 3, 1, 2, 2, 1, 0, 4 });
                 Microsoft.nonInterSectiongSegment(new int[] { 9,9,9,9,9 });

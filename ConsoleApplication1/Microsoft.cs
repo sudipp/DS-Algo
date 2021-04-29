@@ -1016,6 +1016,98 @@ namespace ConsoleApplication1
             return count;
         }
 
+        //253. Meeting Rooms II
+        public int MinMeetingRooms(int[][] intervals)
+        {
+
+            int[] start = new int[intervals.Length];
+            int[] end = new int[intervals.Length];
+
+            for (int k = 0; k < intervals.Length; k++)
+            {
+                start[k] = intervals[k][0];
+                end[k] = intervals[k][1];
+            }
+
+            Array.Sort(start);
+            Array.Sort(end);
+
+            //use merge sort logic (2  arrays) - arrange elements into increasing order
+            int i = 0, j = 0, MaxRoomNeeded = 0, activeRoomCount = 0;
+            while (i < start.Length && j < end.Length)
+            {
+                if (start[i] < end[j]) //meeting started.. need room
+                {
+                    activeRoomCount++;
+                    i++;
+
+                    MaxRoomNeeded = Math.Max(MaxRoomNeeded, activeRoomCount);
+                }
+                else
+                {
+                    activeRoomCount--; //meeting ended room got free
+                    j++;
+                }
+            }
+            return MaxRoomNeeded;
+        }
+
+        public static string EvaluateBooleanExpression(string str)
+        {
+            // you can write to stdout for debugging purposes, e.g.
+            //Console.WriteLine("This is a debug message");
+
+            str = "TRUE OR FALSE OR ( TRUE AND FALSE OR TRUE OR ( TRUE AND FALSE ) ) AND TRUE";
+            str = "TRUE OR FALSE OR ( TRUE AND FALSE OR TRUE ) AND TRUE";
+            Stack<string> stack = new Stack<string>();
+            string[] arr = str.Split(' ');
+
+            string op = "";
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (arr[i] == "TRUE" || arr[i] == "FALSE")
+                {
+                    if (!stack.Any() || stack.Peek() == "(")
+                        stack.Push(arr[i]);
+                    else
+                    {
+                        bool oernd1 = bool.Parse(stack.Pop());
+                        bool oernd2 = bool.Parse(arr[i]);
+                        if (op == "AND")
+                            stack.Push((oernd1 && oernd2).ToString().ToUpper());
+                        else if (op == "OR")
+                            stack.Push((oernd1 || oernd2).ToString().ToUpper());
+                    }
+                }
+                else if (arr[i] == "AND" || arr[i] == "OR")
+                    op = arr[i];
+                else if (arr[i] == "(")
+                {
+                    stack.Push(op);
+                    stack.Push(arr[i]);
+                }
+                else if (arr[i] == ")")
+                {
+                    while (stack.Any() && stack.Count >= 2)
+                    {
+                        bool oernd1 = bool.Parse(stack.Pop());
+                        stack.Pop(); //remove '('
+
+                        op = stack.Pop();
+                        bool oernd2 = bool.Parse(stack.Pop());
+
+                        if (op == "AND")
+                            stack.Push((oernd1 && oernd2).ToString().ToUpper());
+                        else if (op == "OR")
+                            stack.Push((oernd1 || oernd2).ToString().ToUpper());
+                    }
+                }
+            }
+            return stack.Pop();
+        }
+
+
+
         //https://leetcode.com/discuss/interview-question/963586/Microsoft-or-OA-or-Codility
         /*
          * A string is considered balanced when every letter in the string appears both in uppercase and lowercase
@@ -1280,7 +1372,6 @@ More examples
             }
             return dp[num.Length, sum];
         }
-
     }
 
 
@@ -1379,6 +1470,4 @@ More examples
         }
     }
 
-
-    
 }
