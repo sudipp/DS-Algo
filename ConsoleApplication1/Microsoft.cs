@@ -45,7 +45,6 @@ namespace ConsoleApplication1
             // to get the largest index character
             for (int i = 25; i >= 0; i--)
             {
-
                 // Check for the character if both its
                 // uppercase and lowercase exist or not
                 if (uppercase[i] && lowercase[i])
@@ -80,7 +79,7 @@ namespace ConsoleApplication1
                     count++;
                 }
 
-                //find the current MAX and pass it levels down
+                //find the current MAX and pass it levels downMax Sum of Numbers With Same Digit Sum
                 maxSoFar = Math.Max(maxSoFar, root.val);
 
                 if (root.left_ptr != null)
@@ -90,15 +89,11 @@ namespace ConsoleApplication1
                     DFS(root.right_ptr, maxSoFar);
             }
         }
-
-        //Min Deletions to Make Frequency of Each Letter Unique
-        //https://molchevskyi.medium.com/best-solutions-for-microsoft-interview-tasks-min-deletions-to-make-frequency-of-each-letter-unique-16adb3ec694e
-
+        
         //Min Deletions To Obtain String in Right Format
         //https://algo.monster/problems/min_deletions_to_obtain_string_in_right_format
         public static int minStep(String str)
         {
-            // WRITE YOUR BRILLIANT CODE HERE
             int charA = 'A';
             int numB = 0;
             int minDel = 0;
@@ -116,7 +111,7 @@ namespace ConsoleApplication1
             return minDel;
         }
 
-        //algo.monster/problems/day_of_week
+        //https://algo.monster/problems/day_of_week
         //Day of week that is K days later
         public static string dayOfWeek(string day, int k)
         {
@@ -135,10 +130,10 @@ namespace ConsoleApplication1
         {
             int[] cities = new int[N + 1];
             //calculate in and out degree by cities
-            for(int i = 0; i < A.Length; i++)
+            for (int i = 0; i < A.Length; i++)
             {
-                cities[A[i]] ++;
-                cities[B[i]] ++;
+                cities[A[i]]++;
+                cities[B[i]]++;
             }
 
             int maxRank = 0;
@@ -150,7 +145,7 @@ namespace ConsoleApplication1
             return maxRank;
         }
 
-
+        //Min Deletions to Make Frequency of Each Letter Unique
         //https://molchevskyi.medium.com/best-solutions-for-microsoft-interview-tasks-min-deletions-to-make-frequency-of-each-letter-unique-16adb3ec694e
         //https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/
         //1647. Minimum Deletions to Make Character Frequencies Unique
@@ -199,10 +194,10 @@ namespace ConsoleApplication1
 
         //Min Steps to Make Piles Equal Height
         //https://algo.monster/problems/min_steps_to_make_piles_equal_height
+        //https://leetcode.com/discuss/interview-question/364618/
+
         public static int minSteps(int[] nums)
         {
-            //https://leetcode.com/discuss/interview-question/364618/
-
             //Step1 : get char frequency
             Dictionary<int, int> numFrequency = new Dictionary<int, int>();
             foreach (int i in nums)
@@ -326,8 +321,8 @@ namespace ConsoleApplication1
         public static string LexicographicallySmallestString(string str)
         {
             int i = 0;
-            int s_size = str.Length;
-            for (; i < s_size - 1; ++i)
+            int size = str.Length;
+            for (; i < size - 1; ++i)
             {
                 if (str[i] > str[i + 1])
                 {
@@ -347,12 +342,12 @@ namespace ConsoleApplication1
             int oB = str[0] == 'b' ? 1 : 0;
             for (int i = 1; i < str.Length; i++)
             {
-                if(str[i] == str [i-1])
+                if (str[i] == str[i - 1])
                 {
                     if (str[i] == 'a')
-                        oA ++;
+                        oA++;
                     else if (str[i] == 'b')
-                        oB ++;
+                        oB++;
 
                     //if any exceeds
                     if (oA > 2 || oB > 2)
@@ -390,9 +385,9 @@ namespace ConsoleApplication1
                     //if any exceeds 2, caclulate max length
                     if (oA == 3 || oB == 3)
                     {
-                        if(str[i] == 'a')
-                            oA --;
-                        else if(str[i] == 'b')
+                        if (str[i] == 'a')
+                            oA--;
+                        else if (str[i] == 'b')
                             oB--;
 
                         maxLength = Math.Max(maxLength, i - l);
@@ -419,9 +414,9 @@ namespace ConsoleApplication1
             int oA = str[0] == 'a' ? 1 : 0;
 
             //start has possible 2 padding, if first char is not 'a'
-            if (str[0] != 'a') 
+            if (str[0] != 'a')
                 maxInsert += 2;
-            
+
             for (int i = 1; i < str.Length; i++)
             {
                 if (str[i] == str[i - 1])
@@ -438,7 +433,7 @@ namespace ConsoleApplication1
                     //except cuurent character != 'a', it will check for previous possible insert of character 'a'
                     if (str[i] != 'a') //current is not 'a'
                         maxInsert += (2 - oA);
-                    
+
                     oA = str[i] == 'a' ? 1 : 0;
                 }
             }
@@ -464,16 +459,16 @@ namespace ConsoleApplication1
                 byte[] char_bits = new byte[26];
 
                 // set bits corresponding to chars in the string.
-                foreach (char c in str) 
+                foreach (char c in str)
                     char_bits[c - 'a'] = 1;
-                
+
                 // How many bits were set.
-                int bit_num = char_bits.Count(c=> c == 1);
+                int bit_num = char_bits.Count(c => c == 1);
                 // the string contains duplicate characters so 
                 // don't process it
                 if (bit_num < str.Length)
                     continue;
-                
+
                 // Check if current word has common letters with 
                 // already processed strings
                 if (char_bits_vector.Intersect(char_bits).Count() > 0)
@@ -525,7 +520,7 @@ namespace ConsoleApplication1
                 return prevLen;
 
             int localMax = prevLen;
-            for(int i = idx; i < args.Length; i++)
+            for (int i = idx; i < args.Length; i++)
             {
                 if (!isUnique(args[i]))
                     continue;
@@ -559,7 +554,7 @@ namespace ConsoleApplication1
         {
             int largest = 0;
             HashSet<int> hs = new HashSet<int>();
-            for(int i = 0; i < nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
                 if (hs.Contains(nums[i] * -1))
                     largest = Math.Max(largest, Math.Abs(nums[i]));
@@ -578,21 +573,21 @@ namespace ConsoleApplication1
 
             int countR = 0, totalR = 0;
             foreach (char c in str)
-                if(c == 'R') countR++;
+                if (c == 'R') countR++;
             totalR = countR;
 
             int min = 0;
             int l = 0, r = str.Length - 1;
-            while( l < r)
+            while (l < r)
             {
                 //find first 'R' from left
                 while (l < str.Length && str[l] != 'R')
                     l++;
-            
+
                 //find first 'R' from right
                 while (r > 0 && str[r] != 'R')
                     r--;
-                
+
                 //count number of 'W' between l and r.
                 countR = countR - 2;
                 int countW = r - l - 1 - countR;
@@ -662,9 +657,9 @@ namespace ConsoleApplication1
             // [-1, 1, 3, 3, 3, 2, 3, 2, 1, 0]
             if (particles.Length < 3) return -1;
             int numStable = 0;
-            for (int i = 0; i < particles.Length - 2; i ++)
+            for (int i = 0; i < particles.Length - 2; i++)
             {
-                for(int j = i + 1; j < particles.Length - 1; j++)
+                for (int j = i + 1; j < particles.Length - 1; j++)
                 {
                     if (particles[i + 1] - particles[i] == particles[j + 1] - particles[j])
                         numStable += 1;
@@ -675,7 +670,7 @@ namespace ConsoleApplication1
 
             return numStable;
         }
-        
+
 
         private static int CompareHeights(Tuple<int, int> h1, Tuple<int, int> h2)
         {
@@ -775,7 +770,7 @@ namespace ConsoleApplication1
                         freq[topC - 'a']++;
                         sb.Remove(sb.Length - 1, 1);
 
-                        if(sb.Length > 0)
+                        if (sb.Length > 0)
                             topC = sb[sb.Length - 1];
                     }
                 }
@@ -877,7 +872,7 @@ namespace ConsoleApplication1
             SortedSet<int> xDistance = new SortedSet<int>();
             foreach (int xc in x)
                 xDistance.Add(xc);
-            
+
             int maxWidth = 0;
             int xl = xDistance.Min, xr = 0;
             xDistance.Remove(xDistance.Min);
@@ -902,12 +897,12 @@ namespace ConsoleApplication1
                 fairIndex(b, a);
 
             int sumA = 0, sumB = 0;
-            for (int i = 0; i < a.Length; i ++) sumA += a[i];
-            for (int i = 0; i < b.Length; i ++) sumB += b[i];
+            for (int i = 0; i < a.Length; i++) sumA += a[i];
+            for (int i = 0; i < b.Length; i++) sumB += b[i];
 
             if (sumA != sumB)
                 return 0;
-            
+
             int count = 0;
             int sumAL = a[0], sumAR = sumA - a[0], sumBL = b[0], sumBR = sumB - b[0];
             for (int i = 1; i < a.Length; i++)
@@ -988,15 +983,18 @@ namespace ConsoleApplication1
             return maxTicket;
         }
 
+        //https://leetcode.com/discuss/interview-question/963586/Microsoft-or-OA-or-Codility
         //Maximum possible value by inserting '5'
         public static int MaxPossibleByInsertingFive(int number)
         {
             string n1 = Math.Abs(number).ToString();
             int i = 0;
-            while(i < n1.Length)
+            while (i < n1.Length)
             {
+                //for positive number, find first number smaller than 5, and insert 5 before that.
                 if (5.CompareTo(n1[i] - '0') >= 0 && number > -1) //positive
                     return int.Parse(n1.Substring(0, i) + '5' + n1.Substring(i, n1.Length - i)) * (number < 0 ? -1 : 1);
+                //for negative number, find first number grater than 5, and insert 5 before that.
                 else if (5.CompareTo(n1[i] - '0') <= 0 && number < 0) //negative
                     return int.Parse('5' + n1.Substring(i, n1.Length - i)) * (number < 0 ? -1 : 1);
                 i++;
@@ -1009,7 +1007,7 @@ namespace ConsoleApplication1
             string[] lines = System.IO.File.ReadAllLines(path);
             int count = 0;
             System.Text.RegularExpressions.Regex regexp = new System.Text.RegularExpressions.Regex("\\w*");
-            foreach(string line in lines)
+            foreach (string line in lines)
             {
                 count += regexp.Matches(line).Count;
             }
@@ -1106,7 +1104,202 @@ namespace ConsoleApplication1
             return stack.Pop();
         }
 
+        //Partition array into N subsets with balanced sum.
+        /*
+         * Description:
+Give you one sorted array, please put them into n buckets, we need to ensure we get n sub array with approximately equal weights.
+Example:
+input {1, 2, 3, 4, 5} n = 3
+output [[5],[1,4],[2,3]];
+        */
+        static List<List<int>> Part(int[] v, int n)
+        {
+            return null;
+        }
 
+
+
+
+        //1576. Replace All ?'s to Avoid Consecutive Repeating Characters
+        public class ReplaceAllToAvoidConsecutiveRepeatingCharacters
+        {
+            public static string ModifyString(string s)
+            {
+                int l = 0, r = 0;
+                StringBuilder sb = new StringBuilder();
+                while (r < s.Length)
+                {
+                    if (s[r] != '?')
+                    {
+                        sb.Append(s[r]);
+                        l = r;
+                        r++;
+                    }
+                    else
+                    {
+                        int R1 = r;
+                        //get the right boundary - next non '?' on right
+                        while (r < s.Length && s[r] == '?')
+                            r++;
+
+                        if (r == s.Length)
+                            r = l;
+                        //we will generate next charcater between left and right boundary (non '?' characters)
+                        char leftBoundary = (sb.Length > l) ? sb[l] : s[l];
+                        char rightBoundary = (sb.Length > r) ? sb[r] : s[r];
+
+                        sb.Append(GenerateBetweenLR(leftBoundary, rightBoundary));
+
+                        l = R1;
+                        r = R1 + 1;
+                    }
+                }
+
+                return sb.ToString();
+            }
+
+            private static char GenerateBetweenLR(char leftChar, char rightChar)
+            {
+                //replace '?' with any lower case letter
+                if (leftChar == '?')
+                    leftChar = 'a';
+
+                int j = 1;
+                int i = leftChar - 'a';
+                //generate next char, and see if it collide with left char or right char
+                //if collides, pick the next character till we find an unique
+                char newChar = (char)('a' + (i + j) % 25);
+                while (newChar == leftChar || newChar == rightChar)
+                {
+                    j++;
+                    newChar = (char)('a' + (i + j) % 25);
+                }
+                return newChar;
+            }
+        }
+
+        //https://leetcode.com/discuss/interview-question/1165018/Microsoft-or-OA-or-India
+        public static bool CanCraneMovePackage(int[] A, int[] P, int B, int E)
+        {
+            //position of crane P[]
+            //Arm size of crane A[]
+            //package is at location B, has to be moved to E
+
+            //Generate Intervals
+            //Merge intervals (merge crane reach)
+            int[] start = new int[P.Length];
+            int[] end = new int[P.Length];
+            for (int i = 0; i < P.Length; i++)
+            {
+                start[i] = P[i] - A[i];
+                end[i] = P[i] + A[i];
+            }
+            Array.Sort(start);
+            Array.Sort(end);
+
+            //merge meeting intervals - logic
+            IList<int[]> mergedIntervals = new List<int[]>();
+            mergedIntervals.Add(new int[] { start[0], end[0]});
+            for(int i = 1; i < P.Length; i++)
+            {
+                int[] last = mergedIntervals.Last();
+
+                if (last[1] >= start[i])
+                    last[1] = Math.Max(last[1], end[i]);
+                else
+                    mergedIntervals.Add(new int[] { start[i], end[i] });
+            }
+
+            foreach(int[]  intervals in mergedIntervals)
+            {
+                if (intervals[0] <= B && E <= intervals[1])
+                    return true;
+            }
+            return false;
+        }
+
+        //https://leetcode.com/discuss/interview-question/558015/Microsoft-OA
+        //Given an array A of N integers, return true if A contains at least two elements which differ by 1, and false otherwise.
+        public static bool ElementsDifferByOne(int[] A)
+        {
+            if (A.Length < 2)
+                return false;
+
+            HashSet<int> hs = new HashSet<int>();
+            for(int i = 0; i < A.Length; i++)
+            {
+                if (hs.Contains(A[i]))
+                    return true;
+                else
+                    hs.Add(A[i] + 1); //to maintain 1 difference add '1'
+            }
+            return false;
+        }
+
+        //https://leetcode.com/discuss/interview-question/988051/Microsoft-or-OA
+        /*
+         Given a string S with both lowercase and uppercase letters, return the biggest (sorted alphabetically) letter that appears both in lowercase and uppercase. The returned letter must be in uppercase. If there is no such letter, return 'NO'.
+Examples:
+'aaacbAbCd', return 'C'
+'aA', return 'A'
+'abcdE', return 'NO'
+'a', return 'NO'
+        */
+        public static string BiggestLetter(string s)
+        {
+            bool[] lower = new bool[26];
+            bool[] upper = new bool[26];
+            foreach(char c in s)
+            {
+                if (char.IsUpper(c))
+                    upper[c - 'A'] = true;
+                else
+                    lower[c - 'a'] = true;
+            }
+            for(int i = lower.Length -1; i >= 0; i--)
+            {
+                if (lower[i] && upper[i])
+                    return ((char)('A' + i)).ToString();
+            }
+            return "NO";
+        }
+
+        //Maximum number of Games in a Given Period of Time
+        //https://leetcode.com/discuss/interview-question/1147447/Microsoft-or-OA-or-Codility-or-Maximum-number-of-Games-in-a-Given-Period-of-Time
+        public static int MaximumGamesInAGivenPeriodOfTime(string stTime, string endTime)
+        {
+            //00:00,00:15,00:30,00:45,1:00,.... 23:15,23:30,23:45,
+            string[] stSplit = stTime.Split(':');
+            string[] endSplit = endTime.Split(':');
+
+            int stHr = int.Parse(stSplit[0]);
+            int endHr = int.Parse(endSplit[0]);
+
+            int stMin = int.Parse(stSplit[1]);
+            int endMin = int.Parse(endSplit[1]);
+
+            int hrDiff = 0;
+            if (stHr <= endHr)
+                hrDiff = endHr - stHr;
+            else
+                hrDiff = 24 - stHr + endHr;
+
+            //push start min to next Quadrant (as it is a start game)
+            if (stMin % 15 == 0)
+                stMin = stMin / 15;
+            else
+                stMin = (stMin / 15) + 1;
+
+            //pull end min to prev Quadrant (as it is a end game)
+            endMin = endMin / 15;
+
+            int count = (hrDiff * 4) + endMin - stMin;
+
+            if (count < 0)
+                count = 0;
+
+            return count;
+        }
 
         //https://leetcode.com/discuss/interview-question/963586/Microsoft-or-OA-or-Codility
         /*
@@ -1120,354 +1313,200 @@ More examples
 “TacoCat” returns -1 (not balanced)
 “AcZCbaBz” returns the entire string
          */
-
         public static string GetShortestBalancedSubstring(string str)
         {
-            int l = 0, r = 0;
-            Dictionary<char, List<int>> capList = new Dictionary<char, List<int>>();
-            Dictionary<char, List<int>> lowList = new Dictionary<char, List<int>>();
+            Dictionary<char, int> occurance = new Dictionary<char, int>();
+            Dictionary<char, int> window = new Dictionary<char, int>();
+            
             for (int i = 0; i < str.Length; i++)
             {
-                char c = str[i];
-                if (char.IsUpper(c))
+                if (!occurance.ContainsKey(str[i]))
+                    occurance.Add(str[i], 0);
+
+                occurance[str[i]] ++;
+            }
+
+            int smallestBalancedLength = int.MaxValue;
+            string smallestBalanced = "";
+            int l = 0, r = 0; 
+            while(r < str.Length)
+            {
+                if (!window.ContainsKey(str[r]))
+                    window.Add(str[r], 0);
+
+                window[str[r]] ++;
+
+                char lowKey = char.ToLower(str[r]);
+                char upperKey = char.ToUpper(str[r]);
+
+                if (occurance.ContainsKey(lowKey) && occurance[lowKey] > 0 && occurance.ContainsKey(upperKey) &&  occurance[upperKey] > 0)
                 {
-                    if (!capList.ContainsKey(c)) capList.Add(c, new List<int>());
-                    capList[c].Add(i);
+                    if(r - l + 1 < smallestBalancedLength)
+                    {
+                        bool isWindowBalanced = true;
+                        foreach(char key in window.Keys)
+                        {
+                            lowKey = char.ToLower(key);
+                            upperKey = char.ToUpper(key);
+                            if (!window.ContainsKey(lowKey) || !window.ContainsKey(upperKey))
+                            {
+                                isWindowBalanced = false;
+                                break;
+                            }
+                        }
+                        if (isWindowBalanced)
+                        {
+                            smallestBalancedLength = r - l + 1;
+                            smallestBalanced = str.Substring(l, r - l + 1);
+                        }
+                    }
+
+                    r++;
                 }
                 else
                 {
-                    if (!lowList.ContainsKey(c)) lowList.Add(c, new List<int>());
-                    lowList[c].Add(i);
-                }
-            }
-            Dictionary<char, List<int>> missOnEitherList = new Dictionary<char, List<int>>();
-            foreach(char key in capList.Keys)
-            {
-                if (!lowList.ContainsKey(key)) {
-                    if (!missOnEitherList.ContainsKey(key))
-                        missOnEitherList.Add(key, new List<int>());
+                    while (l <= r)
+                    {
+                        occurance[str[l]]--;
 
-                    missOnEitherList[key].AddRange(capList[key]);
-                }
-            }
-            foreach (char key in lowList.Keys)
-            {
-                if (!capList.ContainsKey(key))
-                {
-                    if (!missOnEitherList.ContainsKey(key))
-                        missOnEitherList.Add(key, new List<int>());
+                        window[str[l]]--;
+                        if (window[str[l]] == 0)
+                            window.Remove(str[l]);
 
-                    missOnEitherList[key].AddRange(lowList[key]);
-                }
-            }
+                        l++;
+                    }
 
-            int minStableLen = int.MaxValue;
-            string minStableString = "";
-            HashSet<char> cap = new HashSet<char>();
-            HashSet<char> low = new HashSet<char>();
-            while (l <= r && r < str.Length)
-            {
-                char c = str[r];
-                if(missOnEitherList.ContainsKey(c))
-                {
-                    cap.Clear();
-                    low.Clear();
-                    r ++;
+                    r++;
                     l = r;
                 }
-
-                //once immbalanced keep growing the window till we get shortest balanced..
-                //once we balanced, try to shink from left.. to find the shorest
-                if (char.IsUpper(c))
-                {
-                    if (!cap.Contains(c))
-                        cap.Add(c);
-                }
-                else
-                {
-                    if (!low.Contains(c))
-                        low.Add(c);
-                }
-                if (isDictionaryBalanced(cap, low) && minStableLen < r - l)
-                {
-                    minStableLen = r - l;
-                    minStableString = str.Substring(l, r - l);
-                }
             }
-            return minStableString;
-            /*
 
-            Dictionary<char, int> cap = new Dictionary<char, int>();
-            Dictionary<char, int> low = new Dictionary<char, int>();
-            while (l <= r && r < str.Length)
+            return smallestBalancedLength == 0 ? "-1" : smallestBalanced;
+        }
+
+        //https://leetcode.com/problems/group-anagrams
+        //https://leetcode.com/discuss/interview-question/519744/Microsoft-Telephonic-round
+        public IList<IList<string>> GroupAnagrams(string[] strs)
+        {
+
+            //idea : generate common string from character occurance of every word, treat it like a key and store
+            //into dictionary.. if more than one word generates same key.. then we got anagram.
+
+
+            //using Count Sort
+            int[] buffer = new int[26];
+            Dictionary<string, IList<string>> ans = new Dictionary<string, IList<string>>();
+
+            for (int i = 0; i < strs.Length; i++)
             {
-                char c = str[r];
-                //once immbalanced keep growing the window till we get shortest balanced..
-                //once we balanced, try to shink from left.. to find the shorest
-                if (char.IsUpper(c))
+                foreach (char c in strs[i])
+                    buffer[c - 'a']++;
+
+                //make a common string from character occurance of a word
+                StringBuilder sb = new StringBuilder();
+                for (int k = 0; k < 26; k++)
                 {
-                    if (!cap.ContainsKey(c)) cap.Add(c, 0);
-                    cap[c]++;
+                    if (buffer[k] > 0)
+                        sb.Append(new string((char)(k + 'a'), buffer[k]));
                 }
-                else
+
+                //store
+                string key = sb.ToString();
+                if (!ans.ContainsKey(key))
+                    ans.Add(key, new List<string>());
+                ans[key].Add(strs[i]);
+            }
+
+            IList<IList<string>> result = new List<IList<string>>();
+            foreach (string key in ans.Keys)
+            {
+                result.Add(ans[key]);
+            }
+            return result;
+        }
+
+        //https://leetcode.com/discuss/interview-question/876509/Microsoft-Online-Assesment
+        //https://leetcode.com/problems/number-of-ways-to-split-a-string/
+        public static int NumWays(string s)
+        {
+            double MOD = 1e7;
+
+            int n = s.Length;
+            List<int> ones = new List<int>();
+            for (int i = 0; i < s.Length; i++)
+                if (s[i] == '1')
+                    ones.Add(i);
+
+            int total = ones.Count;
+
+            long x;
+            long y;
+
+            if (total == 0)
+            {
+                //# ref: https://en.wikipedia.org/wiki/Combination
+                //# combination of selecting 2 places to split the string out of n-1 places
+
+                x = n - 1;
+                y = n - 2;
+
+                return (int)(((x * y) / 2) % MOD);
+            }
+            else if (total % 3 != 0)
+                return 0;
+
+            int target = total / 3;
+
+            x = ones[target] - ones[target - 1];
+            y = ones[target * 2] - ones[target * 2 - 1];
+
+            return (int)((x * y) % MOD);
+        }
+
+
+        //https://leetcode.com/discuss/interview-question/1173416/Microsoft-OA-Codility/916433
+        /*
+         * Find the maximum number of non intersecting segments of length 2(two adjacent elements) such that the segments have an equal sum.
+
+Given, A = [1,0,1,3,1,2,2,1,0,4] there are three non intersecting segments each whose sum is equal to 4. : (1,3), (2,2), (0,4). Another three non intersecting segments are: (3,1), (2,2), (0,4)
+Given A = [5,3,1,3,2,3] the function should return 1. Each sum of two adjacent elements is different from the others.
+Given A = [9,9,9,9,9], the function should return 2
+Given A = [1,5,2,4,3,3], the function should return 3. There are 3 segments: (1,5), (2,4), (3,3) whose sums are equal to 6
+         */
+        public static int CountNonInterSectingSegmentsWithEqualSum(int[] A)
+        {
+            // write your code in C# 6.0 with .NET 4.5 (Mono)
+            int maxCount = 0;
+            if (A.Length < 2)
+                return maxCount;
+
+            int sum = 0;
+            HashSet<int> hs = new HashSet<int>();
+            for (int i = 0; i < A.Length - 1; i++)
+            {
+                sum = A[i] + A[i + 1];
+
+                //*** count sumber of setset after i + 1 equal to sum   
+                //int count = countSubSets(A, i + 2, sum);
+
+                int count = 1;
+                hs.Clear();
+                for (int j = i + 2; j < A.Length; j++)
                 {
-                    if (!low.ContainsKey(c)) low.Add(c, 0);
-                    low[c]++;
+                    if (hs.Contains(A[j]))
+                    {
+                        count++;
+                        //we want non overlapping... so ignore previous numbers
+                        hs.Clear();
+                        continue;
+                    }
+                    hs.Add(sum - A[j]);
                 }
                 
-                //balanced ?? shink from left
-                while(isDictionaryBalanced(cap, low))
-                {
-                    c = str[l];
-                    if (char.IsUpper(c))
-                    {
-                        cap[c] --;
-                        if (cap[c] == 0) cap.Remove(c);
-                    }
-                    else
-                    {
-                        low[c]--;
-                        if (low[c] == 0) low.Remove(c);
-                    }
-                    l++;
-                }
-                r++;
+                maxCount = Math.Max(maxCount, count);
             }
-            
-            if (l == r)
-                return "-1";
-            return str.Substring(l, r - l);
-            */
-        }
-        private static bool isDictionaryBalanced(Dictionary<char, int> cap, Dictionary<char, int> low)
-        {
-//            “azABaabza” returns “ABaab”
-//“TacoCat” returns - 1(not balanced)
-//“AcZCbaBz” returns the entire string
-
-            //if (cap.Keys.Count != low.Keys.Count)
-            //    return false;
-            foreach (char key in cap.Keys)
-            {
-                if (!low.ContainsKey(key))// || cap[key] != low[key])
-                    return false;
-            }
-            return true;
-        }
-        private static bool isDictionaryBalanced(HashSet<char> cap, HashSet<char> low)
-        {
-            foreach (char c in cap)
-            {
-                if (!low.Contains(c))
-                    return false;
-            }
-            foreach (char c in low)
-            {
-                if (!cap.Contains(c))
-                    return false;
-            }
-            return true;
-        }
-
-
-
-
-        public static int nonInterSectiongSegment(int[] arr)
-        {
-            int count = 0;
-            if (arr.Length < 2) return count;
-
-            int[] max = new int[1];
-            int sum = 0;
-            for (int i = 0; i < arr.Length - 1; i++)
-            {
-                sum = arr[i] + arr[i + 1];
-                DFS(arr, i + 2, sum, 2, max);
-            }
-            
-            return max[0];
-            /*
-            int max = int.MinValue;
-            for (int i = 0; i < arr.Length - 1; i++)
-            {
-                sum = arr[i] + arr[i + 1];
-                max = Math.Max(max, countSubSets(arr, i + 2, sum));
-            }
-            return max;*/
-        }
-
-        static int DFS(int[] arr, int idx, int sum, int c, int[] max)
-        {
-            if (idx >= arr.Length || c == 0)
-                return 0;// int.MinValue;
-
-            if (sum == 0)
-                return 1;
-
-            int count = 0;
-            //int max = int.MinValue;
-            for (int i = idx; i < arr.Length - 1; i++)
-            {
-                //exclude current
-                count += DFS(arr, i + 1, sum, c, max);
-                //include
-                count += DFS(arr, i + 1, sum - arr[i], c - 1, max);
-
-                //int s = arr[i] + arr[i + 1];
-                //if (s == sum)
-                //    count += 1;
-
-                //count += DFS(arr, i + 2, s, max);
-                //count += DFS(arr, i + 3, s, max);
-                max[0] = Math.Max(max[0], count);
-            }
-            return count;
-        }
-
-
-        private static int countSubSets(int[] num, int stIdx, int target)
-        {
-            Dictionary<int, int> map = new Dictionary<int, int>();
-            map.Add(target, 0);
-            map.Add(0, 0);
-
-            int res = 0;
-            int sum = 0;
-            for (int i = stIdx; i < num.Length; ++i)
-            {
-                sum += num[i];
-                if (map.ContainsKey(sum - target))
-                    res = Math.Max(res, map[sum - target] + 1);
-                
-                if(!map.ContainsKey(sum))
-                    map.Add(sum, res);
-                else
-                    map[sum] = res;
-            }
-
-            return res + 1;
-        }
-
-        public int countSubSets(int[] num, int sum)
-        {
-            //Build a table with (n+l)(sum+l) elements
-            int[,] dp = new int[num.Length + 1, sum + 1];
-
-            //Base case - we can exclude all "I" elements to get a subset sum of 0
-            for (int n = 0; n <= num.Length; n++)
-                dp[n, 0] = 1;
-
-            //Do a full traversal of the dependency DAG table now
-            for (int n = 1; n <= num.Length; n++)
-            {
-                for (int target = 1; target <= sum; target++)
-                {
-                    if (target >= num[n - 1])
-                        //exclude or include
-                        dp[n, target] = dp[n - 1, target]
-                             + dp[n - 1, target - num[n - 1]];
-                    else
-                        dp[n, target] = dp[n - 1, target];
-                }
-            }
-            return dp[num.Length, sum];
+            return maxCount;
         }
     }
-
-
-
-
-    public class Evaluator
-    {
-        Extractor extractor = null;
-        Stack<Exression> stack = null;
-        public Evaluator()
-        {
-            stack = new Stack<Exression>();
-            extractor = new Extractor();
-        }
-
-        public string Evaluate(string expression)
-        {
-            foreach (Exression exp in extractor.Extract(expression))
-                stack.Push(exp);
-
-            Exression result = EvaluateExpression();
-            return result.Format();
-        }
-
-        private Exression EvaluateExpression()
-        {
-            return null;
-        }
-    }
-
-    abstract class Exression {
-        public string Value;
-        public abstract string Format();
-    }
-
-    class Operator: Exression {
-        public Operator(string name) { this.Value = name; }
-
-        public override string Format()
-        {
-            return string.Format("{0}", this.Value);
-        }
-    }
-
-    class Whole : Exression {
-        public Whole(string val) { this.Value = val; }
-
-        public override string Format()
-        {
-            return string.Format("{0}", this.Value);
-        }
-    }
-    class Franction : Exression
-    {
-        public Franction(string val) { this.Value = val; }
-
-        public override string Format()
-        {
-            throw new NotImplementedException();
-        }
-    }
-    class MixedFranction : Exression
-    {
-        public MixedFranction(string val) { this.Value = val; }
-
-        public override string Format()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    interface IExtractor
-    {
-        IList<Exression> Extract(string expression);
-    }
-    class Extractor : IExtractor
-    {
-        System.Text.RegularExpressions.Regex rgExp = new System.Text.RegularExpressions.Regex(@"[+-/*_\d]+");
-        HashSet<string> ops = new HashSet<string>(new string[] { "+", "-", "*", "/"});
-        public IList<Exression> Extract(string expression)
-        {
-            IList<Exression> expressions = new List<Exression>();
-            foreach(System.Text.RegularExpressions.Match m in rgExp.Matches(expression))
-            {
-                if (ops.Contains(m.Value))
-                    expressions.Add(new Operator(m.Value));
-                else if (m.Value.IndexOf("_") > -1 && m.Value.IndexOf("/") > -1)
-                    expressions.Add(new MixedFranction(m.Value));
-                else if (m.Value.IndexOf("/") > -1)
-                    expressions.Add(new Franction(m.Value));
-                else
-                    expressions.Add(new Whole(m.Value));
-            }
-
-            return expressions;
-        }
-    }
-
+    
 }

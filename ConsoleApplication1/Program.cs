@@ -1166,16 +1166,120 @@ namespace ConsoleApplication1
 
         }
 
+
+        public static int WaterArea(int[] heights)
+        {
+
+            if (heights.Length == 0)
+                return 0;
+
+            int[] NGL = new int[heights.Length];
+            int[] NGR = new int[heights.Length];
+
+            Stack<Tuple<int, int>> stack = new Stack<Tuple<int, int>>();
+
+            //find nearest greater on left side
+            for (int i = 0; i < heights.Length; i++)
+            {
+                if (!stack.Any())
+                    NGL[i] = 0;
+                if (stack.Any() && stack.Peek().Item1 > heights[i])
+                {
+                    NGL[i] = stack.Peek().Item2;
+                }
+                else if (stack.Any() && stack.Peek().Item1 <= heights[i])
+                {
+                    while (stack.Any() && stack.Peek().Item1 <= heights[i])
+                        stack.Pop();
+
+                    if (!stack.Any())
+                        NGL[i] = 0;
+                    else
+                        NGL[i] = stack.Peek().Item2;
+                }
+                stack.Push(new Tuple<int, int>(heights[i], i));
+            }
+
+            stack.Clear();
+
+            //find nearest greater on right side
+            for (int i = heights.Length - 1; i >= 0; i--)
+            {
+                if (!stack.Any())
+                    NGR[i] = heights.Length - 1;
+                if (stack.Any() && stack.Peek().Item1 > heights[i])
+                {
+                    NGR[i] = stack.Peek().Item2;
+                }
+                else if (stack.Any() && stack.Peek().Item1 <= heights[i])
+                {
+                    while (stack.Any() && stack.Peek().Item1 <= heights[i])
+                        stack.Pop();
+
+                    if (!stack.Any())
+                        NGR[i] = heights.Length - 1;
+                    else
+                        NGR[i] = stack.Peek().Item2;
+                }
+                stack.Push(new Tuple<int, int>(heights[i], i));
+            }
+
+            int waterCount = 0;
+            for (int i = 0; i < NGR.Length; i++)
+            {
+                int minHeight = Math.Min(heights[NGL[i]], heights[NGR[i]]);
+                //Console.WriteLine(minIndex);
+
+                if (minHeight - heights[i] > 0)
+                    waterCount += minHeight - heights[i];
+            }
+            return waterCount;
+        }
+
+
         static void Main(string[] args)
         {
-            try
-            {
-                Microsoft.EvaluateBooleanExpression("");
-                Microsoft.nonInterSectiongSegment(new int[] { 5,3,1,3,2,3 });
-                Microsoft.nonInterSectiongSegment(new int[] { 10, 1, 3, 1, 2, 2, 1, 0, 4 });
-                Microsoft.nonInterSectiongSegment(new int[] { 9,9,9,9,9 });
+            try {
 
-                Microsoft.nonInterSectiongSegment(new int[] { 1, 5, 2, 4, 3, 3 });
+                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 10, 1, 3, 1, 2, 2, 1, 0, 4 });
+                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 10, 5, 1, 3, 1, 2, 2, 1, 6, 0, 4, 2, 3,3,3,3});
+                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 5, 3, 1, 3, 2, 3 });
+                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 9, 9, 9, 9, 9,9 });
+                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 1, 5, 2, 4, 3, 3 });
+                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 1, 0, 1, 3, 1, 2, 2, 1, 0, 4 });
+
+                Microsoft.EvaluateBooleanExpression("TRUE OR FALSE OR ( TRUE AND FALSE OR TRUE OR ( TRUE AND FALSE ) ) AND TRUE");
+
+                Microsoft.NumWays("abcde");
+
+
+                Microsoft.GetShortestBalancedSubstring("azABaabza");
+                Microsoft.GetShortestBalancedSubstring("AcZCbaBz");
+                
+                
+                
+
+                Microsoft.MaximumGamesInAGivenPeriodOfTime("01:01", "02:00");
+                Microsoft.MaximumGamesInAGivenPeriodOfTime("12:01", "12:44");
+                Microsoft.MaximumGamesInAGivenPeriodOfTime("20:00", "06:00");
+                Microsoft.MaximumGamesInAGivenPeriodOfTime("00:00", "23:59");
+                
+
+                Microsoft.BiggestLetter("aaacbAbCd");
+                Microsoft.BiggestLetter("abcdE");
+                Microsoft.BiggestLetter("aA");
+                Microsoft.ElementsDifferByOne(new int[]{ 11, 1, 8, 12, 14 });
+                Microsoft.ElementsDifferByOne(new int[] { 5,5,5,5,5 });
+                
+                Microsoft.CanCraneMovePackage(new int[] { 1,4,2 }, new int[] { 10,4,7 }, 11,1);
+
+                Microsoft.ReplaceAllToAvoidConsecutiveRepeatingCharacters.ModifyString("ubv?w");
+                WaterArea(new int[] { 3, 0, 0, 2, 0, 4 });// 0, 1, 1, 0, 0 });
+
+                //Threading.DemonstrateConcurrency();
+                Threading.DemonstrateParallelism();
+                
+
 
 
                 Microsoft.readStream(@"c:\IK.txt");

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConsoleApplication1</RootNamespace>
     <AssemblyName>ConsoleApplication1</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -68,6 +68,7 @@
     <Compile Include="DPExercise.cs" />
     <Compile Include="Heap.cs" />
     <Compile Include="Microsoft.cs" />
+    <Compile Include="Microsoft\NumberExpressionEvaluator.cs" />
     <Compile Include="RecursionExercise.cs" />
     <Compile Include="DPRecursionBottomUpExercise.cs" />
     <Compile Include="StackQueueExercise.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="BinarySearchExercise.cs" />
     <Compile Include="SortingSearchingLogarithmsExercise.cs" />
     <Compile Include="GraphExercise.cs" />
+    <Compile Include="Threading.cs" />
     <Compile Include="TreeGraphExercise - Copy.cs" />
     <Compile Include="TreeExercise.cs" />
     <Compile Include="utilExercise.cs" />
