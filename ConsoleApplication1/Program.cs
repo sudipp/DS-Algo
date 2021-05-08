@@ -1236,10 +1236,21 @@ namespace ConsoleApplication1
             return waterCount;
         }
 
-
+        
         static void Main(string[] args)
         {
             try {
+
+                int[,] items = new int[4, 2];// { new int[2] { 1, 2 }, new int[2] { 4, 3 }, new int[2] { 5, 6 }, new int[2] { 6, 7 } };
+                items[0, 0] = 1;
+                items[0, 1] = 2;
+                items[1, 0] = 4;
+                items[1, 1] = 3;
+                items[2, 0] = 5;
+                items[2, 1] = 6;
+                items[3, 0] = 6;
+                items[3, 1] = 7;
+                Microsoft.KnapsackProblem(items, 10);
 
                 Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 10, 1, 3, 1, 2, 2, 1, 0, 4 });
                 Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 10, 5, 1, 3, 1, 2, 2, 1, 6, 0, 4, 2, 3,3,3,3});

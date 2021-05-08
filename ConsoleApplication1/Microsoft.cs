@@ -8,6 +8,62 @@ namespace ConsoleApplication1
 {
     class Microsoft
     {
+        public static List<List<int>> KnapsackProblem(int[,] items, int capacity)
+        {
+            //items[0] = value
+            //items[1] = weight
+
+            int[,] dp = new int[items.GetLength(0) + 1, capacity + 1];
+            //with 0 weight, we can fill 0 capacity and earn 0 value
+            dp[0, 0] = 0;
+
+            for (int w = 1; w < dp.GetLength(0); w++)
+            {
+                for (int c = 1; c < dp.GetLength(1); c++)
+                {
+                    int val = items[w - 1, 0];
+                    int weight = items[w - 1, 1];
+                    
+                    //include
+                    int includeProfit = 0;
+                    if (weight <= c)
+                        includeProfit = val + dp[w - 1, c - weight];
+
+                    //exclude
+                    int excludeProfit = dp[w - 1, c];
+
+                    //max of them
+                    dp[w, c] = Math.Max(excludeProfit, includeProfit);
+                }
+            }
+
+            List<int> totalValue = new List<int> {
+                dp[items.GetLength(0), capacity]
+            };
+            List<int> finalItems = new List<int>();
+
+            int profit = dp[items.GetLength(0), capacity];
+            for(int w = dp.GetLength(0) - 1; w >= 0; w --)
+            {
+                if (dp[w, capacity] != profit)
+                {
+                    int val = items[w, 0];
+                    int weight = items[w, 1];
+
+                    finalItems.Add(w);
+
+                    profit -= val;
+                    capacity -= weight; 
+                }
+            }
+
+            var result = new List<List<int>>();
+            result.Add(totalValue);
+            result.Add(finalItems);
+            return result;
+        }
+
+
         //1304. Find N Unique Integers Sum up to Zero
         //Unique Integers That Sum Up To 0
         //https://algo.monster/problems/unique_integers_that_sum_up_to_0
@@ -1050,60 +1106,7 @@ namespace ConsoleApplication1
             return MaxRoomNeeded;
         }
 
-        public static string EvaluateBooleanExpression(string str)
-        {
-            // you can write to stdout for debugging purposes, e.g.
-            //Console.WriteLine("This is a debug message");
-
-            str = "TRUE OR FALSE OR ( TRUE AND FALSE OR TRUE OR ( TRUE AND FALSE ) ) AND TRUE";
-            str = "TRUE OR FALSE OR ( TRUE AND FALSE OR TRUE ) AND TRUE";
-            Stack<string> stack = new Stack<string>();
-            string[] arr = str.Split(' ');
-
-            string op = "";
-            for (int i = 0; i < arr.Length; i++)
-            {
-                if (arr[i] == "TRUE" || arr[i] == "FALSE")
-                {
-                    if (!stack.Any() || stack.Peek() == "(")
-                        stack.Push(arr[i]);
-                    else
-                    {
-                        bool oernd1 = bool.Parse(stack.Pop());
-                        bool oernd2 = bool.Parse(arr[i]);
-                        if (op == "AND")
-                            stack.Push((oernd1 && oernd2).ToString().ToUpper());
-                        else if (op == "OR")
-                            stack.Push((oernd1 || oernd2).ToString().ToUpper());
-                    }
-                }
-                else if (arr[i] == "AND" || arr[i] == "OR")
-                    op = arr[i];
-                else if (arr[i] == "(")
-                {
-                    stack.Push(op);
-                    stack.Push(arr[i]);
-                }
-                else if (arr[i] == ")")
-                {
-                    while (stack.Any() && stack.Count >= 2)
-                    {
-                        bool oernd1 = bool.Parse(stack.Pop());
-                        stack.Pop(); //remove '('
-
-                        op = stack.Pop();
-                        bool oernd2 = bool.Parse(stack.Pop());
-
-                        if (op == "AND")
-                            stack.Push((oernd1 && oernd2).ToString().ToUpper());
-                        else if (op == "OR")
-                            stack.Push((oernd1 || oernd2).ToString().ToUpper());
-                    }
-                }
-            }
-            return stack.Pop();
-        }
-
+        
         //Partition array into N subsets with balanced sum.
         /*
          * Description:

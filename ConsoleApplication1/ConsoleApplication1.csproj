@@ -68,7 +68,10 @@
     <Compile Include="DPExercise.cs" />
     <Compile Include="Heap.cs" />
     <Compile Include="Microsoft.cs" />
-    <Compile Include="Microsoft\NumberExpressionEvaluator.cs" />
+    <Compile Include="MicrosoftFolder\AutocompleteSystem.cs" />
+    <Compile Include="MicrosoftFolder\EvaluateBooleanExpression.cs" />
+    <Compile Include="MicrosoftFolder\StreamMedianFinder.cs" />
+    <Compile Include="MicrosoftFolder\NumberExpressionEvaluator.cs" />
     <Compile Include="RecursionExercise.cs" />
     <Compile Include="DPRecursionBottomUpExercise.cs" />
     <Compile Include="StackQueueExercise.cs" />
