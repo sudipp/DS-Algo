@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1.MicrosoftFolder
 {
-    publc class EvaluateBooleanExpressionEvaluator
+    public class EvaluateBooleanExpressionEvaluator
     {
         public static string EvaluateBooleanExpression(string str)
         {

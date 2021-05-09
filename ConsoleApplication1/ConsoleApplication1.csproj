@@ -69,6 +69,7 @@
     <Compile Include="Heap.cs" />
     <Compile Include="Microsoft.cs" />
     <Compile Include="MicrosoftFolder\AutocompleteSystem.cs" />
+    <Compile Include="MicrosoftFolder\MaxCarParkedTimeSlot.cs" />
     <Compile Include="MicrosoftFolder\EmployeeFreeTime.cs" />
     <Compile Include="MicrosoftFolder\EvaluateBooleanExpression.cs" />
     <Compile Include="MicrosoftFolder\StreamMedianFinder.cs" />
