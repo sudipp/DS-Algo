@@ -65,6 +65,26 @@
     <Compile Include="AbstractClass.cs" />
     <Compile Include="Amazon.cs" />
     <Compile Include="ArrayExercise - Copy.cs" />
+    <Compile Include="DesignPattern\Behavioural\State\BrushTool.cs" />
+    <Compile Include="DesignPattern\Behavioural\State\Canvas.cs" />
+    <Compile Include="DesignPattern\Behavioural\State\Client.cs" />
+    <Compile Include="DesignPattern\Behavioural\State\EraserTool.cs" />
+    <Compile Include="DesignPattern\Behavioural\State\ITools.cs" />
+    <Compile Include="DesignPattern\Behavioural\Momento\Client.cs" />
+    <Compile Include="DesignPattern\Behavioural\Momento\Editor.cs" />
+    <Compile Include="DesignPattern\Behavioural\Momento\EditorState.cs" />
+    <Compile Include="DesignPattern\Behavioural\Momento\History.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\Calculator.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\Subtract.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\Add.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\Client.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\ICompressor.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\IFilter.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\ImageStore.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\BWFilter.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\IOperation.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\JPEGCompressor.cs" />
+    <Compile Include="DesignPattern\Behavioural\Strategy\PNGCompressor.cs" />
     <Compile Include="DPExercise.cs" />
     <Compile Include="Heap.cs" />
     <Compile Include="Microsoft.cs" />
@@ -124,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ArrayNString\" />
+    <Folder Include="DesignPattern\Behavioural\Visitor\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

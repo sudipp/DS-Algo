@@ -1241,12 +1241,6 @@ namespace ConsoleApplication1
         {
             try {
 
-                MicrosoftFolder.MaxCarParkedTimeSlot
-                    .GetMaxCarParkedTimeSlot(new int[][] { new int[] {1,4}, new int[] { 2,4 }, new int[] { 3,6 },
-
-                    new int[] {8,15}, new int[] { 9,14 }, new int[] { 9,15 },new int[] { 11,12 }
-                    });
-
                 int[,] items = new int[4, 2];// { new int[2] { 1, 2 }, new int[2] { 4, 3 }, new int[2] { 5, 6 }, new int[2] { 6, 7 } };
                 items[0, 0] = 1;
                 items[0, 1] = 2;
