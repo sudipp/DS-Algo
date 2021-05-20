@@ -79,6 +79,12 @@
     <Compile Include="DesignPattern\Behavioural\Command\fx\IUndoableCommand.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\ImageResizeCommand.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\UndoCommand.cs" />
+    <Compile Include="DesignPattern\Behavioural\Observer\Client.cs" />
+    <Compile Include="DesignPattern\Behavioural\Observer\DataSource.cs" />
+    <Compile Include="DesignPattern\Behavioural\Observer\IObserver.cs" />
+    <Compile Include="DesignPattern\Behavioural\Observer\Chart.cs" />
+    <Compile Include="DesignPattern\Behavioural\Observer\Spreadsheet.cs" />
+    <Compile Include="DesignPattern\Behavioural\Observer\SubjectObservable.cs" />
     <Compile Include="DesignPattern\Behavioural\State\BrushTool.cs" />
     <Compile Include="DesignPattern\Behavioural\State\Canvas.cs" />
     <Compile Include="DesignPattern\Behavioural\State\Client.cs" />
