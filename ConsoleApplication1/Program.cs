@@ -12,6 +12,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Security.Cryptography;
+using ConsoleApplication1.DesignPattern.Behavioural.Visitor;
+using ConsoleApplication1.DesignPattern.Behavioural.Command;
 
 namespace ConsoleApplication1
 {
