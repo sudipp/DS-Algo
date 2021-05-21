@@ -14,6 +14,8 @@ using System.Collections.ObjectModel;
 using System.Security.Cryptography;
 using ConsoleApplication1.DesignPattern.Behavioural.Visitor;
 using ConsoleApplication1.DesignPattern.Behavioural.Command;
+using ConsoleApplication1.DesignPattern.Structural.Decorator;
+using ConsoleApplication1.DesignPattern.Structural.Proxy;
 
 namespace ConsoleApplication1
 {
