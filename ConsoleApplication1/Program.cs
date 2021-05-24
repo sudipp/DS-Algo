@@ -16,6 +16,7 @@ using ConsoleApplication1.DesignPattern.Behavioural.Visitor;
 using ConsoleApplication1.DesignPattern.Behavioural.Command;
 using ConsoleApplication1.DesignPattern.Structural.Decorator;
 using ConsoleApplication1.DesignPattern.Structural.Proxy;
+using ConsoleApplication1.AmazonOA;
 
 namespace ConsoleApplication1
 {
@@ -1239,11 +1240,27 @@ namespace ConsoleApplication1
             }
             return waterCount;
         }
-
         
         static void Main(string[] args)
         {
             try {
+                int[,] matrix = new int[3, 3];
+                matrix[0, 0] = 1;  matrix[0, 1] = 0; matrix[0, 2] = 0;
+                matrix[1, 0] = 1; matrix[1, 1] = 0; matrix[1, 2] = 0;
+                matrix[2, 0] = 1; matrix[2, 1] = 1; matrix[2, 2] = 9;
+                DemolitionRobot.findMinDiatnaceToObstacle(matrix);
+
+                List<int>[] coor = new List<int>[3] { new List<int>(new int[] { 1, 2 }), new List<int>(new int[] { 1, -1 }), new List<int>(new int[] { 3, 4 }) };
+                AmazonFreshDeliveries.GetClosestCoordinate(coor.ToList(), 2);
+
+//            eg: max travel distance is : 11000
+//forward route list: [1, 3000],[2,5000],[3,4000],[4,10000]
+//        backward route list : [1,2000],[2,3000],[3,4000]
+
+                minimum_cost_merging_files.minCostToMerge(new int[] { 14, 25, 5, 8 });
+                int[][] forward = new int[4][] { new int[] {1,3000}, new int[] { 2, 5000 }, new int[] { 3, 4000 }, new int[] { 4, 10000 } };
+                int[][] backward = new int[3][] { new int[] { 1, 2000 }, new int[] { 2, 3000 }, new int[] { 3, 4000 } };
+                AmazonPrimeAirRoute.getIdPairsForOptimal(forward.ToList(), backward.ToList(), 11000);
 
                 int[,] items = new int[4, 2];// { new int[2] { 1, 2 }, new int[2] { 4, 3 }, new int[2] { 5, 6 }, new int[2] { 6, 7 } };
                 items[0, 0] = 1;

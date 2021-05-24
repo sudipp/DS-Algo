@@ -154,6 +154,49 @@ namespace ConsoleApplication1
             return turnTime.ToList();
         }
 
+        //https://algo.monster/problems/min_job_difficulty
+        public int MinDifficulty(int[] jobDifficulty, int d)
+        {
+            int n = jobDifficulty.Length;
+
+            if (n < d)
+                return -1;
+
+            //https://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/discuss/490460/Java-Bottom-Up-DP-with-explanation
+            //https://www.youtube.com/watch?v=6EZVJWHt9Qg
+            //https://medium.com/@chuncaohenli/1335-minimum-difficulty-of-a-job-schedule-5ee30d10a88b
+
+            //dp[i,j] = min difficulty on "i"th day to finish "j" jobs
+            //dp[i,j] = Min(dp[i-1, k-1] + Max(k,j));
+
+            int[,] dp = new int[d, n];
+            dp[0, 0] = jobDifficulty[0];
+            for (int i = 1; i < n; i++)
+                dp[0, i] = Math.Max(dp[0, i - 1], jobDifficulty[i]);
+
+            for (int i = 1; i < d; i++)
+            {
+                for (int j = i; j < n; j++)
+                {
+                    int max = jobDifficulty[j];
+                    dp[i, j] = int.MaxValue;
+
+                    for (int k = j; k >= i; k--)
+                    {
+                        max = Math.Max(max, jobDifficulty[k]);
+                        dp[i, j] = Math.Min(dp[i, j], max + dp[i - 1, k - 1]);
+                    }
+                }
+            }
+            return dp[d - 1, n - 1];
+        }
+
+        //Minimum Total Container Size
+        //https://algo.monster/problems/minimum_total_container_size
+        //https://leetcode.com/discuss/interview-question/958494/Minimum-Total-Container-Size-or-Interview-Question
+
+
+
         class Pair
         {
             public KeyValuePair<int, string> V;
@@ -246,6 +289,7 @@ namespace ConsoleApplication1
         }
 
         //algo.monster/problems/number_of_islands
+
 
 
         //https://algo.monster/problems/items_in_containers

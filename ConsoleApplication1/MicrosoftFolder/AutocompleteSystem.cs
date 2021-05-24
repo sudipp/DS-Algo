@@ -63,7 +63,6 @@ namespace ConsoleApplication1.MicrosoftFolder
 
         public IList<string> Input(char c)
         {
-
             if (c == '#')
             {
                 Add(prefix, 1);

@@ -64,6 +64,10 @@
   <ItemGroup>
     <Compile Include="AbstractClass.cs" />
     <Compile Include="Amazon.cs" />
+    <Compile Include="AmazonOA\AmazonFreshDeliveries.cs" />
+    <Compile Include="AmazonOA\AmazonPrimeAirRoute.cs" />
+    <Compile Include="AmazonOA\DemolitionRobot.cs" />
+    <Compile Include="AmazonOA\minimum-cost-merging-files.cs" />
     <Compile Include="ArrayExercise - Copy.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\AddCustomerCommand.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\Document.cs" />
