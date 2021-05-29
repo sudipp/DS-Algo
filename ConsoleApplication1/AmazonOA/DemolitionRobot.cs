@@ -40,6 +40,7 @@ namespace ConsoleApplication1.AmazonOA
                     if (matrix[current.Item1, current.Item2] == 9)
                         return depth;
 
+                    //mark 
                     matrix[current.Item1, current.Item2] = 0;
 
                     //use neigbours

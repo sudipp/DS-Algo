@@ -1447,7 +1447,7 @@ namespace ConsoleApplication1
                 logs.Add("345366 382391 23");
                 logs.Add("029323 345366 13");
                 logs.Add("382391 382391 23");
-                Amazon.getUserWithLogMoreThanThreshold(logs, 3);
+                AmazonOA.transactionlogs.getUserWithLogMoreThanThreshold(logs, 3);
 
                 //MincostTickets(new int[] {1,2,3,4,6,8,9,10,13,14,16,17,19,21,24,26,27,28,29 }, new int[] { 3,14,50});
                 

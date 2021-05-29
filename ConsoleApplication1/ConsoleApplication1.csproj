@@ -68,6 +68,8 @@
     <Compile Include="AmazonOA\AmazonPrimeAirRoute.cs" />
     <Compile Include="AmazonOA\DemolitionRobot.cs" />
     <Compile Include="AmazonOA\minimum-cost-merging-files.cs" />
+    <Compile Include="AmazonOA\RobotBoundedInCircle.cs" />
+    <Compile Include="AmazonOA\transactionlogs.cs" />
     <Compile Include="ArrayExercise - Copy.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\AddCustomerCommand.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\Document.cs" />
@@ -136,9 +138,12 @@
     <Compile Include="Heap.cs" />
     <Compile Include="Microsoft.cs" />
     <Compile Include="MicrosoftFolder\AutocompleteSystem.cs" />
+    <Compile Include="MicrosoftFolder\ReplaceQuestinWithLettersThatAreNotNextToEachOther.cs" />
+    <Compile Include="MicrosoftFolder\MaxSum2NumberWhoseDigitSumsAreEqual.cs" />
     <Compile Include="MicrosoftFolder\MaxCarParkedTimeSlot.cs" />
     <Compile Include="MicrosoftFolder\EmployeeFreeTime.cs" />
     <Compile Include="MicrosoftFolder\EvaluateBooleanExpression.cs" />
+    <Compile Include="MicrosoftFolder\MaxDistanceBewteen2Frogs.cs" />
     <Compile Include="MicrosoftFolder\StreamMedianFinder.cs" />
     <Compile Include="MicrosoftFolder\NumberExpressionEvaluator.cs" />
     <Compile Include="RecursionExercise.cs" />
