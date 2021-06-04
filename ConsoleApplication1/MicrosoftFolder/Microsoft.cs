@@ -1489,9 +1489,7 @@ Given A = [1,5,2,4,3,3], the function should return 3. There are 3 segments: (1,
             {
                 sum = A[i] + A[i + 1];
 
-                //*** count sumber of setset after i + 1 equal to sum   
-                //int count = countSubSets(A, i + 2, sum);
-
+                //*** count sumber of setset after i + 1 equal to sum
                 int count = 1;
                 hs.Clear();
                 for (int j = i + 2; j < A.Length; j++)

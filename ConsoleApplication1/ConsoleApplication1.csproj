@@ -136,7 +136,7 @@
     <Compile Include="DesignPattern\Structural\Proxy\RealEBook.cs" />
     <Compile Include="DPExercise.cs" />
     <Compile Include="Heap.cs" />
-    <Compile Include="Microsoft.cs" />
+    <Compile Include="MicrosoftFolder\Microsoft.cs" />
     <Compile Include="MicrosoftFolder\AutocompleteSystem.cs" />
     <Compile Include="MicrosoftFolder\ReplaceQuestinWithLettersThatAreNotNextToEachOther.cs" />
     <Compile Include="MicrosoftFolder\MaxSum2NumberWhoseDigitSumsAreEqual.cs" />
