@@ -138,6 +138,7 @@
     <Compile Include="Heap.cs" />
     <Compile Include="MicrosoftFolder\Microsoft.cs" />
     <Compile Include="MicrosoftFolder\AutocompleteSystem.cs" />
+    <Compile Include="MicrosoftFolder\Reader-writer-lock.cs" />
     <Compile Include="MicrosoftFolder\ReplaceQuestinWithLettersThatAreNotNextToEachOther.cs" />
     <Compile Include="MicrosoftFolder\MaxSum2NumberWhoseDigitSumsAreEqual.cs" />
     <Compile Include="MicrosoftFolder\MaxCarParkedTimeSlot.cs" />
