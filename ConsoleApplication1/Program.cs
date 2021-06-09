@@ -17,6 +17,8 @@ using ConsoleApplication1.DesignPattern.Behavioural.Command;
 using ConsoleApplication1.DesignPattern.Structural.Decorator;
 using ConsoleApplication1.DesignPattern.Structural.Proxy;
 using ConsoleApplication1.AmazonOA;
+using ConsoleApplication1.MicrosoftFolder;
+using ConsoleApplication1.Stack;
 
 namespace ConsoleApplication1
 {
@@ -1244,6 +1246,14 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             try {
+
+                BinarySearchExercise.CutRibbon(new int[] { 1, 2, 3, 4, 9 }, 5);
+
+                NearestSmallerLeftRight.NSL(new int[] { 71, 55, 82, 55});
+                NearestSmallerLeftRight.NSR(new int[] { 71, 54, 82, 55});
+
+                JclosestNumbersToK.GetJclosestNumbersToK(new int[] { 2, 3, 5, 11, 27, 34, 55, 92 }, 5, 18);
+
                 int[,] matrix = new int[3, 3];
                 matrix[0, 0] = 1;  matrix[0, 1] = 0; matrix[0, 2] = 0;
                 matrix[1, 0] = 1; matrix[1, 1] = 0; matrix[1, 2] = 0;

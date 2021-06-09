@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractClass.cs" />
-    <Compile Include="Amazon.cs" />
+    <Compile Include="AmazonOA\Amazon.cs" />
     <Compile Include="AmazonOA\AmazonFreshDeliveries.cs" />
     <Compile Include="AmazonOA\AmazonPrimeAirRoute.cs" />
     <Compile Include="AmazonOA\DemolitionRobot.cs" />
@@ -136,6 +136,7 @@
     <Compile Include="DesignPattern\Structural\Proxy\RealEBook.cs" />
     <Compile Include="DPExercise.cs" />
     <Compile Include="Heap.cs" />
+    <Compile Include="MicrosoftFolder\JclosestNumbersToK.cs" />
     <Compile Include="MicrosoftFolder\Microsoft.cs" />
     <Compile Include="MicrosoftFolder\AutocompleteSystem.cs" />
     <Compile Include="MicrosoftFolder\Reader-writer-lock.cs" />
@@ -159,6 +160,8 @@
     <Compile Include="BinarySearchExercise.cs" />
     <Compile Include="SortingSearchingLogarithmsExercise.cs" />
     <Compile Include="GraphExercise.cs" />
+    <Compile Include="Stack\NearestGreaterLeftRight.cs" />
+    <Compile Include="Stack\NearestSmallerLeftRight.cs" />
     <Compile Include="Threading.cs" />
     <Compile Include="TreeGraphExercise - Copy.cs" />
     <Compile Include="TreeExercise.cs" />

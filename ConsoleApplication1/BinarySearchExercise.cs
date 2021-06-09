@@ -6,6 +6,100 @@ namespace ConsoleApplication1
 {
     public class BinarySearchExercise
     {
+        //https://leetcode.com/discuss/interview-question/354854/
+        public static int CutWood(int[] wood, int k)
+        {
+            if (wood.Length == 0)
+                return 0;
+
+            int l = 1, r = int.MinValue;
+            foreach (int w in wood)
+            {
+                if (w < k) return 0;
+                r = Math.Max(r, w);
+            }
+
+            while(l <= r)
+            {
+                int m = l + (r - l) / 2;
+                if (CanCutWood(wood, m, k))
+                    l = m + 1;
+                else
+                    r = m - 1;
+            }
+            return r;
+        }
+
+        private static bool CanCutWood(int[] wood, int m, int k)
+        {
+            int count = 0;
+            foreach (int w in wood)
+                count += w / m;
+
+            return count >= k;
+        }
+
+        //https://leetcode.com/discuss/interview-question/388503/Google-or-Phone-Screen-or-Cut-Ribbon
+        public static int CutRibbon(int[] ribbonLengths, int k)
+        {
+            if (ribbonLengths.Length == 0 || k == 0)
+                return 0;
+
+            int l = 1, r = int.MinValue;
+            foreach(int rl in ribbonLengths)
+                r = Math.Max(r, rl);
+            
+            while( l <= r)
+            {
+                int m = l + (r - l) / 2;
+                if (CanCutRibbon(ribbonLengths, m, k))
+                    l = m + 1;
+                else
+                    r = m - 1;
+            }
+            return r;
+        }
+        private static bool CanCutRibbon(int[] ribbonLengths, int m, int k)
+        {
+            int count = 0;
+            foreach (int rl in ribbonLengths)
+                if(rl >= m)
+                    count += rl / m;
+
+            return count >= k;
+        }
+
+
+        public static double maximum_serving_area(int[] radii, int k)
+        {
+            double l = 0, r = 0;
+            for(int i = 0; i < radii.Length; i++)  
+            {
+                double area = (double)radii[i] * (double)radii[i] * 3.141592;
+                r = Math.Max(r, area);
+            }
+            while(l + 1e-5 <= r)
+            {
+                double m = l + (r - l)/2;
+                if(check(m, radii, k))
+                    l = m ;
+                else 
+                    r = m;
+            }
+            return Math.Round(l, 4);
+        }
+        static bool check(double m, int[] radii, int K)
+        {
+            int sum = 0;
+            foreach(int r in radii)
+            {
+                sum += (int)((r * r * 3.141592) / m);
+                if (sum >= K) 
+                return true;
+            }
+            return false;
+        }  
+
         //702. Search in a Sorted Array of Unknown Size
         class SearchInSortedArrayofUnknownSize
         {
