@@ -19,6 +19,7 @@ using ConsoleApplication1.DesignPattern.Structural.Proxy;
 using ConsoleApplication1.AmazonOA;
 using ConsoleApplication1.MicrosoftFolder;
 using ConsoleApplication1.Stack;
+using ConsoleApplication1.SlidingWindow;
 
 namespace ConsoleApplication1
 {
@@ -1243,9 +1244,124 @@ namespace ConsoleApplication1
             return waterCount;
         }
         
+        private static int AscendingMeetingEndTime(int[] interval1, int[] interval2)
+        {
+            if (interval1.Equals(interval2))
+                return 0;
+            else
+            {
+                if (interval1[1].CompareTo(interval2[1]) == 0)
+                    return 1;
+                else
+                    return interval1[1].CompareTo(interval2[1]);
+            }
+        }
+
+        public static string Decode(string str)
+        {
+            //str = "3[a2[c]]";
+            Stack<int> repeat = new Stack<int>();
+            Stack<string> sub_string = new Stack<string>();
+
+            //bool collectRepeat = true;
+            //bool collectSubStr = false;
+            int r = 0;
+            while(r < str.Length)
+            {
+                int n = 0;
+                while (r < str.Length && char.IsDigit(str[r]))
+                {
+                    n += (n * 10) + str[r] - '0';
+                    r++;
+                }
+                if(n > 0)
+                    repeat.Push(n);
+
+                if(str[r] == '[') //collect caracters to be repeated
+                {
+                    r ++;
+                    int l = r;                    
+                    while (r < str.Length && char.IsLetter(str[r]))
+                        r ++;
+                    
+                    if(r > l)
+                    {
+                        string subStr = str.Substring(l, r - l);
+                        sub_string.Push(subStr);
+                    }
+                }
+                else if(str[r] == ']' && sub_string.Any() && repeat.Any()) //actual repeat process
+                {
+                    string subStr = string.Concat(Enumerable.Repeat(sub_string.Pop(), repeat.Pop()));
+                    //push the repeated string back to sub_string 'stack'
+                    if (sub_string.Any())
+                        subStr = sub_string.Pop() + subStr;
+
+                    sub_string.Push(subStr);
+                    r ++;
+                }
+                else //any alphabets after ] till next digit
+                {
+                    int l = r;
+                    while (r < str.Length && !char.IsDigit(str[r]))
+                        r++;
+
+                    if (r > l)
+                    {
+                        string subStr = str.Substring(l, r - l);
+                        sub_string.Push(sub_string.Pop() + subStr);
+                    }
+                }
+            }
+            return sub_string.Pop();
+        }
+
+
+        public class Pair
+        {
+            public int elIndex = 0, LstIndex = 0;
+            public Pair(int elIdx, int aidx)
+            {
+                elIndex = elIdx;
+                LstIndex = aidx;
+            }
+        }
+
+        static List<int[]> GlobalLists;
+
+        public static int AscendingSorter(Pair x, Pair y)
+        {
+            // Two nodes are equal only when their index are same 
+            if (x.LstIndex == y.LstIndex)
+                return 0;
+            else
+            {
+                if (GlobalLists[x.LstIndex][x.elIndex] == GlobalLists[y.LstIndex][y.elIndex])
+                    return -1;// x.LstIndex.CompareTo(y.LstIndex);
+                else
+                    return GlobalLists[x.LstIndex][x.elIndex].CompareTo(GlobalLists[y.LstIndex][y.elIndex]);
+            }
+        }
+
         static void Main(string[] args)
         {
-            try {
+            try
+            {
+
+                SortedSet<int[]> minHeap = new SortedSet<int[]>(Comparer<int[]>.Create(AscendingMeetingEndTime));
+                
+                int[] testLst = new int[10];
+
+                var sortedDictionary = new SortedDictionary<int, List<int>>(Comparer<int>.Create(Descending));
+                Array.Sort(testLst, Comparer<int>.Create(Descending));
+                Array.Sort(testLst, (i, j) => { return j.CompareTo(i); });
+
+                Decode("3[a2[c]]");
+                Decode("3[a]2[bc]");
+                Decode("2[abc]3[cd]ef");
+
+                MaxSlidingWindow.GetMaxSlidingWindow(new int[] { 1, 3, -1, -3, 5, 3, 6, 7}, 3);
+                MaxFreq.GetMaxFreq("aababcaab", 2, 3, 4);
 
                 BinarySearchExercise.CutRibbon(new int[] { 1, 2, 3, 4, 9 }, 5);
 
@@ -1333,13 +1449,6 @@ namespace ConsoleApplication1
                 solveKnapsack(new int[] { 1,6,10,16}, new int[] { 1,2,3,5}, 7);
 
 
-                int[] testLst = new int[10];
-
-                var sortedDictionary = new SortedDictionary<int, List<int>>(Comparer<int>.Create(Descending));// new T1());
-
-                Array.Sort(testLst, Comparer<int>.Create(Descending));
-
-                Array.Sort(testLst, (i, j) => { return j.CompareTo(i); });
                 
                 testLst.ToList().Sort((i, j) => { return j.CompareTo(i); });
 

@@ -150,6 +150,9 @@
     <Compile Include="MicrosoftFolder\NumberExpressionEvaluator.cs" />
     <Compile Include="RecursionExercise.cs" />
     <Compile Include="DPRecursionBottomUpExercise.cs" />
+    <Compile Include="SlidingWindow\LongestSubstring.cs" />
+    <Compile Include="SlidingWindow\MaxSlidingWindow.cs" />
+    <Compile Include="SlidingWindow\MaxFreq.cs" />
     <Compile Include="StackQueueExercise.cs" />
     <Compile Include="GreedyAlgoExercise.cs" />
     <Compile Include="ListHashDictExercise.cs" />

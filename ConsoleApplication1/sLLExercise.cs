@@ -625,8 +625,15 @@ namespace ConsoleApplication1
         public static void runTest()
         {
             ListNode l1 = new ListNode(1);
-            l1.next = new ListNode(4);
-            //l1.next.next = new ListNode(5);
+            l1.next = new ListNode(2);
+            l1.next.next = new ListNode(3);
+            l1.next.next.next = new ListNode(4);
+            l1.next.next.next.next = new ListNode(5);
+            l1.next.next.next.next.next = new ListNode(6);
+            l1.next.next.next.next.next.next = new ListNode(7);
+            l1.next.next.next.next.next.next.next = new ListNode(8);
+
+
             ListNode l2 = new ListNode(1);
             l2.next = new ListNode(3);
             l2.next.next = new ListNode(4);
@@ -636,6 +643,9 @@ namespace ConsoleApplication1
             llArray[0] = l1;
             llArray[1] = l2;
             llArray[2] = l3;
+
+            Reverse1(l1, 3);
+
             MergeKLists(llArray);
 
 
@@ -703,5 +713,130 @@ namespace ConsoleApplication1
             list.reverse();
             list.printList();
         }
+
+
+
+
+
+
+
+        public static ListNode ReverseKGroup(ListNode head, int k)
+        {
+            //Get total node count
+            int nodeCount = 1;
+            ListNode tempHead = head;
+            while (tempHead != null)
+            {
+                nodeCount++;
+                tempHead = tempHead.next;
+            }
+
+            int countTill = 1, k1 = 0;
+
+            //create dummy head
+            ListNode fakeHead = new ListNode(-1);
+            //ListNode newHead = new ListNode(-1);
+            //tempHead = newHead;
+            ListNode fakeHead1 = fakeHead;//new ListNode(-1);        
+            //fakeHead1 = fakeHead;
+
+            while (head != null)
+            {
+                if (nodeCount - countTill >= k)
+                {
+                    //Console.WriteLine("www");
+
+                    ListNode next = null;
+                    ListNode kGrouplast = null;
+                    k1 = k;
+                    while (k1 > 0 && head != null)
+                    {
+                        Console.WriteLine(fakeHead.val);
+
+                        fakeHead.next = head;
+                        ListNode headNext = head.next;
+
+                        head.next = next;
+                        next = head;
+
+                        if (kGrouplast == null)
+                            kGrouplast = head;
+
+                        //move head forward
+                        head = headNext;
+
+                        k1--;
+                        countTill++;
+                    }
+
+                    fakeHead = kGrouplast;
+                }
+                else
+                {
+                    Console.WriteLine("www");
+                    fakeHead.next = head;
+                    break;
+                }
+            }
+
+            return fakeHead1.next;
+        }
+
+
+        public static ListNode Reverse1(ListNode head, int k)
+        {
+            bool reverse = true;
+
+            //create dummy head
+            ListNode fakeHead = new ListNode(-1);
+            ListNode tempHead = fakeHead;
+
+            while (head != null)
+            {
+                int k1 = 0;
+                if (reverse)
+                {
+                    ListNode next = null;
+                    ListNode kGrouplast = null;
+                    
+                    while (k1 < k && head != null)
+                    {
+                        fakeHead.next = head;
+                        ListNode headNext = head.next;
+
+                        head.next = next;
+                        next = head;
+
+                        //store reference of last node in the group
+                        if (kGrouplast == null)
+                            kGrouplast = head;
+
+                        //move head forward
+                        head = headNext;
+
+                        k1++;
+                    }
+                    //head must point to group's last node
+                    fakeHead = kGrouplast;
+                }
+                else
+                {
+                    while (k1 < k && head != null)
+                    {
+                        fakeHead.next = head;
+                        fakeHead = fakeHead.next;
+
+                        head = head.next;
+                        k1++;
+                    }
+                }
+                reverse = !reverse;
+            }
+
+            return tempHead.next;
+        }
     }
+
+
+    
 }
