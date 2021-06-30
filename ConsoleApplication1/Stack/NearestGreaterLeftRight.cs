@@ -12,7 +12,19 @@ namespace ConsoleApplication1.Stack
         {
             int[] NGL = new int[arr.Length];
             Stack<int> stack = new Stack<int>();
-            
+
+            //Store NGL of every element in arr
+            for (int i = 0; i < arr.Length; i++)
+            {
+                while (stack.Any() && stack.Peek() <= arr[i])
+                    stack.Pop();
+
+                NGL[i] = !stack.Any() ? -1 : stack.Peek();
+                //Console.Write(NSL[i] + ",");
+                stack.Push(arr[i]);
+            }
+            return NGL;
+
             //Store NGL of every element in arr
             for (int i = 0; i < arr.Length; i++)
             {
@@ -39,6 +51,18 @@ namespace ConsoleApplication1.Stack
         {
             int[] NGR = new int[arr.Length];
             Stack<int> stack = new Stack<int>();
+
+            //Store NGR of every element in arr
+            for (int i = arr.Length - 1; i >= 0; i--)
+            {
+                while (stack.Any() && stack.Peek() <= arr[i])
+                    stack.Pop();
+
+                NGR[i] = !stack.Any() ? arr.Length : stack.Peek();
+                //Console.Write(NSR[i] + ",");
+                stack.Push(arr[i]);
+            }
+            return NGR;
 
             //Store NGR of every element in arr
             for (int i = arr.Length - 1; i >= 0; i--)

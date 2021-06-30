@@ -1342,12 +1342,11 @@ namespace ConsoleApplication1
                     return GlobalLists[x.LstIndex][x.elIndex].CompareTo(GlobalLists[y.LstIndex][y.elIndex]);
             }
         }
-
+        
         static void Main(string[] args)
         {
             try
             {
-
                 SortedSet<int[]> minHeap = new SortedSet<int[]>(Comparer<int[]>.Create(AscendingMeetingEndTime));
                 
                 int[] testLst = new int[10];
