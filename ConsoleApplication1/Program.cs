@@ -985,7 +985,7 @@ namespace ConsoleApplication1
             return j.CompareTo(i);
         }
 
-        class T :IComparable<int>
+        class T : IComparable<int>
         {
             int IComparable<int>.CompareTo(int other)
             {
@@ -1033,7 +1033,7 @@ namespace ConsoleApplication1
                 return 0;
 
             int n = profits.Length;
-            int[, ] dp = new int[n + 1, capacity + 1];
+            int[,] dp = new int[n + 1, capacity + 1];
 
             // populate the capacity=0 columns, with '0' capacity we have '0' profit
             for (int i = 0; i <= n; i++)
@@ -1091,7 +1091,7 @@ namespace ConsoleApplication1
             //f(i,1,k) = Max (f(i - 1,1,k), f(i - 1, 0, k) - prices[i - 1])
 
             int k = 2; //k transactions
-            int[,,] dp = new int[prices.Length + 1, 2, k+1];
+            int[,,] dp = new int[prices.Length + 1, 2, k + 1];
 
             //base case...
             for (int ki = 0; ki <= k; ki++)
@@ -1148,7 +1148,7 @@ namespace ConsoleApplication1
             int cool = 1;
             int noCool = 0;
             int[,,] dp = new int[prices.Length + 1, 2, 2];
-            
+
             //base case...
             dp[0, 0, noCool] = 0;            //First day, profit 0, with holding '0' stock on hand
             dp[0, 0, cool] = 0;
@@ -1243,7 +1243,7 @@ namespace ConsoleApplication1
             }
             return waterCount;
         }
-        
+
         private static int AscendingMeetingEndTime(int[] interval1, int[] interval2)
         {
             if (interval1.Equals(interval2))
@@ -1266,7 +1266,7 @@ namespace ConsoleApplication1
             //bool collectRepeat = true;
             //bool collectSubStr = false;
             int r = 0;
-            while(r < str.Length)
+            while (r < str.Length)
             {
                 int n = 0;
                 while (r < str.Length && char.IsDigit(str[r]))
@@ -1274,23 +1274,23 @@ namespace ConsoleApplication1
                     n += (n * 10) + str[r] - '0';
                     r++;
                 }
-                if(n > 0)
+                if (n > 0)
                     repeat.Push(n);
 
-                if(str[r] == '[') //collect caracters to be repeated
+                if (str[r] == '[') //collect caracters to be repeated
                 {
-                    r ++;
-                    int l = r;                    
+                    r++;
+                    int l = r;
                     while (r < str.Length && char.IsLetter(str[r]))
-                        r ++;
-                    
-                    if(r > l)
+                        r++;
+
+                    if (r > l)
                     {
                         string subStr = str.Substring(l, r - l);
                         sub_string.Push(subStr);
                     }
                 }
-                else if(str[r] == ']' && sub_string.Any() && repeat.Any()) //actual repeat process
+                else if (str[r] == ']' && sub_string.Any() && repeat.Any()) //actual repeat process
                 {
                     string subStr = string.Concat(Enumerable.Repeat(sub_string.Pop(), repeat.Pop()));
                     //push the repeated string back to sub_string 'stack'
@@ -1298,7 +1298,7 @@ namespace ConsoleApplication1
                         subStr = sub_string.Pop() + subStr;
 
                     sub_string.Push(subStr);
-                    r ++;
+                    r++;
                 }
                 else //any alphabets after ] till next digit
                 {
@@ -1342,1440 +1342,2933 @@ namespace ConsoleApplication1
                     return GlobalLists[x.LstIndex][x.elIndex].CompareTo(GlobalLists[y.LstIndex][y.elIndex]);
             }
         }
-        
-        static void Main(string[] args)
+
+
+        public static IList<string> MostVisitedPattern(string[] username, int[] timestamp, string[] website)
         {
-            try
+            Dictionary<string, List<(int, string)>> users = new Dictionary<string, List<(int, string)>>();  // Maps a username to a list of accesses (timestamp, website)-pairs.
+
+            for (int i = 0; i < username.Length; i++)
             {
-                SortedSet<int[]> minHeap = new SortedSet<int[]>(Comparer<int[]>.Create(AscendingMeetingEndTime));
+                if (!users.ContainsKey(username[i]))
+                    users.Add(username[i], new List<(int, string)>());
+                users[username[i]].Add((timestamp[i], website[i]));
+            }
+
+            foreach (List<(int, string)> accesses in users.Values)
+            {
+                accesses.Sort((a, b) => { return a.Item1.CompareTo(b.Item1); });   // Sort accesses of each user by timestamp (ascending order).
+            }
+
+            List<string> result = null;
+            int resOccurrences = -1;
+            string resKey = null;
+            Dictionary<string, int> threeSequences = new Dictionary<string, int>();          // Maps a 3-sequence to the number of users that have it.
+
+            foreach (string user in users.Keys)
+            {
+                List<(int, string)> accesses = users[user];
+                HashSet<string> seen = new HashSet<string>();
+                for (int i = 0; i < accesses.Count - 2; i++)
+                {
+                    for (int j = i + 1; j < accesses.Count - 1; j++)
+                    {
+                        for (int k = j + 1; k < accesses.Count; k++)
+                        {
+                            string key = accesses[i].Item2 + "-" + accesses[j].Item2 + "-" + accesses[k].Item2;
+                            if (seen.Contains(key))
+                                continue;
+
+                            if (!threeSequences.ContainsKey(key))
+                            {
+                                threeSequences.Add(key, 0);
+                                seen.Add(key);
+                            }
+                            threeSequences[key]++;
+
+                            if (resOccurrences <= threeSequences[key] && key.CompareTo(resKey) < 0)//.CompareTo(key) > 0)
+                            {
+                                result = new string[] { accesses[i].Item2, accesses[j].Item2, accesses[k].Item2 }.ToList();
+                                resOccurrences = threeSequences[key];
+                                resKey = key;
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static int Calculate(string s)
+        {
+
+            if (s == null || s.Length == 0)
+                return 0;
+            Stack<int> nums = new Stack<int>(); // the stack that stores numbers
+            Stack<char> ops = new Stack<char>(); // the stack that stores operators (including parentheses)
+
+            //To handle group starts with +/- we will insert 0 in the number 
+            bool isNewGorup = true; //expression start is a group start
+            for (int i = 0; i < s.Length; i++)
+            {
+                char c = s[i];
+                if (c == ' ')
+                    continue;
+
+                if (char.IsDigit(c))
+                {
+                    int num = 0;
+                    while (i < s.Length && char.IsDigit(s[i]))
+                    {
+                        num = num * 10 + (s[i] - '0');
+                        i++;
+                    }
+                    i--;
+
+                    nums.Push(num);
+                    isNewGorup = false;
+                }
+                else if (c == '(')
+                {
+                    ops.Push(c);
+
+                    // ( is also a group start
+                    isNewGorup = true;
+                }
+                else if (c == ')')
+                {
+                    // do the math when we encounter a ')' until '('
+                    while (ops.Peek() != '(')
+                        nums.Push(operation(ops.Pop(), nums.Pop(), nums.Pop()));
+
+                    ops.Pop(); // get rid of '(' in the ops stack
+                    isNewGorup = false;
+                }
+                else if (c == '+' || c == '-' || c == '*' || c == '/')
+                {
+                    //if stack has higher or equal priority OP, than the current OP, then do the higher priority OP calculation first and 
+                    //store calculation result into stack.
+                    while (ops.Any() && Priority(c) <= Priority(ops.Peek()))
+                        nums.Push(operation(ops.Pop(), nums.Pop(), nums.Pop()));
+
+                    //To handle group starts with +/- we will insert 0 in the number 
+                    if (isNewGorup)
+                        nums.Push(0);
+                    isNewGorup = false;
+
+                    //push the current OP
+                    ops.Push(c);
+                }
+            }
+
+            while (ops.Any())
+            {
+                nums.Push(operation(ops.Pop(), nums.Pop(), nums.Pop()));
+            }
+            return nums.Pop();
+        }
+
+        private static int operation(char op, int b, int a)
+        {
+            switch (op)
+            {
+                case '+': return a + b;
+                case '-': return a - b;
+                case '*': return a * b;
+                case '/': return a / b; // assume b is not 0
+            }
+            return 0;
+        }
+
+        private static int Priority(char op)
+        {
+            if (op == '(' || op == ')')
+                return 1;
+            else if (op == '+' || op == '-')
+                return 2;
+            else if (op == '*' || op == '/')
+                return 3;
+            else
+                return -1;
+        }
+
+        private static void DFS(string str, int idx, List<char> slate)
+        {
+            if (idx == str.Length)
+            {
+                Console.WriteLine(new string(slate.ToArray()));
+                return;
+            }
+
+            DFS(str, idx + 1, slate);
+
+            slate.Add(str[idx]);
+            DFS(str, idx + 1, slate);
+            slate.RemoveAt(slate.Count - 1);
+        }
+
+        public static int NumTreesBottomUp(int n)
+        {
+            //dp[i] represents, number of structuraly unique BST for i nodes
+            int[] dp = new int[n + 1];
+            dp[0] = 1; //number of unique BST with 0 node is 1, i,e empty BST
+            dp[1] = 1; //number of unique BST with 1 node is 1, i,e node itself
+
+            int l = 0, r = 0;
+            for (int i = 2; i <= n; i++)
+            {
+                l = 0;
+                r = i - 1;
+                while (l <= i - 1)
+                {
+                    dp[i] += dp[l] * dp[r];
+
+                    l++;
+                    r--;
+                }
+            }
+            /*for (int i = 2; i <= n; i++) 
+            {
+                for (int j = 1; j <= i; j++) 
+                {
+                    dp[i] += dp[j - 1] * dp[i - j];
+                }
+            }*/
+
+            return dp[n];
+        }
+
+        private static int ConvertFromString(string str)
+        {
+            int result = 0;
+            checked
+            {
+                for (int i = 0; i < str.Length; i++)
+                    if (char.IsDigit(str[i]))
+                        result = ((result * 10) + (str[i] - '0'));
+                    else
+                        throw new Exception("Invalid Input");
+            }
+            return result;
+        }
+        private static int ConvertFromBinaryString(string str)
+        {
+            int result = 0;
+            int pow = 1;
+            for (int i = str.Length - 1; i >= 0; i--)
+            {
+                if (char.IsDigit(str[i]) && str[i] <= '1')
+                    result += pow * (str[i] - '0');
+                else
+                    throw new Exception("Invalid Input");
+
+                pow *= 2;
+            }
+            return result;
+        }
+        private static int ConvertFromHexaString(string str)
+        {
+            int result = 0;
+            int pow = 1;
+            for (int i = str.Length - 1; i >= 0; i--)
+            {
+                if (char.IsDigit(str[i]))
+                    result += pow * (str[i] - '0');
+                else if (char.IsLetter(str[i]) && (str[i] <= 'F' || str[i] <= 'f'))
+                    result += pow * (str[i] - (char.IsUpper(str[i]) ? 'A' : 'a') + 10);
+                else
+                    throw new Exception("Invalid Input");
+
+                pow *= 16;
+            }
+            return result;
+        }
+
+
+
+        public class Pair1
+        {
+            public char value;
+            public int index;
+            public Pair1(int idx, char v)
+            {
+                index = idx;
+                value = v;
+            }
+        }
+
+        public static int DescendingSorter(Pair1 x, Pair1 y)
+        {
+            // Two nodes are equal only when their indices are same 
+            if (x.Equals(y))
+                return 0;
+            else if (x.index == y.index)
+                return -1; // or x.index.CompareTo(y.index);
+            else
+                return y.index.CompareTo(x.index);
+        }
+
+        public static string ReorganizeString(string str)
+        {
+            // find the frequency of each number
+            Dictionary<char, int> numFrequencyMap = new Dictionary<char, int>();
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (!numFrequencyMap.ContainsKey(str[i]))
+                    numFrequencyMap.Add(str[i], 0);
+
+                numFrequencyMap[str[i]]++;
+            }
+
+            SortedSet<Pair1> maxHeap = new SortedSet<Pair1>(Comparer<Pair1>.Create(DescendingSorter));
+
+            // add all characters to the max heap
+            foreach (char key in numFrequencyMap.Keys)
+            {
+                maxHeap.Add(new Pair1(numFrequencyMap[key], key));
+            }
+
+            Queue<Pair1> queue = new Queue<Pair1>();
+            Pair1 previousEntry = null;
+            StringBuilder resultString = new StringBuilder();
+            while (maxHeap.Any())
+            {
+                Pair1 currentEntry = maxHeap.First();
+                maxHeap.Remove(maxHeap.First());
+
+                // append the current character to the result string and decrement its count
+                resultString.Append(currentEntry.value);
+                currentEntry.index--;
+
+                queue.Enqueue(currentEntry);
+
+                /*
+                // add the previous entry back in the heap if its frequency is greater than zero
+                if (previousEntry != null && previousEntry.value > 0)
+                    maxHeap.Add(previousEntry);
+
+                previousEntry = currentEntry;*/
+
+                //make sure that we have 2 distance between same letter
+                if (queue.Count == 2)
+                {
+                    Pair1 entry = queue.Dequeue();
+                    if (entry.index > 0)
+                        maxHeap.Add(entry);
+                }
+            }
+
+            //Console.WriteLine(resultString.ToString());
+
+            // if we were successful in appending all the characters to the result string, return it
+            return resultString.Length == str.Length ? resultString.ToString() : "";
+        }
+
+        public int NumberOfSteps(int num)
+        {
+            if (num < 0)
+                return 0;
+
+            int res = 0;
+            while (num > 0)
+            {
+                res += ((num & 1) == 1 ? 2 : 1);
+                num = num >> 1;  //divide it
+            }
+            return res - 1;
+        }
+
+
+
+        
+
+        public static IList<IList<int>> FindSubsequences(int[] arr)
+        {
+            if (arr.Length == 0)
+                return new List<IList<int>>();
+
+            IList<IList<int>> result = new List<IList<int>>();
+
+            //dp[i] stores the length of LIS ending at 'i'
+            int[] dp = new int[arr.Length];
+
+            //Longest LIS ending at 0th index is 1, it’s the number itself
+            dp[0] = 1;
+
+            result.Add(new List<int>() { arr[0], arr[0] });
+            result.Add(new List<int>() { arr[0], arr[0] });
+
+            int omax = 1;
+            for (int i = 1; i < arr.Length; i++)
+            {
+                //find max LIS among all previous 'i', which are smaller than current value
+                int max = 0;
+                for (int j = 0; j < i; j++)
+                {
+                    if (arr[j] <= arr[i])  //must be smaller than current value
+                    {
+                        max = Math.Max(max, dp[j]); //pick the maximum LIS value
+                        var x = result[j];
+                        /*foreach (List<int> lst1 in result[j])
+                        {
+                            IList<int> local = new List<int>(lst1.ToArray());
+                            local.Add(arr[i]);
+                            result.Add(local);
+                        }*/
+                    }
+                }
+                dp[i] = max + 1;
+
+                //omax = Math.Max(omax, dp[i]);
+            }
+
+            Console.WriteLine(result.Count);
+
+            return result;
+        }
+
+        public static Result MaxSumSubmatrix(int[][] matrix, int k)
+        {
+            int rows = matrix.Length;
+            int cols = matrix[0].Length;
+            int[] temp = new int[rows];
+            Result result = new Result();
+            
+            for (int left = 0; left < cols; left++)
+            {
+                //Array.Fill(temp, 0);
+                for (int i = 0; i < rows; i++)
+                    temp[i] = 0;
                 
-                int[] testLst = new int[10];
+                for (int right = left; right < cols; right++)
+                {
+                    for (int i = 0; i < rows; i++)
+                        temp[i] += matrix[i][right];
 
-                var sortedDictionary = new SortedDictionary<int, List<int>>(Comparer<int>.Create(Descending));
-                Array.Sort(testLst, Comparer<int>.Create(Descending));
-                Array.Sort(testLst, (i, j) => { return j.CompareTo(i); });
+                    KadaneResult kadaneResult = kadane(temp, k);
 
-                Decode("3[a2[c]]");
-                Decode("3[a]2[bc]");
-                Decode("2[abc]3[cd]ef");
+                    if(kadaneResult.maxSum > result.maxSum)
+                    {
+                        result.maxSum = kadaneResult.maxSum;
+                        result.leftBound = left;
+                        result.rightBound = right;
+                        result.upBound = kadaneResult.start;
+                        result.lowBound = kadaneResult.end;
+                    }
+                }
+            }
+            return result;
+        }
 
-                MaxSlidingWindow.GetMaxSlidingWindow(new int[] { 1, 3, -1, -3, 5, 3, 6, 7}, 3);
-                MaxFreq.GetMaxFreq("aababcaab", 2, 3, 4);
+        private static KadaneResult kadane(int[] arr, int k)
+        {
+            int max = 0;
+            int maxStart = -1;
+            int maxEnd = -1;
+            int currentStart = 0;
+            int maxSoFar = 0;
+            for (int i = 0; i < arr.Length; i++)
+            {
+                maxSoFar += arr[i];
+                if (maxSoFar < 0)
+                {
+                    maxSoFar = 0;
+                    currentStart = i + 1;
+                }
+                if (max < maxSoFar)
+                {
+                    maxStart = currentStart;
+                    maxEnd = i;
+                    max = maxSoFar;
+                }
+            }
+            return new KadaneResult(max, maxStart, maxEnd);
+        }
 
-                BinarySearchExercise.CutRibbon(new int[] { 1, 2, 3, 4, 9 }, 5);
+        public class Result
+        {
+            public int maxSum;
+            public int leftBound;
+            public int rightBound;
+            public int upBound;
+            public int lowBound;
+        }
+        public class KadaneResult
+        {
+            public int maxSum;
+            public int start;
+            public int end;
+            public KadaneResult(int maxSum, int start, int end)
+            {
+                this.maxSum = maxSum;
+                this.start = start;
+                this.end = end;
+            }
+        }
 
-                NearestSmallerLeftRight.NSL(new int[] { 71, 55, 82, 55});
-                NearestSmallerLeftRight.NSR(new int[] { 71, 54, 82, 55});
+        static void maxProductSubsequence(int[] nums, int n)
+        {
+            // Your code here
+            int[] min = new int[n];
+            Stack<int> stack = new Stack<int>();
 
-                JclosestNumbersToK.GetJclosestNumbersToK(new int[] { 2, 3, 5, 11, 27, 34, 55, 92 }, 5, 18);
+            for (int i = 0; i < nums.Length; i++)
+            {
+                while (stack.Any() && stack.Peek() >= nums[i])
+                    stack.Pop();
 
-                int[,] matrix = new int[3, 3];
-                matrix[0, 0] = 1;  matrix[0, 1] = 0; matrix[0, 2] = 0;
-                matrix[1, 0] = 1; matrix[1, 1] = 0; matrix[1, 2] = 0;
-                matrix[2, 0] = 1; matrix[2, 1] = 1; matrix[2, 2] = 9;
-                DemolitionRobot.findMinDiatnaceToObstacle(matrix);
+                min[i] = !stack.Any() ? nums[0] : stack.Peek();
+                stack.Push(nums[i]);
+            }
+            stack.Clear();
 
-                List<int>[] coor = new List<int>[3] { new List<int>(new int[] { 1, 2 }), new List<int>(new int[] { 1, -1 }), new List<int>(new int[] { 3, 4 }) };
-                AmazonFreshDeliveries.GetClosestCoordinate(coor.ToList(), 2);
+            int maxProd = nums[0]; 
+            for (int i = n - 1; i >= 0; i--)
+            {
+                //middle is greater than left
+                if (nums[i] > min[i])
+                {
+                    //ensures right/stack has bigger element than left
+                    while (stack.Any() && stack.Peek() <= nums[i])
+                        stack.Pop();
+
+                    //stack has descendent values, Middle is greater than right
+                    if (stack.Any())
+                        maxProd = Math.Max(maxProd, nums[i] * min[i] * stack.Peek());
+
+                    stack.Push(nums[i]);
+                }
+            }
+        }
+
+        public static int[] maxOfMin(int[] arr, int n)
+        {
+            Stack<int> stack = new Stack<int>();
+            int[] left = new int[n];
+            //find the NSL
+            for (int i = 0; i < n; i++)
+            {
+                while (stack.Any() && arr[stack.Peek()] >= arr[i])
+                    stack.Pop();
+
+                left[i] = (!stack.Any()) ? -1 : stack.Peek();
+                stack.Push(i);
+            }
+            //find the NSR
+            stack.Clear();
+            int[] right = new int[n];
+            for (int i = n - 1; i >= 0; i--)
+            {
+                while (stack.Any() && arr[stack.Peek()] >= arr[i])
+                    stack.Pop();
+
+                right[i] = (!stack.Any()) ? n : stack.Peek();
+                stack.Push(i);
+            }
+
+            int[] ans = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                // length of the interval
+                int len = (right[i] - left[i] - 1) - 1;
+
+                // arr[i] is a possible answer for this length len interval
+                ans[len] = Math.Max(ans[len], arr[i]);
+            }
+
+            for (int i=n-2; i>=0; i--)
+                ans[i] = Math.Max(ans[i], ans[i+1]);
+
+            return ans;
+        }
+
+        static int gmin = int.MaxValue;
+        public static int MinimumTimeRequired(int[] jobs, int k)
+        {
+            DFS(jobs, k, new bool[jobs.Length], 0);
+            return gmin;
+        }
+        private static int DFS(int[] jobs, int k, bool[] scheduled, int idx)
+        {
+            //completed filling up k-1 bucket with targetSubsetSum
+            //only 1 bucket left, this buckt will also be filled up by rest of items 
+            if (k == 1)
+                return Sum(jobs, idx, jobs.Length - 1);
+
+            int lmin = int.MaxValue;
+            int sum = 0;
+            for (int i = idx; i < (jobs.Length - idx - k + 1); i++)
+            {
+                if (scheduled[i])
+                    continue;
+
+                sum += jobs[i];
+                scheduled[i] = true;  //choose
+
+                int tempMin = DFS(jobs, k-1, scheduled, 0);
+
+                lmin = Math.Min(lmin, Math.Max(sum, tempMin));
+                gmin = Math.Min(gmin, lmin);
+
+                sum -= jobs[i];
+                scheduled[i] = false; //unchoose
+            }
+            return lmin;
+        }
+
+        static int Sum(int[] jobs, int st, int end)
+        {
+            int sum = 0;
+            for (; st <= end; st++)
+                sum += jobs[st];
+            return sum;
+        }
+
+        static void combinationUtil(int[] arr, List<int> data,
+        int start, int end,
+        int index)
+        {
+            for (int j = 0; j < data.Count; j++)
+                Console.Write(data[j] + " ");
+            Console.WriteLine("");
+
+            // replace index with all possible elements.
+            for (int i = start; i < end; i++)
+            {
+                data.Add(arr[i]);
+
+                combinationUtil(arr, data, i + 1, end, index + 1);
+
+                data.RemoveAt(data.Count - 1);
+            }
+        }
+
+        private static void SubSetSum(int[] nums, int start, int sum)
+        {
+            if (start == nums.Length)
+            {
+                Console.WriteLine(sum);
+                return;
+            }
+
+            sum += nums[start];
+            SubSetSum(nums, start + 1, sum);
+            sum -= nums[start];
+
+            SubSetSum(nums, start + 1, sum);
+        }
+        private static void SubSets(int[] nums, int start, IList<int> combination, IList<IList<int>> subsets)
+        {
+            if (start == nums.Length)
+            {
+                subsets.Add(new List<int>(combination));
+                return;
+            }
+
+            // Incldue the current element in subset
+            combination.Add(nums[start]);
+            SubSets(nums, start + 1, combination, subsets);
+            combination.RemoveAt(combination.Count - 1);
+
+            // Don't include the current element to subset
+            SubSets(nums, start + 1, combination, subsets);
+        }
+
+        private static void jobsdfs(int[] jobs, int pos, int[] sum)
+        {
+            if (pos == jobs.Length)
+            {
+                for (int i = 0; i < sum.Length; i++)
+                    Console.Write(sum[i] + " ");
+
+                Console.WriteLine();
+                //res = Math.min(res, Arrays.stream(sum).max().getAsInt());
+                return;
+            }
+            //if (Arrays.stream(sum).max().getAsInt() >= res) return;           //prune1
+            for (int i = 0; i < sum.Length; i++)
+            {
+                
+
+                //if (i > 0 && sum[i] == sum[i - 1]) continue;                  //prune2
+                sum[i] += jobs[pos];
+                jobsdfs(jobs, pos + 1, sum);
+                sum[i] -= jobs[pos];
+
+                jobsdfs(jobs, pos + 1, sum);
+
+            }
+        }
+
+
+        //int gmin = int.MaxValue;
+        public static void PartitionInKSubsets(int[] arr, int k)
+        {
+            IList<IList<int>> ans = new List<IList<int>>();
+            //we need to Split array among K subsets, so we need K subsets, 
+            //initially subsets are empty
+            for (int i = 0; i < k; i++)
+                ans.Add(new List<int>());
+            
+            DFS11(arr, 0, k, 0, ans);
+        }
+
+        private static void DFS11(int[] arr, int idxJ, int kSubSets, int nonEmptySetSoFar, IList<IList<int>> ans)
+        {
+            if (idxJ == arr.Length)
+            {
+                if (kSubSets == nonEmptySetSoFar)
+                {
+                    //Console.Write(sum + "->");
+                    foreach (IList<int> set in ans)
+                    {
+                        Console.Write(string.Join("", set) + " ");
+                    }
+                    Console.WriteLine();
+                }
+                return;
+            }
+
+            for (int i = 0; i < ans.Count; i++)
+            {
+                if (ans[i].Count > 0)
+                {
+                    ans[i].Add(arr[idxJ]);
+                    DFS11(arr, idxJ + 1, kSubSets, nonEmptySetSoFar, ans);
+                    ans[i].RemoveAt(ans[i].Count - 1);
+                }
+                else
+                {
+                    ans[i].Add(arr[idxJ]);
+                    DFS11(arr, idxJ + 1, kSubSets, nonEmptySetSoFar + 1, ans);
+                    ans[i].RemoveAt(ans[i].Count - 1);
+                    break;
+                }
+            }
+        }
+
+        private static void DFS1(int[] jobs, int idxJ, int kSubSets, int setSoFar, IList<int> ans, int sum)
+        {
+            if (idxJ == jobs.Length)
+            {
+                if (kSubSets == setSoFar)
+                {
+                    int max = int.MinValue;
+                    Console.Write(sum +"->");
+                    foreach (int setSum in ans)
+                    {
+                        Console.Write(setSum + " ");
+                        max = Math.Max(max, setSum);
+                    }
+                    gmin = Math.Min(gmin, max);
+                    Console.WriteLine();
+                }
+                return;
+            }
+
+
+            for (int i = 0; i < ans.Count; i++)
+            {
+                if (ans[i] > 0)
+                {
+                    ans[i] += jobs[idxJ];
+                    DFS1(jobs, idxJ+1, kSubSets, setSoFar, ans, sum);
+                    ans[i] -= jobs[idxJ];
+                }
+                else
+                {
+                    ans[i] += jobs[idxJ];
+                    DFS1(jobs, idxJ+1, kSubSets, setSoFar + 1, ans, sum);
+                    ans[i] -= jobs[idxJ];
+                    break;
+                }
+            }
+        }
+
+
+        private static int MinWorkerRequired(int[] jobDurations, int maxTimeLimit)
+        {
+            int l = 1, r = jobDurations[0];
+            for(int j=0; j< jobDurations.Length; j++)
+            {
+                r = Math.Max(r, jobDurations[j]);
+            }
+
+            int minWorker = -1;
+            while(l <= r)
+            {
+                int mWrkr = l + (r - l) / 2;
+                if(CanSchedule(jobDurations, mWrkr, maxTimeLimit))
+                {
+                    minWorker = mWrkr;
+                    r = mWrkr - 1;
+                }
+                else
+                    l = mWrkr + 1;
+            }
+            return minWorker;
+        }
+
+
+        public class Pair2
+        {
+            public int value;
+            public int index;
+            public Pair2(int idx, int v)
+            {
+                index = idx;
+                value = v;
+            }
+        }
+        private static int AscDurationComparer(Pair2 a, Pair2 b)
+        {
+            if (a.Equals(b))
+                return 0;
+            else if (a.value.Equals(b.value))
+                return -1;
+            else
+                return a.value.CompareTo(b.value);
+        }
+        private static bool CanSchedule(int[] jobDurations, int midWrkr, int maxTimeLimit)
+        {
+            if (midWrkr == 0 && maxTimeLimit > 0)
+                return false;
+
+            SortedSet<Pair2> activeWorkers = new SortedSet<Pair2>(Comparer<Pair2>.Create(AscDurationComparer));
+            //Add "midWrkr" workers with 0 time
+            for (int i=0; i < midWrkr; i++)
+                activeWorkers.Add(new Pair2(i, 0));
+
+            for (int i = 0; i < jobDurations.Length; i++)
+            {
+                int runningDuration = jobDurations[i] + activeWorkers.First().value;
+                if (runningDuration > maxTimeLimit)
+                    return false;
+
+                int idx = activeWorkers.First().index;
+                activeWorkers.Remove(activeWorkers.First());
+                activeWorkers.Add(new Pair2(idx, runningDuration));
+            }
+            return true;
+        }
+
+        public static int minWasteBfs(int cost, int[] bills)
+        {
+            Array.Sort(bills); //NLogN
+            HashSet<int> visited = new HashSet<int>();
+            SortedSet<int> queue = new SortedSet<int>(); //NLogN
+            visited.Add(0);
+            queue.Add(0);
+
+            while (queue.Any())
+            {
+                int cur = queue.First();
+                queue.Remove(queue.First());
+                if (cur >= cost)
+                {
+                    return cur - cost;
+                }
+
+                foreach (int bill in bills)
+                {
+                    int newAmount = bill + cur;
+                    if (!visited.Contains(newAmount))
+                    {
+                        visited.Add(newAmount);
+                        queue.Add(newAmount);
+                    }
+                }
+            }
+
+            return int.MaxValue;
+        }
+
+
+        static void Permutation(int[] boxes, int cIndex, int totalIndex)
+        {
+            if(cIndex > totalIndex)
+            {
+                for (int b = 0; b < boxes.Length; b++)
+                    Console.Write(boxes[b]);
+                Console.WriteLine();
+                return;
+            }
+
+            //Permutation, Items choices Box
+            for(int b=0; b<boxes.Length; b++)
+            {
+                if (boxes[b] == 0) //If box is Empty, It can put itself
+                {
+                    boxes[b] = cIndex; //putting itself
+                    //Every call will have 1 less than the previous choices
+                    //Level1 = n, Level2 = n-1 , Level3 = n-2 , Level4 = n-3 , Leveln-r+1 = n-r
+                    Permutation(boxes, cIndex + 1, totalIndex);                 
+                    boxes[b] = 0;     //removing itself
+                }
+            }
+        }
+
+        static void Combination(int currentBox, int totalBox, int itemSelectionSoFar, int totalItemSelection, string answerSoFar)
+        {
+            if (currentBox > totalBox)
+            {
+                if(itemSelectionSoFar == totalItemSelection)
+                    Console.WriteLine(answerSoFar);
+                return;
+            }
+
+            //Combination, Boxes will decide if he wants to be put item or not
+            Combination(currentBox + 1, totalBox, itemSelectionSoFar, totalItemSelection, answerSoFar + "-"); //box not selected
+            Combination(currentBox + 1, totalBox, itemSelectionSoFar + 1, totalItemSelection, answerSoFar + "i"); //box selected
+        }
+
+        static void CombinationToPermutation(int currentBox, int totalBox, int[] itemsUsed, int itemSelectionSoFar, int totalItemSelection, string answerSoFar)
+        {
+            if (currentBox > totalBox)
+            {
+                if (itemSelectionSoFar == totalItemSelection)
+                    Console.WriteLine(answerSoFar);
+                return;
+            }
+
+            //Combination, Boxes will decide if he wants to be put item or not
+            CombinationToPermutation(currentBox + 1, totalBox, itemsUsed, itemSelectionSoFar, totalItemSelection, answerSoFar + "0"); //box will not hold item
+
+            //box hold all items one by one
+            for (int i = 0; i < itemsUsed.Length; i++)
+            {
+                if (itemsUsed[i] == 0) //item not used
+                {
+                    itemsUsed[i] = 1; //Use this item
+                    CombinationToPermutation(currentBox + 1, totalBox, itemsUsed, itemSelectionSoFar + 1, totalItemSelection, answerSoFar + (i + 1));
+                    itemsUsed[i] = 0; //Return it
+                }
+            }
+        }
+
+
+        static int BrushCount(int[] buildings)
+        {
+            int brushCount = 0;
+            int prevHeight = 0;
+            for (int i = 0; i < buildings.Length; i++)
+            {
+                if (buildings[i] > prevHeight)
+                    brushCount += (buildings[i] - prevHeight);
+
+                //Always capture the latest height, this helps to detect if we need to start a new Store in future
+                prevHeight = buildings[i];
+            }
+            return brushCount;
+        }
+
+
+        static int StringToInt(string str)
+        {
+            int v = 0;
+            int m = 10;
+            for (int i = 0; i < str.Length; i++)
+                v = v * m + str[i] - '0';
+            //return v;
+
+            v = 0;
+            m = 1;
+            for (int i = str.Length - 1; i >= 0; i--)
+            {
+                v = (str[i] - '0') * m + v;
+                m = m * 10;
+            }
+            return v;
+        }
+
+        static void PermutationToCombination(int[] boxes, int itemIdx, int totalItemIdx, int lastBoxIndex)
+        {
+            if (itemIdx > totalItemIdx)
+            {
+                for (int b = 0; b < boxes.Length; b++)
+                    Console.Write(boxes[b]);
+                Console.WriteLine();
+                return;
+            }
+
+            //An Item choose Box one by one and place itself
+            //recersively calls for next Item to choose from n-1 boxes
+            for (int b = lastBoxIndex + 1; b < boxes.Length; b++)
+            {
+                if (boxes[b] == 0) //If box is Empty, It can put itself
+                {
+                    boxes[b] = itemIdx; //item putting itself
+
+                    //In every level, there will be 1 less boxes than the previous level
+                    //Level1 = n, Level2 = n-1 , Level3 = n-2 , Level4 = n-3 , Leveln-r+1 = n-r
+                    PermutationToCombination(boxes, itemIdx + 1, totalItemIdx, b);
+
+                    boxes[b] = 0;     //item removing itself
+                }
+            }
+        }
+
+
+        public static int NextGreaterElement(int n)
+        {
+
+            //Count digits in number
+            int digits = (int)Math.Floor(Math.Log10(Math.Abs(n))) + 1;
+            //convert number to int array
+            int[] nums = new int[digits];
+            int i = digits - 1;
+            while (n > 0)
+            {
+                nums[i--] = n % 10;
+                n = n / 10;
+            }
+
+            //From Right side, find the index(l) after which items are in Descending Order
+            int l = nums.Length - 2;
+            for (; l >= 0; l--)
+                if (nums[l] < nums[l + 1])
+                    break;
+
+            //if Whole array is descending 5320, next Bigger number is not possible
+            if (l == -1)
+            {
+                return -1;
+            }
+
+            //right side after "l", side whole is descending
+            //Pick the first item[smlIdx], whose value is bigger than nums[l]
+            int smlIdx = nums.Length - 1;
+            for (; smlIdx > l; smlIdx--)
+                if (nums[l] < nums[smlIdx])
+                    break;
+
+            //Swap - the values of l with smlIdx
+            int temp = nums[l];
+            nums[l] = nums[smlIdx];
+            nums[smlIdx] = temp;
+
+            //Reverse the right side of "l"
+            l++;
+            int r = nums.Length - 1;
+            while (l <= r)
+            {
+                temp = nums[l];
+                nums[l] = nums[r];
+                nums[r] = temp;
+                l++;
+                r--;
+            }
+
+            //convert array back to integer
+            long res = 0;
+            long dec = 1;
+            for (i = digits - 1; i >= 0; i--)
+            {
+                res = nums[i] * dec + res;
+                dec = dec * 10;
+            }
+            return res >= int.MaxValue ? -1 : (int)res;
+        }
+
+        public static int findNext(int n)
+        {
+            //Count digits in number
+            int digits = (int)Math.Floor(Math.Log10(Math.Abs(n))) + 1;
+            //convert number to int array
+            int[] nums = new int[digits];
+            int i = digits - 1;
+            while (n > 0)
+            {
+                nums[i--] = n % 10;
+                n = n / 10;
+            }
+
+            //From Right side, find the index(l) after which items are in Descending Order
+            int l = nums.Length - 2;
+            for (; l >= 0; l--)
+                if (nums[l] < nums[l + 1])
+                    break;
+
+            //if Whole array is descending 5320, next Bigger number is not possible
+            if (l == -1)
+            {
+                return -1;
+            }
+
+            //right side after "l", side whole is descending
+            //Pick the first item[smlIdx], whose value is bigger than nums[l]
+            int smlIdx = nums.Length - 1;
+            for (; smlIdx > l; smlIdx--)
+                if (nums[l] < nums[smlIdx])
+                    break;
+
+            //Swap - the values of l with smlIdx
+            int temp = nums[l];
+            nums[l] = nums[smlIdx];
+            nums[smlIdx] = temp;
+
+            //Reverse the right side of "l"
+            l++;
+            int r = nums.Length - 1;
+            while (l <= r)
+            {
+                temp = nums[l];
+                nums[l] = nums[r];
+                nums[r] = temp;
+                l++;
+                r--;
+            }
+
+            //convert array back to integer
+            int res = 0;
+            int dec = 1;
+            for (i = digits-1; i >=0; i--)
+            {
+                res = nums[i] * dec + res;
+                dec = dec * 10;
+            }
+            return res;
+        }
+
+        public static string NextPalindrome(string num)
+        {
+            //The String is palindrome, we just need to think about the first half part.
+            //The next smallest bigger number is the next permutation of the "first half"
+            int len = num.Length;
+
+            int[] arr = new int[len / 2];
+            for (int i = 0; i < arr.Length; i++)
+                arr[i] = num[i] - '0';
+
+            if (!NextPermutation(arr))
+                return "";
+
+            StringBuilder sb = new StringBuilder();
+            foreach (int item in arr)
+                sb.Append(item);
+
+            if (len % 2 == 1)
+                sb.Append(num.Substring(len / 2, 1));
+
+            for (int i = arr.Length - 1; i >= 0; i--)
+                sb.Append(arr[i]);
+
+            return sb.ToString();
+
+            /*if(len % 2 == 0) 
+                return sb.ToString() + sb.ToString().Reverse();
+            else 
+                return sb.ToString() + num.Substring(len / 2, len / 2 + 1) + sb.ToString().Reverse();*/
+        }
+
+        public static  bool NextPermutation(int[] nums)
+        {
+            //From Right side, find the index(l) after which items are in Descending Order
+            int l = nums.Length - 2;
+            for (; l >= 0; l--)
+                if (nums[l] < nums[l + 1])
+                    break;
+
+            //if Whole array is descending 5320, so l =-1
+            //Next permuation would be 0235, so rever the array and return
+            if (l == -1)
+            {
+                Array.Reverse(nums, 0, nums.Length);
+                return false;
+            }
+
+            //right side after "l", side whole is descending
+            //Pick the first item[smlIdx], whose value is bigger than nums[l]
+            int smlIdx = nums.Length - 1;
+            for (; smlIdx > l; smlIdx--)
+                if (nums[l] < nums[smlIdx])
+                    break;
+
+            //Swap - the values of l with smlIdx
+            int temp = nums[l];
+            nums[l] = nums[smlIdx];
+            nums[smlIdx] = temp;
+
+            //Reverse the right side of "l"
+            l++;
+            int r = nums.Length - 1;
+            while (l <= r)
+            {
+                temp = nums[l];
+                nums[l] = nums[r];
+                nums[r] = temp;
+                l++;
+                r--;
+            }
+
+            return true;
+        }
+
+        public static int SuperEggDrop(int e, int f)
+        {
+            int lo = 0, hi = f;  //max number of throws required is total floor(f)
+            int minThrows = 0;
+            while (lo <= hi)
+            {
+                int midThrow = lo + ((hi - lo) / 2);
+                if (CanMidThrowsCoverAllFloors(e, f, midThrow))
+                {
+                    minThrows = midThrow;
+                    hi = midThrow - 1;
+                }
+                else
+                    lo = midThrow + 1;
+            }
+            return minThrows;
+        }
+
+//        https://www.youtube.com/watch?v=xsOCvSiSrSs
+// Find sum of binomial coefficients
+// maxDrops(C)e (where e varies from 1 to e).
+//We will check with maxDrops if we can reach "f" floors
+private static bool CanMidThrowsCoverAllFloors(int e, int f, int maxDrops)
+        {
+            //if (((long)1 << maxDrops) > int.MaxValue)
+            //    return false;
+            long c = (long)1 << maxDrops;
+            return (c - 1) >= f;
+
+            //drop is equal to egg count
+            int res = 1, sum = 0;
+            for (int drop = 1; drop <= e && sum < f; drop++)
+            {
+                res *= (maxDrops - drop + 1);
+                res /= drop;
+                sum += res;
+            }
+            return sum >= f;
+        }
+
+    public static int Four_Sum(int[] nums1, int[] nums2, int[] nums3, int[] nums4)
+    {
+        List<int> ar1 = new List<int>();
+        List<int> ar2 = new List<int>();
+
+        for (int i = 0; i < nums1.Length; i++)
+            for (int j = 0; j < nums2.Length; j++)
+            {
+                ar1.Add(nums1[i] + nums2[j]);
+                ar2.Add(nums3[i] + nums4[j]);
+            }
+
+        //Sort 1 array
+        ar2.Sort();
+
+        int count = 0;
+        for (int i = 0; i < ar1.Count; i++)
+        {
+            int findSum = -1 * ar1[i];
+            int leftIdx = Search(-1, ar2, findSum);
+            int rightIdx = Search(0, ar2, findSum);
+
+            if (leftIdx != -1)
+                count += rightIdx - leftIdx + 1;
+        }
+        return count;
+    }
+
+    private static int Search(int direction, List<int> ar1, int findSum)
+    {
+        int idx = -1;
+        int l = 0, r = ar1.Count - 1;
+        while (l <= r)
+        {
+            int m = l + (r - l) / 2;
+            if (ar1[m] == findSum)
+            {
+                idx = m;
+                if (direction == -1) //search on left side
+                    r = m - 1;
+                else              //search on right side
+                    l = m + 1;
+            }
+            else if (ar1[m] < findSum)
+            {
+                l = m + 1;
+            }
+            else if (ar1[m] > findSum)
+            {
+                r = m - 1;
+            }
+        }
+        return idx;
+    }
+
+    public static int reverseBits(int input)
+    {
+        int j = 0;
+        bool found = false;
+        int rev = 0;
+        for (int i = 31; i >= 0; i--)
+        {
+            if (found) j++;
+            int mask = (1 << i);
+            if ((input & mask) != 0)
+            {
+                int rmask = (1 << j);
+                rev = rev | rmask;
+                found = true;
+            }
+        }
+        return rev;
+    }
+
+    public static List<int> getBuildingsWithAView(int[] buildings)
+    {
+        List<int> result = new List<int>();
+        Stack<(int, int)> stack = new Stack<(int, int)>();
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            while (stack.Any() && stack.Peek().Item2 < buildings[i])
+                stack.Pop();
+
+            if (!stack.Any())
+            {
+                result.Add(i);
+                stack.Push((i, buildings[i]));
+            }
+            else if (stack.Any() && result.Last() != stack.Peek().Item1)
+            {
+                result.Add(stack.Peek().Item1);
+                stack.Push((i, buildings[i]));
+            }
+        }
+
+        return result;
+    }
+    
+    public static string minWindow(string searchString, string t)
+    {
+        Dictionary<char, int> occ = new Dictionary<char, int>();
+        Dictionary<char, int> ocwin = new Dictionary<char, int>();
+        foreach (char c in t)
+        {
+            if (!occ.ContainsKey(c))
+            {
+                occ.Add(c, 0);
+                ocwin.Add(c, 0);
+            }
+            occ[c]++;
+        }
+
+        int minLength = int.MaxValue;
+        int lIdx = 0, rIdx = 0, l = 0;
+        int found = 0;
+        for (int r = 0; r < searchString.Length; r++)
+        {
+            char c = searchString[r];
+            if (occ.ContainsKey(c))
+            {
+                ocwin[c]++;
+                if(ocwin[c] <= occ[c])
+                    found++;
+            }
+            
+            while (found == t.Length)
+            {
+                if (r - l + 1 < minLength)
+                {
+                    lIdx = l;
+                    rIdx = r;
+                    minLength = r - l + 1;
+                }
+                //sqeeze from left side by 1 character
+                c = searchString[l++];
+                if (occ.ContainsKey(c))
+                {
+                    if (ocwin[c] <= occ[c])
+                        found--;
+                    ocwin[c]--;
+                }
+            }
+        }
+        return minLength == int.MaxValue ? "" : searchString.Substring(lIdx, rIdx - lIdx + 1);
+    }
+
+    public static string getWrongAnswers(int N, string C)
+    {
+        // Write your code here
+        //string choices = "AB";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < N; i++)
+        {
+            char correct = C[i];
+            sb.Append(correct == 'A' ? 'B' : 'A');
+        }
+        return sb.ToString();
+    }
+    static void Main(string[] args)
+    {
+        try
+        {
+            getWrongAnswers(3, "ABA");
+
+            minWindow("donutsandwafflemakemehungry", "flea");
+
+            getBuildingsWithAView(new int[] { 9,8,7});
+            reverseBits(29);
+
+
+            Four_Sum(new int[] {}, new int[] {}, new int[] {}, new int[] {});
+
+
+            NextPalindrome("1");
+            NextGreaterElement(1999999999);
+
+
+            findNext(218765);
+
+            PermutationToCombination(new int[3], 1, 2, -1);
+
+            int digits = (int)(Math.Floor(Math.Log10(Math.Abs(-123)))) + 1;
+
+
+            int[] carr = new int[26];
+            carr['c'-'a'] = 1;
+
+            StringToInt("1234");
+
+            BrushCount(new int[] { 4, 1, 2, 0, 2, 2 });
+
+            CombinationToPermutation(1, 3, new int[2], 0, 2, "");
+
+            Combination(1, 4, 0, 2, "");   // 4 C 2 = 6
+            Permutation(new int[4], 1 ,2);   //4 P 2 = 12
+
+
+            minWasteBfs(9, new int[] { 2, 5, 3 });
+            //MinimumTimeRequired1(new int[] { 1, 2, 4, 7, 8 }, 2);
+
+            MinWorkerRequired(new int[] { 1, 2, 3, 4, 10, 9, 8 }, 15);
+
+
+            jobsdfs(new int[] { 4, 3, 5 }, 0, new int[2]);
+
+            //var all = new List<IList<int>>();
+            //SubSets(new int[] { 1, 2, 3 }, 0, new List<int>(), all);
+
+            //IList<IList<int>> subsets = new List<IList<int>>();
+            //SubSets(new int[] { 1, 2, 3 }, 0, new List<int>(), subsets);,
+
+
+            int[] arr121 = { 1, 5, 3};
+            //SubSetSum(new int[] { 1, 2, 3 }, 0, 0);
+            combinationUtil(arr121, new List<int>(), 0, arr121.Length, 0);
+
+
+            MinimumTimeRequired(new int[]{ 1, 2, 4, 7, 8 }, 2);
+
+
+            maxOfMin(new int[] { 10, 20, 30, 50, 10, 70, 30 }, 7);
+
+            maxProductSubsequence(new int[] { 10, 11, 9, 5, 6, 1, 20 }, 7);
+            maxProductSubsequence(new int[] { 1, 2, 3, 4 },4);
+            //MaxSumSubmatrix(new int[][] { new int[] { 2,2,-1 }}, 2);
+
+            MaxSumSubmatrix(new int[][] { new int[] { 1, 0, 1 }, new int[] { 0, -2, 3 } }, -2);
+            //RodCutting(new int[] { 1,   5,   8,   9,  10,  17,  17,  20 });
+            //LongestIncreasingSubsequence(new int[] { -1, 2, 1, 2 });
+
+            List<List<int>> res = new List<List<int>>();
+            res.Add(new List<int>() { 0, 0, 0, 1 });
+            res.Add(new List<int>(){0, 1, 0, 0});
+            res.Add(new List<int>() { 0, 1, 0, 0});
+            res.Add(new List<int>() { 0, 1, 0, 1});
+            //Program1.SquareOfZeroes(res);
+
+            FindSubsequences(new int[] { 4, 6, 7, 7 });
+
+            ReorganizeString("vvvlo");
+
+            ConvertFromString("100000000000000000000");
+
+            ConvertFromBinaryString("10101");
+            ConvertFromHexaString("AC3");
+            System.Convert.ToInt32("AABCDF991", 16);
+            //System.Convert.ToInt32("101", 2);
+
+
+            int result = 0;
+            string wwe = "1234";
+            foreach (char c1 in wwe)
+                result = (result * 10) + (c1 - '0');
+
+
+
+
+            NumTreesBottomUp(3);
+
+            string str = "abc";
+            DFS(str, 0, new List<char>());
+
+            TreeExercise.runTest();
+            sLLExercise.runTest();
+
+            Calculate("(1+(4+5+2)-3)");
+
+            SortedSet<int[]> minHeap = new SortedSet<int[]>(Comparer<int[]>.Create(AscendingMeetingEndTime));
+                
+            int[] testLst = new int[10];
+
+            var sortedDictionary = new SortedDictionary<int, List<int>>(Comparer<int>.Create(Descending));
+            Array.Sort(testLst, Comparer<int>.Create(Descending));
+            Array.Sort(testLst, (i, j) => { return j.CompareTo(i); });
+
+            Decode("3[a2[c]]");
+            Decode("3[a]2[bc]");
+            Decode("2[abc]3[cd]ef");
+
+            MaxSlidingWindow.GetMaxSlidingWindow(new int[] { 1, 3, -1, -3, 5, 3, 6, 7}, 3);
+            MaxFreq.GetMaxFreq("aababcaab", 2, 3, 4);
+
+            BinarySearchExercise.CutRibbon(new int[] { 1, 2, 3, 4, 9 }, 5);
+
+            NearestSmallerLeftRight.NSL(new int[] { 71, 55, 82, 55});
+            NearestSmallerLeftRight.NSR(new int[] { 71, 54, 82, 55});
+
+            JclosestNumbersToK.GetJclosestNumbersToK(new int[] { 2, 3, 5, 11, 27, 34, 55, 92 }, 5, 18);
+
+            int[,] matrix = new int[3, 3];
+            matrix[0, 0] = 1;  matrix[0, 1] = 0; matrix[0, 2] = 0;
+            matrix[1, 0] = 1; matrix[1, 1] = 0; matrix[1, 2] = 0;
+            matrix[2, 0] = 1; matrix[2, 1] = 1; matrix[2, 2] = 9;
+            DemolitionRobot.findMinDiatnaceToObstacle(matrix);
+
+            List<int>[] coor = new List<int>[3] { new List<int>(new int[] { 1, 2 }), new List<int>(new int[] { 1, -1 }), new List<int>(new int[] { 3, 4 }) };
+            AmazonFreshDeliveries.GetClosestCoordinate(coor.ToList(), 2);
 
 //            eg: max travel distance is : 11000
 //forward route list: [1, 3000],[2,5000],[3,4000],[4,10000]
 //        backward route list : [1,2000],[2,3000],[3,4000]
 
-                minimum_cost_merging_files.minCostToMerge(new int[] { 14, 25, 5, 8 });
-                int[][] forward = new int[4][] { new int[] {1,3000}, new int[] { 2, 5000 }, new int[] { 3, 4000 }, new int[] { 4, 10000 } };
-                int[][] backward = new int[3][] { new int[] { 1, 2000 }, new int[] { 2, 3000 }, new int[] { 3, 4000 } };
-                AmazonPrimeAirRoute.getIdPairsForOptimal(forward.ToList(), backward.ToList(), 11000);
+            minimum_cost_merging_files.minCostToMerge(new int[] { 14, 25, 5, 8 });
+            int[][] forward = new int[4][] { new int[] {1,3000}, new int[] { 2, 5000 }, new int[] { 3, 4000 }, new int[] { 4, 10000 } };
+            int[][] backward = new int[3][] { new int[] { 1, 2000 }, new int[] { 2, 3000 }, new int[] { 3, 4000 } };
+            AmazonPrimeAirRoute.getIdPairsForOptimal(forward.ToList(), backward.ToList(), 11000);
 
-                int[,] items = new int[4, 2];// { new int[2] { 1, 2 }, new int[2] { 4, 3 }, new int[2] { 5, 6 }, new int[2] { 6, 7 } };
-                items[0, 0] = 1;
-                items[0, 1] = 2;
-                items[1, 0] = 4;
-                items[1, 1] = 3;
-                items[2, 0] = 5;
-                items[2, 1] = 6;
-                items[3, 0] = 6;
-                items[3, 1] = 7;
-                Microsoft.KnapsackProblem(items, 10);
+            int[,] items = new int[4, 2];// { new int[2] { 1, 2 }, new int[2] { 4, 3 }, new int[2] { 5, 6 }, new int[2] { 6, 7 } };
+            items[0, 0] = 1;
+            items[0, 1] = 2;
+            items[1, 0] = 4;
+            items[1, 1] = 3;
+            items[2, 0] = 5;
+            items[2, 1] = 6;
+            items[3, 0] = 6;
+            items[3, 1] = 7;
+            Microsoft.KnapsackProblem(items, 10);
 
-                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 10, 1, 3, 1, 2, 2, 1, 0, 4 });
-                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 10, 5, 1, 3, 1, 2, 2, 1, 6, 0, 4, 2, 3,3,3,3});
-                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 5, 3, 1, 3, 2, 3 });
-                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 9, 9, 9, 9, 9,9 });
-                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 1, 5, 2, 4, 3, 3 });
-                Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 1, 0, 1, 3, 1, 2, 2, 1, 0, 4 });
+            Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 10, 1, 3, 1, 2, 2, 1, 0, 4 });
+            Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 10, 5, 1, 3, 1, 2, 2, 1, 6, 0, 4, 2, 3,3,3,3});
+            Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 5, 3, 1, 3, 2, 3 });
+            Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 9, 9, 9, 9, 9,9 });
+            Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 1, 5, 2, 4, 3, 3 });
+            Microsoft.CountNonInterSectingSegmentsWithEqualSum(new int[] { 1, 0, 1, 3, 1, 2, 2, 1, 0, 4 });
 
-                MicrosoftFolder.EvaluateBooleanExpressionEvaluator
-                    .EvaluateBooleanExpression("TRUE OR FALSE OR ( TRUE AND FALSE OR TRUE OR ( TRUE AND FALSE ) ) AND TRUE");
+            MicrosoftFolder.EvaluateBooleanExpressionEvaluator
+                .EvaluateBooleanExpression("TRUE OR FALSE OR ( TRUE AND FALSE OR TRUE OR ( TRUE AND FALSE ) ) AND TRUE");
 
-                Microsoft.NumWays("abcde");
+            Microsoft.NumWays("abcde");
 
 
-                Microsoft.GetShortestBalancedSubstring("azABaabza");
-                Microsoft.GetShortestBalancedSubstring("AcZCbaBz");
+            Microsoft.GetShortestBalancedSubstring("azABaabza");
+            Microsoft.GetShortestBalancedSubstring("AcZCbaBz");
                 
                 
                 
 
-                Microsoft.MaximumGamesInAGivenPeriodOfTime("01:01", "02:00");
-                Microsoft.MaximumGamesInAGivenPeriodOfTime("12:01", "12:44");
-                Microsoft.MaximumGamesInAGivenPeriodOfTime("20:00", "06:00");
-                Microsoft.MaximumGamesInAGivenPeriodOfTime("00:00", "23:59");
+            Microsoft.MaximumGamesInAGivenPeriodOfTime("01:01", "02:00");
+            Microsoft.MaximumGamesInAGivenPeriodOfTime("12:01", "12:44");
+            Microsoft.MaximumGamesInAGivenPeriodOfTime("20:00", "06:00");
+            Microsoft.MaximumGamesInAGivenPeriodOfTime("00:00", "23:59");
                 
 
-                Microsoft.BiggestLetter("aaacbAbCd");
-                Microsoft.BiggestLetter("abcdE");
-                Microsoft.BiggestLetter("aA");
-                Microsoft.ElementsDifferByOne(new int[]{ 11, 1, 8, 12, 14 });
-                Microsoft.ElementsDifferByOne(new int[] { 5,5,5,5,5 });
+            Microsoft.BiggestLetter("aaacbAbCd");
+            Microsoft.BiggestLetter("abcdE");
+            Microsoft.BiggestLetter("aA");
+            Microsoft.ElementsDifferByOne(new int[]{ 11, 1, 8, 12, 14 });
+            Microsoft.ElementsDifferByOne(new int[] { 5,5,5,5,5 });
                 
-                Microsoft.CanCraneMovePackage(new int[] { 1,4,2 }, new int[] { 10,4,7 }, 11,1);
+            Microsoft.CanCraneMovePackage(new int[] { 1,4,2 }, new int[] { 10,4,7 }, 11,1);
 
-                Microsoft.ReplaceAllToAvoidConsecutiveRepeatingCharacters.ModifyString("ubv?w");
-                WaterArea(new int[] { 3, 0, 0, 2, 0, 4 });// 0, 1, 1, 0, 0 });
+            Microsoft.ReplaceAllToAvoidConsecutiveRepeatingCharacters.ModifyString("ubv?w");
+            WaterArea(new int[] { 3, 0, 0, 2, 0, 4 });// 0, 1, 1, 0, 0 });
 
-                //Threading.DemonstrateConcurrency();
-                Threading.DemonstrateParallelism();
+            //Threading.DemonstrateConcurrency();
+            Threading.DemonstrateParallelism();
                 
 
 
 
-                Microsoft.readStream(@"c:\IK.txt");
+            Microsoft.readStream(@"c:\IK.txt");
 
-                Microsoft.GetShortestBalancedSubstring("azABaabza");
-                Microsoft.MaxPossibleByInsertingFive(1234);
+            Microsoft.GetShortestBalancedSubstring("azABaabza");
+            Microsoft.MaxPossibleByInsertingFive(1234);
                 
-                solveKnapsack(new int[] { 1,6,10,16}, new int[] { 1,2,3,5}, 7);
+            solveKnapsack(new int[] { 1,6,10,16}, new int[] { 1,2,3,5}, 7);
 
 
                 
-                testLst.ToList().Sort((i, j) => { return j.CompareTo(i); });
+            testLst.ToList().Sort((i, j) => { return j.CompareTo(i); });
 
                
 
-                int[][] booked22 = new int[1][] { new int[] { 2,3 }};
+            int[][] booked22 = new int[1][] { new int[] { 2,3 }};
 
 
-                int[][] booked2 = new int[3][] { new int[] { 2,1 },
-                    new int[] { 1,8}, new int[] {2,6 }};
+            int[][] booked2 = new int[3][] { new int[] { 2,1 },
+                new int[] { 1,8}, new int[] {2,6 }};
 
-                int[][] booked1 = new int[4][] { new int[] { 4,3 },
-                    new int[] { 1,4}, new int[] { 4,6 }, new int[]{ 1,7}};
+            int[][] booked1 = new int[4][] { new int[] { 4,3 },
+                new int[] { 1,4}, new int[] { 4,6 }, new int[]{ 1,7}};
 
-                int[][] booked = new int[6][] { new int[] { 1, 2 },
-                    new int[] { 1, 3 }, new int[] { 1, 8 }, new int[]{ 2,6}, new int[]{ 3, 1 }, new int[]{ 3,10} };
+            int[][] booked = new int[6][] { new int[] { 1, 2 },
+                new int[] { 1, 3 }, new int[] { 1, 8 }, new int[]{ 2,6}, new int[]{ 3, 1 }, new int[]{ 3,10} };
                 
-                Microsoft.MaxNumberOfFamilies(3, booked22);
+            Microsoft.MaxNumberOfFamilies(3, booked22);
 
-                Microsoft.maxNetworkRank(new int[] { 1, 2, 3, 3 }, new int[]{ 2,3,1,4}, 4);
-
-
-                Microsoft.particleVelocity(new int[] { -1, 1, 3, 3, 3, 2, 3, 2, 1, 0 });
-
-                Microsoft.widestPath(new List<int>(new int[] { 5, 5, 5, 7, 7, 7 }), new List<int>(new int[] { 3, 4, 5, 1, 3, 7 }));
-                Microsoft.widestPath(new List<int>(new int[] { 6, 10, 1, 4, 3 }), new List<int>(new int[] { 2, 5, 3, 1, 6 }));
-                Microsoft.widestPath(new List<int>(new int[] { 4, 1, 5, 4 }), new List<int>(new int[] { 4, 5, 1, 3 }));
+            Microsoft.maxNetworkRank(new int[] { 1, 2, 3, 3 }, new int[]{ 2,3,1,4}, 4);
 
 
-                Microsoft.fairIndex(new int[]{4, -1, 0, 3}, new int[]{-2, 5, 0, 3});
-                Microsoft.fairIndex(new int[] { 2, -2, -3, 3 }, new int[] { 0, 0, 4, -4});
+            Microsoft.particleVelocity(new int[] { -1, 1, 3, 3, 3, 2, 3, 2, 1, 0 });
 
-                Microsoft.minSteps(new int[] { 5, 2, 1 });
-                Microsoft.minSteps(new int[] { 5, 5, 2, 2, 1, 1 });
-                Microsoft.minSteps(new int[] { 5, 5, 1 });
-                Microsoft.minSteps(new int[] { 5, 5, 5, 5, 1 });
-                Microsoft.minSteps(new int[] { 3, 2, 2 });
-
-                Microsoft.SmallestSubsequence("cbacdcbc");
-
-                IList<int[]> building = new List<int[]>();
-                building.Add(new int[3] { 0, 3, 3 });
-                building.Add(new int[3] { 1, 5, 3 });
-                building.Add(new int[3] { 2, 4, 3 });
-                building.Add(new int[3] { 3, 7, 3 });
-                //building.Add(new int[3] { 19, 24, 8 });
-
-               // [[1,38,219],[2,19,228],[2,64,106],[3,80,65],[3,84,8],[4,12,8],[4,25,14],[4,46,225],[4,67,187],[5,36,118],[5,48,211],[5,55,97],[6,42,92],[6,56,188],[7,37,42],[7,49,78],[7,84,163],[8,44,212],[9,42,125],[9,85,200],[9,100,74],[10,13,58],[11,30,179],[12,32,215],[12,33,161],[12,61,198],[13,38,48],[13,65,222],[14,22,1],[15,70,222],[16,19,196],[16,24,142],[16,25,176],[16,57,114],[18,45,1],[19,79,149],[20,33,53],[21,29,41],[23,77,43],[24,41,75],[24,94,20],[27,63,2],[31,69,58],[31,88,123],[31,88,146],[33,61,27],[35,62,190],[35,81,116],[37,97,81],[38,78,99],[39,51,125],[39,98,144],[40,95,4],[45,89,229],[47,49,10],[47,99,152],[48,67,69],[48,72,1],[49,73,204],[49,77,117],[50,61,174],[50,76,147],[52,64,4],[52,89,84],[54,70,201],[57,76,47],[58,61,215],[58,98,57],[61,95,190],[66,71,34],[66,99,53],[67,74,9],[68,97,175],[70,88,131],[74,77,155],[74,99,145],[76,88,26],[82,87,40],[83,84,132],[88,99,99]]
+            Microsoft.widestPath(new List<int>(new int[] { 5, 5, 5, 7, 7, 7 }), new List<int>(new int[] { 3, 4, 5, 1, 3, 7 }));
+            Microsoft.widestPath(new List<int>(new int[] { 6, 10, 1, 4, 3 }), new List<int>(new int[] { 2, 5, 3, 1, 6 }));
+            Microsoft.widestPath(new List<int>(new int[] { 4, 1, 5, 4 }), new List<int>(new int[] { 4, 5, 1, 3 }));
 
 
-                Microsoft.GetSkyline(building.ToArray());
+            Microsoft.fairIndex(new int[]{4, -1, 0, 3}, new int[]{-2, 5, 0, 3});
+            Microsoft.fairIndex(new int[] { 2, -2, -3, 3 }, new int[] { 0, 0, 4, -4});
 
-                Microsoft.maxLength(new string[] { "co", "di", "ity" });
-                Microsoft.maxLength(new string[] { "abc", "kkk", "defg", "csv" });
+            Microsoft.minSteps(new int[] { 5, 2, 1 });
+            Microsoft.minSteps(new int[] { 5, 5, 2, 2, 1, 1 });
+            Microsoft.minSteps(new int[] { 5, 5, 1 });
+            Microsoft.minSteps(new int[] { 5, 5, 5, 5, 1 });
+            Microsoft.minSteps(new int[] { 3, 2, 2 });
 
-                Microsoft.minAdjSwap("WWRWWWRWRR");
-                Microsoft.minAdjSwap("WWRWWWRWR");
-                Microsoft.minAdjSwap("WR");
-                Microsoft.minAdjSwap("WWW");
+            Microsoft.SmallestSubsequence("cbacdcbc");
 
+            IList<int[]> building = new List<int[]>();
+            building.Add(new int[3] { 0, 3, 3 });
+            building.Add(new int[3] { 1, 5, 3 });
+            building.Add(new int[3] { 2, 4, 3 });
+            building.Add(new int[3] { 3, 7, 3 });
+            //building.Add(new int[3] { 19, 24, 8 });
 
-                Microsoft.maxInserts("aab");
-                Microsoft.maxInserts("aba");
-                Microsoft.maxInserts("aabab");
-                Microsoft.maxInserts("dog");
-                Microsoft.maxInserts("baaaa");
-                Microsoft.maxInserts("aababaa");
-
-                Microsoft.SemiAlternateSubstring("baaabbabbb");
-                Microsoft.SemiAlternateSubstring("aababababbbabbababb");
-
-                Microsoft.longestValidString("aabbaabbaabbaaa");
-
-                
-
-                Microsoft.minStep("BAAABAB");
-
-                //TitleToNumber("AB");
-                //Amazon.getTimes(4, new List<int>(new int[] { 0, 0, 1, 6 }), new List<int>(new int[] { 0, 1, 1, 0 }));
-                /*Amazon.topMentioned(2, new List<string>(new string[] { "gatsby", "american", "novel" }),
-                    new List<string>(new string[] { "The opening of The Great Gatsby -- its first 3-4 pages -- ranks among the best of any novel in the English language." ,
-                        "It is masterful, some may say the great American novel.",
-                         "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald"
-                    }));*/
-                //Amazon.substrings("aabcdbcd", 3);
-                //s = , ranges = [[0, 4], [1, 6]]
-
-                /*var lst23 = new List<List<int>>();
-                lst23.Add(new List<int>(new int[] { 0,3 }));
-                Amazon.numberOfItems("|**|***|", lst23);
-                */
+            // [[1,38,219],[2,19,228],[2,64,106],[3,80,65],[3,84,8],[4,12,8],[4,25,14],[4,46,225],[4,67,187],[5,36,118],[5,48,211],[5,55,97],[6,42,92],[6,56,188],[7,37,42],[7,49,78],[7,84,163],[8,44,212],[9,42,125],[9,85,200],[9,100,74],[10,13,58],[11,30,179],[12,32,215],[12,33,161],[12,61,198],[13,38,48],[13,65,222],[14,22,1],[15,70,222],[16,19,196],[16,24,142],[16,25,176],[16,57,114],[18,45,1],[19,79,149],[20,33,53],[21,29,41],[23,77,43],[24,41,75],[24,94,20],[27,63,2],[31,69,58],[31,88,123],[31,88,146],[33,61,27],[35,62,190],[35,81,116],[37,97,81],[38,78,99],[39,51,125],[39,98,144],[40,95,4],[45,89,229],[47,49,10],[47,99,152],[48,67,69],[48,72,1],[49,73,204],[49,77,117],[50,61,174],[50,76,147],[52,64,4],[52,89,84],[54,70,201],[57,76,47],[58,61,215],[58,98,57],[61,95,190],[66,71,34],[66,99,53],[67,74,9],[68,97,175],[70,88,131],[74,77,155],[74,99,145],[76,88,26],[82,87,40],[83,84,132],[88,99,99]]
 
 
-                //Amazon.autoScale(new List<int>(new int[] { 80, 10, 20, 30, 50 }), 100000001);
+            Microsoft.GetSkyline(building.ToArray());
 
-                var lstA = new List<List<int>>();
+            Microsoft.maxLength(new string[] { "co", "di", "ity" });
+            Microsoft.maxLength(new string[] { "abc", "kkk", "defg", "csv" });
 
-                lstA.Add(new List<int>(new int[] { 1, 3 }));
-                lstA.Add(new List<int>(new int[] { 2, 5 }));
-                lstA.Add(new List<int>(new int[] { 3, 7 }));
-                lstA.Add(new List<int>(new int[] { 4, 10 }));
-                var lstB = new List<List<int>>();
-                lstB.Add(new List<int>(new int[] { 1, 2 }));
-                lstB.Add(new List<int>(new int[] { 2, 3 }));
-                lstB.Add(new List<int>(new int[] { 3, 4 }));
-                lstB.Add(new List<int>(new int[] { 4, 5 }));
-                Amazon.getPairs(lstA, lstB, 10);
+            Microsoft.minAdjSwap("WWRWWWRWRR");
+            Microsoft.minAdjSwap("WWRWWWRWR");
+            Microsoft.minAdjSwap("WR");
+            Microsoft.minAdjSwap("WWW");
 
 
-                List<string> logs = new List<string>();
-                logs.Add("345366 899212 45");
-                logs.Add("029323 382391 23");
-                logs.Add("382391 345366 15");
-                logs.Add("029323 382391 77");
-                logs.Add("345366 382391 23");
-                logs.Add("029323 345366 13");
-                logs.Add("382391 382391 23");
-                AmazonOA.transactionlogs.getUserWithLogMoreThanThreshold(logs, 3);
+            Microsoft.maxInserts("aab");
+            Microsoft.maxInserts("aba");
+            Microsoft.maxInserts("aabab");
+            Microsoft.maxInserts("dog");
+            Microsoft.maxInserts("baaaa");
+            Microsoft.maxInserts("aababaa");
 
-                //MincostTickets(new int[] {1,2,3,4,6,8,9,10,13,14,16,17,19,21,24,26,27,28,29 }, new int[] { 3,14,50});
-                
-                PalindromeTrie pt = new PalindromeTrie();
-                pt.PalindromePairs(new string[] { "pidus", "lllsudip" });
+            Microsoft.SemiAlternateSubstring("baaabbabbb");
+            Microsoft.SemiAlternateSubstring("aababababbbabbababb");
 
-
-                int[] prices11 = new int[10];
-                int[][][] dp11 = new int[prices11.Length + 1][][];
-                for (int d = 0; d < prices11.Length + 1; d++)
-                {
-                    dp11[d] = new int[2][];
-                    for (int d11 = 0; d11 < dp11[d].Length; d11++)
-                        dp11[d][d11] = new int[2];
-                }
-
-                PalindromePartition("madamzmadam");
-
-                FindDuplicates(new int[] { 4, 3, 2, 7, 8, 2, 3, 1 });
-
-
-                GetCollisionTimes.GetCollisionTimes1(new int[4][]{ new int[2] { 1, 2 }, new int[2] { 2, 1 },new int[2] { 4, 3 },new int[2] { 7, 2 }});
-
-
-                //1,7], toppingCosts = [3, 4], target = 10
-                //[3,10], toppingCosts = [2,5], target = 9
-                //[10], toppingCosts = [1], target = 1
-                ClosestCost1.ClosestCost(new int[] { 1,7 }, new int[] { 3,4 }, 10);
-
-                ClosestCost1.ClosestCost(new int[] {3,10 }, new int[] {2,5 }, 9);
-                ClosestCost1.ClosestCost(new int[] {10 }, new int[] {1 }, 1);
-
-                ClosestCost1.ClosestCost(new int[] {8,4,4,5,8}, new int[] {3,10,9,10,8,10,10,9,3 }, 6);
-
-                GenerateTrees.GenerateTrees1(5);
-
-                MinTaps.MinTaps1(3, new int[] { 0, 0, 0, 0 });
-
-
-                SortingSearchingLogarithmsExercise.runTest();
-                //GraphExercise.runTest();
-                ArrayExercise.runTest();
-                RecursionExercise.runTest();
+            Microsoft.longestValidString("aabbaabbaabbaaa");
 
                 
-                FullJustify(new string[] { "What", "must", "be", "acknowledgment", "shall", "be" }, 16);
-                //[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
-                Insert(new int[][]{ new int[]{1,2}, new int[]{3,5}, new int[] { 6, 7 }, new int[] { 8, 10 }, new int[] { 12, 16 } }, new int[]{ 4,8});
-               //Solution1.CanJump(new int[] { 3, 2, 1, 0, 4 });
-                RecursionExercise.runTest();
 
-                Convert("PAYPALISHIRING", 1);
+            Microsoft.minStep("BAAABAB");
+
+            //TitleToNumber("AB");
+            //Amazon.getTimes(4, new List<int>(new int[] { 0, 0, 1, 6 }), new List<int>(new int[] { 0, 1, 1, 0 }));
+            /*Amazon.topMentioned(2, new List<string>(new string[] { "gatsby", "american", "novel" }),
+                new List<string>(new string[] { "The opening of The Great Gatsby -- its first 3-4 pages -- ranks among the best of any novel in the English language." ,
+                    "It is masterful, some may say the great American novel.",
+                        "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald"
+                }));*/
+            //Amazon.substrings("aabcdbcd", 3);
+            //s = , ranges = [[0, 4], [1, 6]]
+
+            /*var lst23 = new List<List<int>>();
+            lst23.Add(new List<int>(new int[] { 0,3 }));
+            Amazon.numberOfItems("|**|***|", lst23);
+            */
 
 
-                Solution.FindSubstring("aaaaaaaaaaaaaa", new string[] { "aa", "aa"});
+            //Amazon.autoScale(new List<int>(new int[] { 80, 10, 20, 30, 50 }), 100000001);
 
-                Solution.FindSubstring("wordgoodgoodgoodbestword", new string[] { "word", "good", "best", "good" });//, "wing", "ding", "wing" });
-                Solution.FindSubstring("barfoothefoobarman", new string[] { "foo", "bar" });
-                Solution.FindSubstring("barfoofoobarthefoobarman", new string[] { "bar", "foo", "the" });
-                Solution.FindSubstring("wordgoodgoodgoodbestword", new string[] { "word", "good", "best", "word" });
+            var lstA = new List<List<int>>();
 
-                //MinWindow.MinWindow1("ADOBECODEBANC", "ABC");
-                //int[][] d = new int[1][] { new int[] { 1} };
-                //RainWaterII.TrapRainWater(d);
+            lstA.Add(new List<int>(new int[] { 1, 3 }));
+            lstA.Add(new List<int>(new int[] { 2, 5 }));
+            lstA.Add(new List<int>(new int[] { 3, 7 }));
+            lstA.Add(new List<int>(new int[] { 4, 10 }));
+            var lstB = new List<List<int>>();
+            lstB.Add(new List<int>(new int[] { 1, 2 }));
+            lstB.Add(new List<int>(new int[] { 2, 3 }));
+            lstB.Add(new List<int>(new int[] { 3, 4 }));
+            lstB.Add(new List<int>(new int[] { 4, 5 }));
+            Amazon.getPairs(lstA, lstB, 10);
 
-                LengthOfLongestSubstring("abcabd");
 
-                LargestSubarray(new int[] { 1, 4, 5, 2, 3 }, 3);
+            List<string> logs = new List<string>();
+            logs.Add("345366 899212 45");
+            logs.Add("029323 382391 23");
+            logs.Add("382391 345366 15");
+            logs.Add("029323 382391 77");
+            logs.Add("345366 382391 23");
+            logs.Add("029323 345366 13");
+            logs.Add("382391 382391 23");
+            AmazonOA.transactionlogs.getUserWithLogMoreThanThreshold(logs, 3);
 
-                ThreeSum1(new int[] { -1, 0, 1, 2, -1, -4 });
-
-                ArrayExercise.runTest();
-
-                GraphExercise.runTest();
-                TreeExercise.runTest();
-                //DPExercise.runTest();
-
-                //ArrayExercise.runTest();
-                //BinarySearchExercise.runTest();
-                //SortingSearchingLogarithmsExercise.runTest();
+            //MincostTickets(new int[] {1,2,3,4,6,8,9,10,13,14,16,17,19,21,24,26,27,28,29 }, new int[] { 3,14,50});
                 
-                //DPRecursionBottomUpExercise.runTest();
+            PalindromeTrie pt = new PalindromeTrie();
+            pt.PalindromePairs(new string[] { "pidus", "lllsudip" });
 
 
+            int[] prices11 = new int[10];
+            int[][][] dp11 = new int[prices11.Length + 1][][];
+            for (int d = 0; d < prices11.Length + 1; d++)
+            {
+                dp11[d] = new int[2][];
+                for (int d11 = 0; d11 < dp11[d].Length; d11++)
+                    dp11[d][d11] = new int[2];
+            }
 
-                RecursionExercise.runTest();
+            PalindromePartition("madamzmadam");
 
-                //GraphExercise.runTest();
+            FindDuplicates(new int[] { 4, 3, 2, 7, 8, 2, 3, 1 });
 
-                TreeExercise.runTest();
 
-                //
-                DPRecursionBottomUpExercise.runTest();
+            GetCollisionTimes.GetCollisionTimes1(new int[4][]{ new int[2] { 1, 2 }, new int[2] { 2, 1 },new int[2] { 4, 3 },new int[2] { 7, 2 }});
 
 
-                TreeNode root1 = new TreeNode(1);
-                root1.left = new TreeNode(0);
-                root1.left.left = new TreeNode(0);
-                root1.left.right = new TreeNode(1);
+            //1,7], toppingCosts = [3, 4], target = 10
+            //[3,10], toppingCosts = [2,5], target = 9
+            //[10], toppingCosts = [1], target = 1
+            ClosestCost1.ClosestCost(new int[] { 1,7 }, new int[] { 3,4 }, 10);
 
-                root1.right = new TreeNode(1);
-                root1.right.left = new TreeNode(0);
-                root1.right.right = new TreeNode(1);
+            ClosestCost1.ClosestCost(new int[] {3,10 }, new int[] {2,5 }, 9);
+            ClosestCost1.ClosestCost(new int[] {10 }, new int[] {1 }, 1);
 
-                SumRootToLeaf(root1);
+            ClosestCost1.ClosestCost(new int[] {8,4,4,5,8}, new int[] {3,10,9,10,8,10,10,9,3 }, 6);
 
-                WordBreak("leetcode", new string[] { "leet", "code" });
+            GenerateTrees.GenerateTrees1(5);
 
+            MinTaps.MinTaps1(3, new int[] { 0, 0, 0, 0 });
 
-                IList<int[]> vertices = new List<int[]>();
-                vertices.Add(new int[] { 1, 2 });
-                vertices.Add(new int[] { 3 });
-                vertices.Add(new int[] { 3 });
-                vertices.Add(new int[] { });
 
-                AllPathsSourceTarget(vertices.ToArray());
+            SortingSearchingLogarithmsExercise.runTest();
+            //GraphExercise.runTest();
+            ArrayExercise.runTest();
+            RecursionExercise.runTest();
 
-                int[] nums12 = new int[] { 1, 2, 1, 3, 2, 5 };
-                int xor = 0;
-                foreach (int n1 in nums12)
-                {
-                    xor ^= n1;
-                }
-
-                //1010", b = "1011
-                AddBinary("1010", "1011");
-                AngleClock(12, 30);
-
-                TreeNode tn = RecoverFromPreorder("1-401--349---90--88");
-
-                //string wwwww1 = Convert.ToString(67, toBase: 2);
-
-
-
-                var bitArray = new BitArray(BitConverter.GetBytes(67));
-
-                var bytes = BitConverter.GetBytes(1);
-                BitArray b1 = new BitArray(bytes);
-
-                StringBuilder bitstr = new StringBuilder();
-                uint cc = 1;
-
-                while (cc > 0)
-                {
-                    bitstr.Insert(0, cc & 1);
-                    cc = cc >> 1;
-                }
-
-
-                TreeNode root = new TreeNode(1);
-                root.left = new TreeNode(3);
-                root.right = new TreeNode(2);
-                root.left.left = new TreeNode(5);
-                //root.left.right = new TreeNode(3);
-                WidthOfBinaryTree(root);
-
-                ThreeSum(new int[] { -1, 0, 1, 2, -1, -4 });
-
-                GetPermutation(4, 3);
-                NextPermutation(new int[] { 4, 2, 3, 1 });
-
-
-                int[] coins = new int[] { 1, 2 };
-                int amount1 = 3;
-                int[] dp1 = new int[amount1 + 1];
-                dp1[0] = 1;
-                int[] dp2 = new int[amount1 + 1];
-                dp2[0] = 1;
-
-                for (int i = 0; i < coins.Length; i++)
-                {
-                    for (int j = coins[i]; j <= amount1; j++)
-                    {
-                        dp2[j] += dp2[j - coins[i]];
-                    }
-                }
-
-                // give target j, where it can come from
-                for (int i = 1; i <= amount1; i++)
-                {
-                    for (int j = 0; j < coins.Length; j++)
-                    {
-                        var number = i - coins[j];
-                        if (number >= 0)
-                        {
-                            //combinations[i] += combinations[number];
-                            dp1[i] += dp1[number];
-                        }
-                    }
-                }
-
-                CombinationSum4_Bottom_Up(new int[] { 1, 2, 3 }, 4);
-
-                int[] ar1 = new int[] { 1, 1, 2, 5, 6 };
-                Array.Sort(ar1);
-                result1 = new List<IList<int>>();
-
-                backtrack(ar1, new List<int>(), 0, 8);
-
-
-                IList<IList<string>> dddd = new List<IList<string>>();
-
-                var v = new List<string>();
-                v.Add("EZE");
-                v.Add("AXA");
-                dddd.Add(v);
-                v = new List<string>();
-                v.Add("TIA");
-                v.Add("ANU");
-                dddd.Add(v);
-                v = new List<string>();
-                v.Add("ANU");
-                v.Add("JFK");
-                v = new List<string>();
-                v.Add("JFK");
-                v.Add("ANU");
-                dddd.Add(v);
-
-
-                v = new List<string>();
-                v.Add("ANU");
-                v.Add("EZE");
-                dddd.Add(v);
-                v = new List<string>();
-                v.Add("TIA");
-                v.Add("ANU");
-                dddd.Add(v);
-
-                v = new List<string>();
-                v.Add("AXA");
-                v.Add("TIA");
-                dddd.Add(v);
-                v = new List<string>();
-                v.Add("TIA");
-                v.Add("JFK");
-                dddd.Add(v);
-                v = new List<string>();
-                v.Add("ANU");
-                v.Add("TIA");
-                dddd.Add(v);
-                v = new List<string>();
-                v.Add("JFK");
-                v.Add("TIA");
-                dddd.Add(v);
-
-                FindItinerary(dddd);
-
-
-                coinChange_DP_BottomUp1(new int[] { 2 }, 1);
-
-                CoinChange_DP(5, new int[] { 1, 2, 5 });
-
-                Change(11, new int[] { 1, 2, 5 });
-
-                LargestDivisibleSubset(new int[] { 2, 3, 8, 9, 27 });
-
-                int[][] menNheight = new int[6][];
-                menNheight[0] = new int[] { 7, 0 };
-                menNheight[1] = new int[] { 4, 4 };
-                menNheight[2] = new int[] { 7, 1 };
-                menNheight[3] = new int[] { 5, 0 };
-                menNheight[4] = new int[] { 6, 1 };
-                menNheight[5] = new int[] { 5, 2 };
-                ReconstructQueue(menNheight);
-
-                Subsets(new int[] { 1, 2, 3, 4 });
-
-                /*int[] test = new int[] { 1, 3, 4, 5 };
-
-                int search = 1;
-                int left1 = 0;
-                int right1 = test.Length - 1;
-                int mid11 = 0;
-                while (left1 <= right1)
-                {
-                    mid11 = left1 + (right1 - left1) / 2;
-
-                    if (test[mid11] == search)
-                        break;
-                    else if (test[mid11] < search)
-                        left1 = mid11 + 1;
-                    else
-                        right1 = mid11 - 1;
-                }
-                */
-
-
-                int[][] costs = new int[4][];
-                costs[3] = new int[] { 10, 20 };
-                costs[2] = new int[] { 30, 200 };
-                costs[1] = new int[] { 400, 500 };
-                costs[0] = new int[] { 30, 520 };
-                TwoCitySchedCost(costs);
-
-
-
-                ListNode ll = new ListNode(4);
-                ll.next = new ListNode(5);
-                ll.next.next = new ListNode(1);
-                ll.next.next.next = new ListNode(9);
-                DeleteNode(ref ll.next.next.next);
-
-
-
-                int[][] B11 = new int[4][];
-                B11[0] = new int[] { 1, 2 };
-                B11[1] = new int[] { 1, 3 };
-                B11[2] = new int[] { 2, 4 };
-                B11[3] = new int[] { 4, 1 };
-                PossibleBipartition(4, B11);
-
-
-
-                CharacterReplacement("AABABBA", 1);
-                int[] A1 = new int[] { 1, 3, 7, 1, 7, 5 };
-                int[] B1 = new int[] { 1, 9, 2, 5, 1 };
-                MaxUncrossedLines(A1, B1);
-
-                List<List<int>> triangle = new List<List<int>>();
-                triangle.Add(new List<int>() { 2 });
-                triangle.Add(new List<int>() { 3, 4 });
-                triangle.Add(new List<int>() { 6, 5, 7 });
-                triangle.Add(new List<int>() { 4, 1, 8, 3 });
-
-                int[] dp = new int[triangle.Count];
-
-                int x11111111111 = min(triangle, 0, 0, dp);
-
-                BuildBSTUsingRange(new int[] { 8, 5, 1, 7, 10, 12 }, int.MinValue, int.MaxValue);
-
-                int[][] A = new int[1][];
-                A[0] = new int[] { 8, 15 };
-
-                int[][] B = new int[3][];
-                B[0] = new int[] { 2, 6 };
-                B[1] = new int[] { 8, 10 };
-                B[2] = new int[] { 12, 20 };
-
-                /*int[][] A = new int[4][];
-                A[0] = new int[] { 0, 2 };
-                A[1] = new int[] { 5, 10 };
-                A[2] = new int[] { 13, 23 };
-                A[3] = new int[] { 24, 25 };
-
-                int[][] B = new int[4][];
-                B[0] = new int[] { 1, 5 };
-                B[1] = new int[] { 8,12 };
-                B[2] = new int[] { 15,24 };
-                B[3] = new int[] { 25,26 };
-                */
-
-                IntervalIntersection(A, B);
-
-
-                FrequencySort("tree");
-
-
-                Array.Sort(a1111, new SortTest());
-
-                Kadene(new int[] { -1, -2, -4 });
-
-
-                int testCase = int.Parse(args[0]);
-                string[] inputs = args[1].Split(' ');
-                string[] prices = args[2].Split(' ');
-                int amount = int.Parse(inputs[1]);
-                int houseCount = int.Parse(inputs[0]);
-                int[] pricesArray = new int[1000];
-                for (int x = 0; x < prices.Length; x++)
-                {
-                    pricesArray[int.Parse(prices[x])]++;
-                }
-
-                int count = 0;
-                for (int x = 0; x < pricesArray.Length; x++)
-                {
-                    while (pricesArray[x] > 0 && amount > 0 && x <= amount)
-                    //if(pricesArray[x] > 0 && amount > 0)
-                    {
-                        //if(x <= amount)
-                        {
-                            count++;
-                            amount -= x;
-                            pricesArray[x]--;
-                        }
-                    }
-
-                    if (amount <= 0)
-                        break;
-                }
-                Console.WriteLine("Case #1:" + count);
-
-
-
-
-                RemoveKdigits("1432219", 3);
-                //Sqrt(808201);
-                /*char[][] memo = new char[9][];
-
-                memo[0] = new char[] { 'X','X','X','X','O','O','X','X','O' };
-                memo[1] = new char[] { 'O','O','O','O','X','X','O','O','X'};
-                memo[2] = new char[] { 'X','O','X','O','O','X','X','O','X'};
-                memo[3] = new char[] { 'O','O','X','X','X','O','O','O','O' };
-                memo[4] = new char[] { 'X','O','O','X','X','X','X','X','O' };
-                memo[5] = new char[] { 'O','O','X','O','X','O','X','O','X' };
-                memo[6] = new char[] { 'O','O','O','X','X','O','X','O','X' };
-                memo[7] = new char[] { 'O','O','O','X','O','O','O','X','O' };
-                memo[8] = new char[] { 'O','X','O','O','O','X','O','X','O' };
-
-                Solve(memo);
-                */
-                /*
-                //string str1 = "17,51#33,83#53,62#25,34#35,90#29,41#14,53#40,84#41,64#13,68#44,85#57,58#50,74#20,69#15,62#25,88#4,56#37,39#30,62#69,79#33,85#24,83#35,77#2,73#6,28#46,98#11,82#29,72#67,71#12,49#42,56#56,65#40,70#24,64#29,51#20,27#45,88#58,92#60,99#33,46#19,69#33,89#54,82#16,50#35,73#19,45#19,72#1,79#27,80#22,41#52,61#50,85#27,45#4,84#11,96#0,99#29,94#9,19#66,99#20,39#16,85#12,27#16,67#61,80#67,83#16,17#24,27#16,25#41,79#51,95#46,47#27,51#31,44#0,69#61,63#33,95#17,88#70,87#40,42#21,42#67,77#33,65#3,25#39,83#34,40#15,79#30,90#58,95#45,56#37,48#24,91#31,93#83,90#17,86#61,65#15,48#34,56#12,26#39,98#1,48#21,76#72,96#30,69#46,80#6,29#29,81#22,77#85,90#79,83#6,26#33,57#3,65#63,84#77,94#26,90#64,77#0,3#27,97#66,89#18,77#27,43";
-                string str1 = "0,1#0,2#1,2";
                 
-                var ar8 = str1.Split('#');
-                int[][] rooms = new int[ar8.Length][];
-                int x6 = 0;
-                foreach(string s in ar8)
-                {
-                    var ar1 = s.Split(',');
-                    rooms[x6] = new int[] { int.Parse(ar1[0]), int.Parse(ar1[1]) };
-                    x6++;
-                }
-                */
-                int[][] rooms = new int[1][];
-                rooms[0] = new int[] { 1, 2 };
-                /*rooms[1] = new int[] { 1,4 };
-                rooms[2] = new int[] { 2,3 };
-                rooms[3] = new int[] { 2, 4 };
-                rooms[4] = new int[] { 4, 3 };*/
-                FindJudge(3, rooms);
+            FullJustify(new string[] { "What", "must", "be", "acknowledgment", "shall", "be" }, 16);
+            //[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+            Insert(new int[][]{ new int[]{1,2}, new int[]{3,5}, new int[] { 6, 7 }, new int[] { 8, 10 }, new int[] { 12, 16 } }, new int[]{ 4,8});
+            //Solution1.CanJump(new int[] { 3, 2, 1, 0, 4 });
+            RecursionExercise.runTest();
 
+            Convert("PAYPALISHIRING", 1);
 
 
-                ShortestDistance(rooms);
-                //int Length = "12345".Length;
-                //int[,] memo = new int[Length, Length];
-                //for (int x = 0; x < Length; x++)
-                //    for (int y = 0; y < Length; y++)
-                //        memo[x, y] = -1;
+            Solution.FindSubstring("aaaaaaaaaaaaaa", new string[] { "aa", "aa"});
 
-                //subarraySum(new int[] { 1 }, 0);
+            Solution.FindSubstring("wordgoodgoodgoodbestword", new string[] { "word", "good", "best", "good" });//, "wing", "ding", "wing" });
+            Solution.FindSubstring("barfoothefoobarman", new string[] { "foo", "bar" });
+            Solution.FindSubstring("barfoofoobarthefoobarman", new string[] { "bar", "foo", "the" });
+            Solution.FindSubstring("wordgoodgoodgoodbestword", new string[] { "word", "good", "best", "word" });
 
-                subarraySum(new int[] { 0, 3, 4, 7, 2, -3, 1, 4, 2 }, 7);
-                subarraySum(new int[] { 0, 1, 2, -3, 4, 2, -6, 6 }, 6);
+            //MinWindow.MinWindow1("ADOBECODEBANC", "ABC");
+            //int[][] d = new int[1][] { new int[] { 1} };
+            //RainWaterII.TrapRainWater(d);
 
-                //subarraySum(new int[] { 6 }, 6);
+            LengthOfLongestSubstring("abcabd");
 
+            LargestSubarray(new int[] { 1, 4, 5, 2, 3 }, 3);
 
-                int[][] shift = new int[7][] {
-                            new int[] {0,7},
-                            new int[] {1,7},
-                            new int[] {1,0},
-                            new int[] {1,3},
-                            new int[] {0,3},
-                            new int[] {0,6},
-                            new int[] {1,2},
-                     };
+            ThreeSum1(new int[] { -1, 0, 1, 2, -1, -4 });
 
-                int totalShift = 0;
-                for (int x = 0; x < shift.Length; x++)
-                {
-                    if (shift[x][0] == 0) //left shift
-                        totalShift -= shift[x][1];
-                    if (shift[x][0] == 1) //right shift
-                        totalShift += shift[x][1];
-                }
+            ArrayExercise.runTest();
 
-                Console.WriteLine(totalShift);
+            GraphExercise.runTest();
+            TreeExercise.runTest();
+            //DPExercise.runTest();
 
+            //ArrayExercise.runTest();
+            //BinarySearchExercise.runTest();
+            //SortingSearchingLogarithmsExercise.runTest();
+                
+            //DPRecursionBottomUpExercise.runTest();
 
 
-                int[] ar = new int[] { 2, 7, 4, 1, 8, 1 };
-                Collection<int> c = new Collection<int>();
-                SortedSet<int> ss = new SortedSet<int>(ar);
 
-                //SortedDictionary<int, int> sd = new SortedDictionary<int, int>();
-                //sd.Add(1, 2);
-                //sd.Add(0, 1);
-                //sd.Add(3, 2);
+            RecursionExercise.runTest();
 
-                List<int> al = new List<int>(ar);
-                al.Sort();
+            //GraphExercise.runTest();
 
-                int h = 0;
-                int sh = 0;
+            TreeExercise.runTest();
 
-                while (al.Count > 0)
-                {
-                    if (al.Count > 1)
-                    {
-                        h = al.Last();
-                        al.Remove(h);
+            //
+            DPRecursionBottomUpExercise.runTest();
 
-                        //h = ss.Last();
-                        //ss.Remove(h);
-                        //sh = ss.Last();
-                        sh = al.Last();
-                        al.Remove(sh);
 
-                        if (h - sh > 0)
-                        {
-                            //ss.Add(h - sh);
-                            al.Add(h - sh);
-                            al.Sort();
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+            TreeNode root1 = new TreeNode(1);
+            root1.left = new TreeNode(0);
+            root1.left.left = new TreeNode(0);
+            root1.left.right = new TreeNode(1);
 
+            root1.right = new TreeNode(1);
+            root1.right.left = new TreeNode(0);
+            root1.right.right = new TreeNode(1);
 
+            SumRootToLeaf(root1);
 
+            WordBreak("leetcode", new string[] { "leet", "code" });
 
-                BackspaceCompare("bxj##tw", "bxj###tw");
 
+            IList<int[]> vertices = new List<int[]>();
+            vertices.Add(new int[] { 1, 2 });
+            vertices.Add(new int[] { 3 });
+            vertices.Add(new int[] { 3 });
+            vertices.Add(new int[] { });
 
+            AllPathsSourceTarget(vertices.ToArray());
 
-
-                //ArrayExercise.runTest();
-
-                GraphExercise.runTest();
-                BinarySearchExercise.runTest();
-                sLLExercise.runTest();
-
-
-
-
-
-                numberToWords(1000);
-
-                var ssss = NumberToWords(999999);
-
-
-                int[] nums1 = new int[] { 2, 0, 2, 1, 1, 0 };
-
-
-                int left = 0;
-                int right = nums1.Length - 1;
-
-                for (int i = 0; i <= nums1.Length - 1; i++)
-                {
-                    if (nums1[i] == 0)
-                    {
-                        nums1[i] = nums1[left];
-                        nums1[left++] = 0;
-                    }
-                    else if (nums1[i] == 2)
-                    {
-                        nums1[i] = nums1[right];
-                        nums1[right--] = 2;
-                    }
-                }
-
-
-                BacktrackingMemoizationExercise.runTest();
-
-
-
-
-                sLLExercise.runTest();
-                StackQueueExercise.runTest();
-
-
-
-
-                NumberToWords(1000000000);
-                int n = 45;
-                int answer = 0;
-
-                while (n != 0)
-                {
-                    answer += 1;//n & 1;
-                    //n = n >>> 1;
-                    n = n >> 1;
-                }
-
-                n = 3;
-                answer = 0;
-                for (int y = n; y >= 1; y = y / 2)
-                {
-                    answer++;
-                }
-
-
-                int[] a = new int[] { 1, -1, 5, -2, 3 };
-                int[] c_sum = new int[a.Length];
-                for (int i = 0; i < a.Length; i++)
-                {
-                    c_sum[i] = (i == 0) ? a[0] : c_sum[i - 1] + a[i];
-                    if (c_sum[i] == 4)
-                    {
-
-                    }
-                    //return new Pair<int>(0, i);
-                }
-
-                Dictionary<int, int> d1 = new Dictionary<int, int>();
-                for (int i = 0; i < c_sum.Length; i++)
-                {
-                    if (d1.ContainsKey(c_sum[i]))
-                    {
-
-                    }
-                    //return​​ new​​ Pair<int>(map[c_sum[i]+1,​​i);
-                    else
-                        d1.Add(c_sum[i], i);
-                }
-
-                int k = 1;
-                int[] nums = new int[] { 2, 5, 9, 6, 9, 3, 8, 9, 7, 1 };
-                int sum = 0, max = 0;
-                Dictionary<int, int> map = new Dictionary<int, int>();
-
-                int slow = 0, fast = 0;
-
-
-                while (true)
-                {
-                    fast = nums[nums[fast]];
-                    slow = nums[slow];
-                    if (fast == slow) break;
-                }
-
-                /*fast = 0;
-                while (fast != slow) {
-                    fast = nums[fast];
-                    slow = nums[slow];
-                }
-                return fast;*/
-
-                slow = 0;
-                while (fast != slow)
-                {
-                    fast = nums[fast];
-                    slow = nums[slow];
-                }
-
-
-                utilExercise.runTest();
-
-                BacktrackingMemoizationExercise.runTest();
-
-                DPRecursionBottomUpExercise.runTest();
-
-                GraphExercise.runTest();
-
-                ArrayExercise1.runTest();
-
-                StackQueueExercise.runTest();
-
-                GreedyAlgoExercise.runTest();
-
-                SortingSearchingLogarithmsExercise.runTest();
-
-
-
-
-
-                ArrayExercise.runTest();
-
-
-
-                sLLExercise.runTest();
-
-                ArrayExercise1.runTest();
-
-                AbstractTest.runTest();
-
-                //
-                //SortingSearchingLogarithmsExercise.runTest();
-
-                //StackQueueExercise.runTest();
-
-                ListHashDictExercise.runTest();
-
-                //ArrayExercise.runTest();
-                //sLLExercise.runTest();
-                utilExercise.runTest();
-                //BinarySearchExercise.runTest();
-
-
-                BitArray b111 = new BitArray(new int[] { 3 });
-
-
-                //palindrome
-                //string pstring = "abcdcba";
-
-                //dcbaabcdc b aabcdcba
-
-                string pstring = "abcdcbaabcdcbaabcdcba";
-                char[] arr = pstring.ToCharArray();//.Split();
-                string[] test11111 = Regex.Split(pstring, string.Empty);
-                var anotherArray = pstring.Select(x => x.ToString()).ToArray();
-                int mid = (arr.Length + 3) >> 1;
-                int mid1 = (arr.Length + 3) / 2;
-                int mid2 = arr.Length - ((arr.Length + 3) >> 1);
-
-                string.Join("", arr);
-                new string(arr);
-
-                var end = arr.Length - 1;
-                for (int x = 0; x <= mid; x++)
-                {
-                    if (!arr[x].Equals(arr[end]))
-                    {
-
-                    }
-                    end--;
-                }
-
-                var l1 = new List<student>();
-                for (int x = 0; x <= 50000; x++)
-                {
-                    l1.Add(new student("sudip" + x, x));
-                }
-                var l2 = new List<student>();
-                for (int x = 0; x <= 20000; x++)
-                {
-                    l2.Add(new student("sudip" + x, x));
-                }
-                l2.Add(new student("sudip0", 0));
-                l2.Add(new student("sudip11", 11));
-
-                var xyz = l1.Except(l2, new GenericCompare<student>(s => new { s.Name, s.Age })).ToList();// EqualityProjectionComparer<student>.Create(s => new { s.Name, s.Age }));
-                var xyz1 = l1.Except(l2, EqualityProjectionComparer<student>.Create(s => new { s.Name, s.Age })).ToList();
-
-                int count1 = 0;
-                while (count <= l1.Count())
-                {
-                    var vins1000Records = l1.Skip(count).Take(10);
-                    count += 9;
-                }
-
-
-
-
-
-                //{"Unable to find credentials\r\n\r\nException 1 of 4:\r\nSystem.ArgumentException: App.config does not contain credentials information. 
-                //Either add the AWSAccessKey and AWSSecretKey or AWSProfileName
-                //   .\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor(String profileName, String profilesLocation) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 318\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor(String profileName) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 264\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 254\r\n   at Amazon.Runtime.EnvironmentAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 590\r\n   at Amazon.Runtime.FallbackCredentialsFactory.<Reset>b__1() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1117\r\n   at Amazon.Runtime.FallbackCredentialsFactory.GetCredentials(Boolean fallbackToAnonymous) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1137\r\n\r\nException 2 of 4:\r\nSystem.ArgumentException: App.config does not contain credentials information. Either add the AWSAccessKey and AWSSecretKey or AWSProfileName.\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor(String profileName, String profilesLocation) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 318\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor(String profileName) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 264\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 254\r\n   at Amazon.Runtime.FallbackCredentialsFactory.<Reset>b__2() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1118\r\n   at Amazon.Runtime.FallbackCredentialsFactory.GetCredentials(Boolean fallbackToAnonymous) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1137\r\n\r\nException 3 of 4:\r\nSystem.InvalidOperationException: The environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY were not set with AWS credentials.\r\n   at Amazon.Runtime.EnvironmentVariablesAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 535\r\n   at Amazon.Runtime.FallbackCredentialsFactory.<Reset>b__3() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1119\r\n   at Amazon.Runtime.FallbackCredentialsFactory.GetCredentials(Boolean fallbackToAnonymous) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1137\r\n\r\nException 4 of 4:\r\nAmazon.Runtime.AmazonServiceException: Unable to reach credentials server\r\n   at Amazon.Runtime.InstanceProfileAWSCredentials.GetContents(Uri uri) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1001\r\n   at Amazon.Runtime.InstanceProfileAWSCredentials.<GetAvailableRoles>d__0.MoveNext() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 880\r\n   at Amazon.Runtime.InstanceProfileAWSCredentials.GetFirstRole() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1008\r\n   at Amazon.Runtime.InstanceProfileAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 866\r\n   at Amazon.Runtime.FallbackCredentialsFactory.<Reset>b__4() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1121\r\n   at Amazon.Runtime.FallbackCredentialsFactory.GetCredentials(Boolean fallbackToAnonymous) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1137\r\n\r\n"}
-
-
-                //TransferUtility fileTransferUtility = new
-                //    TransferUtility(new AmazonS3Client("AKIAJR5ONMR7TRSCIDNQ", "RiDeSz4fMFD9RjpW6IViKDiocdFuBWROXOiyMPZL",Amazon.RegionEndpoint.SAEast1));
-
-                // 1. Upload a file, file name is used as the object key name.
-                //fileTransferUtility.Upload(@"c:\SUService.log", "existingBucketName");
-                //Console.WriteLine("Upload 1 completed");
-
-
-
-                int[] grades = { 7, 1, 5, 3, 6, 4 };
-
-                int x21 = 1;
-                for (int i = 1; i <= 5; i++)
-                {
-                    x21 = 2 * x21;
-                }
-
-                int x2 = 2;
-                int y2 = x2 * x2 * x2;
-
-                for (int i = 0; i < grades.Length / 2; i++)
-                {
-                    int tmp = grades[i];
-                    grades[i] = grades[grades.Length - i - 1];
-                    grades[grades.Length - i - 1] = tmp;
-                }
-
-
-
-                for (int x1 = 0; x1 < grades.Length; x1++)
-                {
-                    grades[x1] = (grades[x1] % 5);
-                }
-
-
-
-                Array.Copy(grades, grades, 0);
-                return;
-            }
-            catch (Exception ex)
+            int[] nums12 = new int[] { 1, 2, 1, 3, 2, 5 };
+            int xor = 0;
+            foreach (int n1 in nums12)
             {
-                throw ex;
+                xor ^= n1;
             }
-        }
+
+            //1010", b = "1011
+            AddBinary("1010", "1011");
+            AngleClock(12, 30);
+
+            TreeNode tn = RecoverFromPreorder("1-401--349---90--88");
+
+            //string wwwww1 = Convert.ToString(67, toBase: 2);
 
 
-        class personHeightComparer : IComparer<int[]>
-        {
-            public int Compare(int[] x, int[] y)
+
+            var bitArray = new BitArray(BitConverter.GetBytes(67));
+
+            var bytes = BitConverter.GetBytes(1);
+            BitArray b1 = new BitArray(bytes);
+
+            StringBuilder bitstr = new StringBuilder();
+            uint cc = 1;
+
+            while (cc > 0)
             {
-                if (x[0] != y[0])
-                    return y[0] - x[0]; //descending by people number
-
-                else return x[1] - y[1]; //ascending by number of people before them
+                bitstr.Insert(0, cc & 1);
+                cc = cc >> 1;
             }
-        }
-        public static int[][] ReconstructQueue(int[][] people)
-        {
-            Array.Sort(people, new personHeightComparer());
 
-            int[][] result = new int[people.Length][];
-            for (int x = 0; x < result.Length; x++)
-                result[x] = new int[2];
-            
-            for (int x=0; x < people.Length; x++)
+
+            TreeNode root = new TreeNode(1);
+            root.left = new TreeNode(3);
+            root.right = new TreeNode(2);
+            root.left.left = new TreeNode(5);
+            //root.left.right = new TreeNode(3);
+            WidthOfBinaryTree(root);
+
+            ThreeSum(new int[] { -1, 0, 1, 2, -1, -4 });
+
+            GetPermutation(4, 3);
+            NextPermutation(new int[] { 4, 2, 3, 1 });
+
+
+            int[] coins = new int[] { 1, 2 };
+            int amount1 = 3;
+            int[] dp1 = new int[amount1 + 1];
+            dp1[0] = 1;
+            int[] dp2 = new int[amount1 + 1];
+            dp2[0] = 1;
+
+            for (int i = 0; i < coins.Length; i++)
             {
-                int index = people[x][1];
-
-                //to make space for 'index' 
-                //shifting all items 1 position right side
-                for(int y = people.Length - 2; y >= index; y -- )
+                for (int j = coins[i]; j <= amount1; j++)
                 {
-                    result[y+1][0] = result[y][0];
-                    result[y+1][1] = result[y][1];
-                }
-                //put people[x] at index
-                result[index][0] = people[x][0];
-                result[index][1] = people[x][1];
-            }
-
-            return result;
-        }
-
-        public static IList<int> LargestDivisibleSubset(int[] nums)
-        {
-            //Sort the Array
-            //Array.Sort(nums);
-
-            int[] dp = new int[nums.Length];
-
-            //Initiaize the array to 1, because the longest substring for one element is '1'
-            for (int i = 0; i < nums.Length; i++)
-            {
-                dp[i] = 1;
-            }
-
-            IList<IList<int>> subsetsAtIndex = new List<IList<int>>();
-            int largestSubsetSize = 0;
-            int largestSubsetIndex = 0;
-            for (int i = 0; i < nums.Length; i++)
-            {
-                subsetsAtIndex.Add(new List<int>());
-
-                for (int j = 0; j < i; j++)
-                {
-                    if (nums[i] % nums[j] == 0) //if module is 0
-                    {
-                        //dp[i] = Math.Max(dp[i], dp[j] + 1);
-
-                        if (dp[j] + 1 > dp[i])
-                        {
-                            subsetsAtIndex[i].Clear();
-                            subsetsAtIndex[i] = subsetsAtIndex[i].Concat(subsetsAtIndex[j]).ToList();
-
-                            dp[i] = dp[j] + 1;
-                        }
-
-
-                        //update 'largestSubsetSize' and 'largestSubsetIndex' where we got the maximum 'largestSubsetSize'
-                        if (dp[i] > largestSubsetSize)
-                        {
-                            
-                            largestSubsetSize = dp[i];
-                            largestSubsetIndex = i;
-                        }
-                    }
-                }
-
-                subsetsAtIndex[i].Add(nums[i]);
-            }
-
-            Console.WriteLine(largestSubsetIndex);
-
-            return subsetsAtIndex[largestSubsetIndex];
-        }
-
-        static IList<IList<int>> result = new List<IList<int>>();
-        public static int Change(int amount, int[] coins)
-        {
-            //Array.Sort(coins);
-
-            //CoinChange(amount, coins, 0, new List<int>());
-            //return result.Count;
-
-            return CoinChange_DP(amount, coins);
-        }
-
-        public static void CoinChange_Recursion(int amount, int[] coins, int index, IList<int> demomination)
-        {
-            if (amount == 0)
-            {
-                result.Add(new List<int>(demomination));
-                return;
-            }
-            else if (amount < 0 || index >= coins.Length)
-                return;
-
-            demomination.Add(coins[index]);
-            CoinChange_Recursion(amount - coins[index], coins, index, demomination);
-
-            demomination.RemoveAt(demomination.Count - 1);
-
-            index++;
-            CoinChange_Recursion(amount, coins, index, demomination);
-        }
-
-        public static int CoinChange_DP(int amount, int[] coins)
-        {
-            int[][] dp = new int[coins.Length + 1][];
-            for(int x=0; x< dp.Length; x++)
-            {
-                dp[x] = new int[amount + 1];
-            }
-
-            for (int x = 0; x <= coins.Length; x++)
-            {
-                dp[x][0] = 1;
-            }
-            for (int x = 0; x <= amount; x++)
-            {
-                dp[0][x] = (x ==0) ? 1 : 0;
-            }
-
-            for (int i = 1; i <= coins.Length; i++)
-            {
-                for (int j = 1; j <= amount; j++)
-                {
-                    int remainAmt = j - coins[i - 1];
-                    dp[i][j] = (remainAmt >= 0 ? dp[i][remainAmt] : 0) + dp[i - 1][j];
+                    dp2[j] += dp2[j - coins[i]];
                 }
             }
-
-            return dp[coins.Length][amount];
-        }
-
-        public static int coinChange_DP_BottomUp1(int[] coins, int amount)
-        {
-
-            int[][] dp = new int[coins.Length + 1][];
-            for (int x = 0; x < dp.Length; x++)
-            {
-                dp[x] = new int[amount + 1];
-
-                //Array.Fill(amount + 1);
-                dp[x] = dp[x].Select(s => (amount + 1)).ToArray();
-            }
-
-            //we have 0 nimimum way to make '0' amount
-            for (int i = 0; i <= coins.Length; i++)
-                dp[i][0] = 0;
-
-            for (int i = 1; i <= coins.Length; i++)
-            {
-                for (int j = 1; j <= amount; j++)
-                {
-                    //exclude current coin
-                    int MinCountWithOutCoin = dp[i - 1][j]; //exclude current coin, the value is previous coin row
-
-                    //include current coin, the total amount is reduced by current coin
-                    int remainAmt = j - coins[i - 1];
-                    int MinCountWithCoin = int.MaxValue;
-                    if(remainAmt >= 0)
-                        MinCountWithCoin = dp[i][remainAmt] + 1;
-
-                    dp[i][j] = Math.Min(MinCountWithCoin, MinCountWithOutCoin);
-                }
-            }
-
-            return dp[coins.Length][amount] > (amount) ? -1 : dp[coins.Length][amount];
-        }
-
-        public static IList<string> FindItinerary(IList<IList<string>> tickets)
-        {
-            Dictionary<string, List<string>> d = new Dictionary<string, List<string>>();
-            foreach (IList<string> t in tickets)
-            {
-                string From = t.First();
-                string To = t.Last();
-
-                if (!d.ContainsKey(From))
-                    d.Add(From, new List<string>());
-
-                d[From].Add(To);
-            }
-            foreach(var t in d)
-                t.Value.Sort();
-           
-            IList<string> r = new List<string>();
-           
-            Stack<string> s = new Stack<string>();
-            s.Push("JFK");
-
-            while (s.Any())
-            {
-                while(d.ContainsKey(s.Peek()) && d[s.Peek()].Count > 0)
-                {
-                    var temp = d[s.Peek()].First();
-                    d[s.Peek()].RemoveAt(0);
-                    s.Push(temp);
-                }
-                r.Add(s.Pop());
-            }
-
-            return r.Reverse().ToList();
-        }
-
-
-        private static void backtrack(int[] candidates, IList<int> combination, int start, int sumLeft)
-        {
-            if (sumLeft < 0)
-                return;
-
-            if (sumLeft == 0)
-            {
-                result1.Add(new List<int>(combination));
-                return;
-            }
-
-            for (int i = start; i < candidates.Length; i++)
-            {
-                if (i > start && candidates[i - 1] == candidates[i])
-                    continue;
-
-                combination.Add(candidates[i]);
-
-                backtrack(candidates, combination, i + 1, sumLeft - candidates[i]);
-
-                combination.RemoveAt(combination.Count - 1);
-            }
-        }
-
-        static IList<IList<int>> result1 = null;
-
-        public static int CombinationSum4_Bottom_Up(int[] coins, int amount)
-        {
-            /*
-            int[] dp = new int[amount+1];
-            dp[0] = 1;
 
             // give target j, where it can come from
-            for(int i=1; i <= amount; i++) 
+            for (int i = 1; i <= amount1; i++)
             {
-                for (int j = 0; j < coins.Length; j++) 
+                for (int j = 0; j < coins.Length; j++)
                 {
                     var number = i - coins[j];
                     if (number >= 0)
                     {
                         //combinations[i] += combinations[number];
-                        dp[i] += dp[number];
+                        dp1[i] += dp1[number];
                     }
                 }
             }
 
-            return dp[amount];
+            CombinationSum4_Bottom_Up(new int[] { 1, 2, 3 }, 4);
 
-            /*          ---------> Amount
-                         0  1  2  3  4  5
-               |        =================
-               |     0 |[1] 0  0  0  0  0
-               |     1 |[1] 1  1  1  1  1 
-               V     2 |[1] 1  1  2  2  3
-             coins   5 |[1] 1  1  2  3 [4]
+            int[] ar1 = new int[] { 1, 1, 2, 5, 6 };
+            Array.Sort(ar1);
+            result1 = new List<IList<int>>();
+
+            backtrack(ar1, new List<int>(), 0, 8);
+
+
+            IList<IList<string>> dddd = new List<IList<string>>();
+
+            var v = new List<string>();
+            v.Add("EZE");
+            v.Add("AXA");
+            dddd.Add(v);
+            v = new List<string>();
+            v.Add("TIA");
+            v.Add("ANU");
+            dddd.Add(v);
+            v = new List<string>();
+            v.Add("ANU");
+            v.Add("JFK");
+            v = new List<string>();
+            v.Add("JFK");
+            v.Add("ANU");
+            dddd.Add(v);
+
+
+            v = new List<string>();
+            v.Add("ANU");
+            v.Add("EZE");
+            dddd.Add(v);
+            v = new List<string>();
+            v.Add("TIA");
+            v.Add("ANU");
+            dddd.Add(v);
+
+            v = new List<string>();
+            v.Add("AXA");
+            v.Add("TIA");
+            dddd.Add(v);
+            v = new List<string>();
+            v.Add("TIA");
+            v.Add("JFK");
+            dddd.Add(v);
+            v = new List<string>();
+            v.Add("ANU");
+            v.Add("TIA");
+            dddd.Add(v);
+            v = new List<string>();
+            v.Add("JFK");
+            v.Add("TIA");
+            dddd.Add(v);
+
+            FindItinerary(dddd);
+
+
+            coinChange_DP_BottomUp1(new int[] { 2 }, 1);
+
+            CoinChange_DP(5, new int[] { 1, 2, 5 });
+
+            Change(11, new int[] { 1, 2, 5 });
+
+            LargestDivisibleSubset(new int[] { 2, 3, 8, 9, 27 });
+
+            int[][] menNheight = new int[6][];
+            menNheight[0] = new int[] { 7, 0 };
+            menNheight[1] = new int[] { 4, 4 };
+            menNheight[2] = new int[] { 7, 1 };
+            menNheight[3] = new int[] { 5, 0 };
+            menNheight[4] = new int[] { 6, 1 };
+            menNheight[5] = new int[] { 5, 2 };
+            ReconstructQueue(menNheight);
+
+            Subsets(new int[] { 1, 2, 3, 4 });
+
+            /*int[] test = new int[] { 1, 3, 4, 5 };
+
+            int search = 1;
+            int left1 = 0;
+            int right1 = test.Length - 1;
+            int mid11 = 0;
+            while (left1 <= right1)
+            {
+                mid11 = left1 + (right1 - left1) / 2;
+
+                if (test[mid11] == search)
+                    break;
+                else if (test[mid11] < search)
+                    left1 = mid11 + 1;
+                else
+                    right1 = mid11 - 1;
+            }
             */
 
-            //O(N^2)
-            int[][] dp = new int[coins.Length + 1][];
-            for (int x = 0; x < dp.Length; x++)
+
+            int[][] costs = new int[4][];
+            costs[3] = new int[] { 10, 20 };
+            costs[2] = new int[] { 30, 200 };
+            costs[1] = new int[] { 400, 500 };
+            costs[0] = new int[] { 30, 520 };
+            TwoCitySchedCost(costs);
+
+
+
+            ListNode ll = new ListNode(4);
+            ll.next = new ListNode(5);
+            ll.next.next = new ListNode(1);
+            ll.next.next.next = new ListNode(9);
+            DeleteNode(ref ll.next.next.next);
+
+
+
+            int[][] B11 = new int[4][];
+            B11[0] = new int[] { 1, 2 };
+            B11[1] = new int[] { 1, 3 };
+            B11[2] = new int[] { 2, 4 };
+            B11[3] = new int[] { 4, 1 };
+            PossibleBipartition(4, B11);
+
+
+
+            CharacterReplacement("AABABBA", 1);
+            int[] A1 = new int[] { 1, 3, 7, 1, 7, 5 };
+            int[] B1 = new int[] { 1, 9, 2, 5, 1 };
+            MaxUncrossedLines(A1, B1);
+
+            List<List<int>> triangle = new List<List<int>>();
+            triangle.Add(new List<int>() { 2 });
+            triangle.Add(new List<int>() { 3, 4 });
+            triangle.Add(new List<int>() { 6, 5, 7 });
+            triangle.Add(new List<int>() { 4, 1, 8, 3 });
+
+            int[] dp = new int[triangle.Count];
+
+            int x11111111111 = min(triangle, 0, 0, dp);
+
+            BuildBSTUsingRange(new int[] { 8, 5, 1, 7, 10, 12 }, int.MinValue, int.MaxValue);
+
+            int[][] A = new int[1][];
+            A[0] = new int[] { 8, 15 };
+
+            int[][] B = new int[3][];
+            B[0] = new int[] { 2, 6 };
+            B[1] = new int[] { 8, 10 };
+            B[2] = new int[] { 12, 20 };
+
+            /*int[][] A = new int[4][];
+            A[0] = new int[] { 0, 2 };
+            A[1] = new int[] { 5, 10 };
+            A[2] = new int[] { 13, 23 };
+            A[3] = new int[] { 24, 25 };
+
+            int[][] B = new int[4][];
+            B[0] = new int[] { 1, 5 };
+            B[1] = new int[] { 8,12 };
+            B[2] = new int[] { 15,24 };
+            B[3] = new int[] { 25,26 };
+            */
+
+            IntervalIntersection(A, B);
+
+
+            FrequencySort("tree");
+
+
+            Array.Sort(a1111, new SortTest());
+
+            Kadene(new int[] { -1, -2, -4 });
+
+
+            int testCase = int.Parse(args[0]);
+            string[] inputs = args[1].Split(' ');
+            string[] prices = args[2].Split(' ');
+            int amount = int.Parse(inputs[1]);
+            int houseCount = int.Parse(inputs[0]);
+            int[] pricesArray = new int[1000];
+            for (int x = 0; x < prices.Length; x++)
             {
-                dp[x] = new int[amount + 1];
+                pricesArray[int.Parse(prices[x])]++;
             }
 
-            //we have only 1 way to make '0' amount - i.e doing nothing
-            for (int i = 0; i <= coins.Length; i++)
-                dp[i][0] = 1;
-
-            //with 0 coin, we need 1 to make '0' amount, we cant make other amount.
-            //for (int j = 0; j <= amount; j++)
-            //    dp[0][j] = (j ==0) ? 1 : 0;
-
-            for (int i = 1; i <= coins.Length; i++)
+            int count = 0;
+            for (int x = 0; x < pricesArray.Length; x++)
             {
-                for (int j = 1; j <= amount; j++)
+                while (pricesArray[x] > 0 && amount > 0 && x <= amount)
+                //if(pricesArray[x] > 0 && amount > 0)
                 {
-                    //exclude current coin
-                    int countWithOutCoin = dp[i - 1][j]; //exclude current coin, the value is previous coin row
+                    //if(x <= amount)
+                    {
+                        count++;
+                        amount -= x;
+                        pricesArray[x]--;
+                    }
+                }
 
-                    //include current coin, the total amount is reduced by current coin
-                    int remainAmt = j - coins[i - 1];
-                    int countWithCoin = remainAmt >= 0 ? dp[i][remainAmt] : 0;
+                if (amount <= 0)
+                    break;
+            }
+            Console.WriteLine("Case #1:" + count);
 
-                    //total
-                    dp[i][j] += countWithCoin + countWithOutCoin;
+
+
+
+            RemoveKdigits("1432219", 3);
+            //Sqrt(808201);
+            /*char[][] memo = new char[9][];
+
+            memo[0] = new char[] { 'X','X','X','X','O','O','X','X','O' };
+            memo[1] = new char[] { 'O','O','O','O','X','X','O','O','X'};
+            memo[2] = new char[] { 'X','O','X','O','O','X','X','O','X'};
+            memo[3] = new char[] { 'O','O','X','X','X','O','O','O','O' };
+            memo[4] = new char[] { 'X','O','O','X','X','X','X','X','O' };
+            memo[5] = new char[] { 'O','O','X','O','X','O','X','O','X' };
+            memo[6] = new char[] { 'O','O','O','X','X','O','X','O','X' };
+            memo[7] = new char[] { 'O','O','O','X','O','O','O','X','O' };
+            memo[8] = new char[] { 'O','X','O','O','O','X','O','X','O' };
+
+            Solve(memo);
+            */
+            /*
+            //string str1 = "17,51#33,83#53,62#25,34#35,90#29,41#14,53#40,84#41,64#13,68#44,85#57,58#50,74#20,69#15,62#25,88#4,56#37,39#30,62#69,79#33,85#24,83#35,77#2,73#6,28#46,98#11,82#29,72#67,71#12,49#42,56#56,65#40,70#24,64#29,51#20,27#45,88#58,92#60,99#33,46#19,69#33,89#54,82#16,50#35,73#19,45#19,72#1,79#27,80#22,41#52,61#50,85#27,45#4,84#11,96#0,99#29,94#9,19#66,99#20,39#16,85#12,27#16,67#61,80#67,83#16,17#24,27#16,25#41,79#51,95#46,47#27,51#31,44#0,69#61,63#33,95#17,88#70,87#40,42#21,42#67,77#33,65#3,25#39,83#34,40#15,79#30,90#58,95#45,56#37,48#24,91#31,93#83,90#17,86#61,65#15,48#34,56#12,26#39,98#1,48#21,76#72,96#30,69#46,80#6,29#29,81#22,77#85,90#79,83#6,26#33,57#3,65#63,84#77,94#26,90#64,77#0,3#27,97#66,89#18,77#27,43";
+            string str1 = "0,1#0,2#1,2";
+                
+            var ar8 = str1.Split('#');
+            int[][] rooms = new int[ar8.Length][];
+            int x6 = 0;
+            foreach(string s in ar8)
+            {
+                var ar1 = s.Split(',');
+                rooms[x6] = new int[] { int.Parse(ar1[0]), int.Parse(ar1[1]) };
+                x6++;
+            }
+            */
+            int[][] rooms = new int[1][];
+            rooms[0] = new int[] { 1, 2 };
+            /*rooms[1] = new int[] { 1,4 };
+            rooms[2] = new int[] { 2,3 };
+            rooms[3] = new int[] { 2, 4 };
+            rooms[4] = new int[] { 4, 3 };*/
+            FindJudge(3, rooms);
+
+
+
+            ShortestDistance(rooms);
+            //int Length = "12345".Length;
+            //int[,] memo = new int[Length, Length];
+            //for (int x = 0; x < Length; x++)
+            //    for (int y = 0; y < Length; y++)
+            //        memo[x, y] = -1;
+
+            //subarraySum(new int[] { 1 }, 0);
+
+            subarraySum(new int[] { 0, 3, 4, 7, 2, -3, 1, 4, 2 }, 7);
+            subarraySum(new int[] { 0, 1, 2, -3, 4, 2, -6, 6 }, 6);
+
+            //subarraySum(new int[] { 6 }, 6);
+
+
+            int[][] shift = new int[7][] {
+                        new int[] {0,7},
+                        new int[] {1,7},
+                        new int[] {1,0},
+                        new int[] {1,3},
+                        new int[] {0,3},
+                        new int[] {0,6},
+                        new int[] {1,2},
+                    };
+
+            int totalShift = 0;
+            for (int x = 0; x < shift.Length; x++)
+            {
+                if (shift[x][0] == 0) //left shift
+                    totalShift -= shift[x][1];
+                if (shift[x][0] == 1) //right shift
+                    totalShift += shift[x][1];
+            }
+
+            Console.WriteLine(totalShift);
+
+
+
+            int[] ar = new int[] { 2, 7, 4, 1, 8, 1 };
+            Collection<int> c = new Collection<int>();
+            SortedSet<int> ss = new SortedSet<int>(ar);
+
+            //SortedDictionary<int, int> sd = new SortedDictionary<int, int>();
+            //sd.Add(1, 2);
+            //sd.Add(0, 1);
+            //sd.Add(3, 2);
+
+            List<int> al = new List<int>(ar);
+            al.Sort();
+
+            int h = 0;
+            int sh = 0;
+
+            while (al.Count > 0)
+            {
+                if (al.Count > 1)
+                {
+                    h = al.Last();
+                    al.Remove(h);
+
+                    //h = ss.Last();
+                    //ss.Remove(h);
+                    //sh = ss.Last();
+                    sh = al.Last();
+                    al.Remove(sh);
+
+                    if (h - sh > 0)
+                    {
+                        //ss.Add(h - sh);
+                        al.Add(h - sh);
+                        al.Sort();
+                    }
+                }
+                else
+                {
+                    break;
                 }
             }
 
-            return dp[coins.Length][amount];
-        }
-
-        public static void NextPermutation(int[] nums)
-        {
 
 
-            //Find the *first descending* element from right
-            int i = nums.Length - 2;
-            while (i >= 0 && nums[i + 1] <= nums[i])
+
+            BackspaceCompare("bxj##tw", "bxj###tw");
+
+
+
+
+            //ArrayExercise.runTest();
+
+            GraphExercise.runTest();
+            BinarySearchExercise.runTest();
+            sLLExercise.runTest();
+
+
+
+
+
+            numberToWords(1000);
+
+            var ssss = NumberToWords(999999);
+
+
+            int[] nums1 = new int[] { 2, 0, 2, 1, 1, 0 };
+
+
+            int left = 0;
+            int right = nums1.Length - 1;
+
+            for (int i = 0; i <= nums1.Length - 1; i++)
             {
-                i--;
-            }
-
-            //Find element just bigger than *first descending* element from right, and swap them   
-            if (i >= 0)
-            {
-                int j = nums.Length - 1;
-                while (j >= 0 && nums[j] <= nums[i])
+                if (nums1[i] == 0)
                 {
-                    j--;
+                    nums1[i] = nums1[left];
+                    nums1[left++] = 0;
                 }
-                swap(nums, i, j);
+                else if (nums1[i] == 2)
+                {
+                    nums1[i] = nums1[right];
+                    nums1[right--] = 2;
+                }
             }
 
-            //Reverse all elements from the element just bigger than *first descending* to then end
-            reverse(nums, i + 1);
+
+            BacktrackingMemoizationExercise.runTest();
+
+
+
+
+            sLLExercise.runTest();
+            StackQueueExercise.runTest();
+
+
+
+
+            NumberToWords(1000000000);
+            int n = 45;
+            int answer = 0;
+
+            while (n != 0)
+            {
+                answer += 1;//n & 1;
+                //n = n >>> 1;
+                n = n >> 1;
+            }
+
+            n = 3;
+            answer = 0;
+            for (int y = n; y >= 1; y = y / 2)
+            {
+                answer++;
+            }
+
+
+            int[] a = new int[] { 1, -1, 5, -2, 3 };
+            int[] c_sum = new int[a.Length];
+            for (int i = 0; i < a.Length; i++)
+            {
+                c_sum[i] = (i == 0) ? a[0] : c_sum[i - 1] + a[i];
+                if (c_sum[i] == 4)
+                {
+
+                }
+                //return new Pair<int>(0, i);
+            }
+
+            Dictionary<int, int> d1 = new Dictionary<int, int>();
+            for (int i = 0; i < c_sum.Length; i++)
+            {
+                if (d1.ContainsKey(c_sum[i]))
+                {
+
+                }
+                //return​​ new​​ Pair<int>(map[c_sum[i]+1,​​i);
+                else
+                    d1.Add(c_sum[i], i);
+            }
+
+            int k = 1;
+            int[] nums = new int[] { 2, 5, 9, 6, 9, 3, 8, 9, 7, 1 };
+            int sum = 0, max = 0;
+            Dictionary<int, int> map = new Dictionary<int, int>();
+
+            int slow = 0, fast = 0;
+
+
+            while (true)
+            {
+                fast = nums[nums[fast]];
+                slow = nums[slow];
+                if (fast == slow) break;
+            }
+
+            /*fast = 0;
+            while (fast != slow) {
+                fast = nums[fast];
+                slow = nums[slow];
+            }
+            return fast;*/
+
+            slow = 0;
+            while (fast != slow)
+            {
+                fast = nums[fast];
+                slow = nums[slow];
+            }
+
+
+            utilExercise.runTest();
+
+            BacktrackingMemoizationExercise.runTest();
+
+            DPRecursionBottomUpExercise.runTest();
+
+            GraphExercise.runTest();
+
+            ArrayExercise1.runTest();
+
+            StackQueueExercise.runTest();
+
+            GreedyAlgoExercise.runTest();
+
+            SortingSearchingLogarithmsExercise.runTest();
+
+
+
+
+
+            ArrayExercise.runTest();
+
+
+
+            sLLExercise.runTest();
+
+            ArrayExercise1.runTest();
+
+            AbstractTest.runTest();
+
+            //
+            //SortingSearchingLogarithmsExercise.runTest();
+
+            //StackQueueExercise.runTest();
+
+            ListHashDictExercise.runTest();
+
+            //ArrayExercise.runTest();
+            //sLLExercise.runTest();
+            utilExercise.runTest();
+            //BinarySearchExercise.runTest();
+
+
+            BitArray b111 = new BitArray(new int[] { 3 });
+
+
+            //palindrome
+            //string pstring = "abcdcba";
+
+            //dcbaabcdc b aabcdcba
+
+            string pstring = "abcdcbaabcdcbaabcdcba";
+            char[] arr = pstring.ToCharArray();//.Split();
+            string[] test11111 = Regex.Split(pstring, string.Empty);
+            var anotherArray = pstring.Select(x => x.ToString()).ToArray();
+            int mid = (arr.Length + 3) >> 1;
+            int mid1 = (arr.Length + 3) / 2;
+            int mid2 = arr.Length - ((arr.Length + 3) >> 1);
+
+            string.Join("", arr);
+            new string(arr);
+
+            var end = arr.Length - 1;
+            for (int x = 0; x <= mid; x++)
+            {
+                if (!arr[x].Equals(arr[end]))
+                {
+
+                }
+                end--;
+            }
+
+            var l1 = new List<student>();
+            for (int x = 0; x <= 50000; x++)
+            {
+                l1.Add(new student("sudip" + x, x));
+            }
+            var l2 = new List<student>();
+            for (int x = 0; x <= 20000; x++)
+            {
+                l2.Add(new student("sudip" + x, x));
+            }
+            l2.Add(new student("sudip0", 0));
+            l2.Add(new student("sudip11", 11));
+
+            var xyz = l1.Except(l2, new GenericCompare<student>(s => new { s.Name, s.Age })).ToList();// EqualityProjectionComparer<student>.Create(s => new { s.Name, s.Age }));
+            var xyz1 = l1.Except(l2, EqualityProjectionComparer<student>.Create(s => new { s.Name, s.Age })).ToList();
+
+            int count1 = 0;
+            while (count <= l1.Count())
+            {
+                var vins1000Records = l1.Skip(count).Take(10);
+                count += 9;
+            }
+
+
+
+
+
+            //{"Unable to find credentials\r\n\r\nException 1 of 4:\r\nSystem.ArgumentException: App.config does not contain credentials information. 
+            //Either add the AWSAccessKey and AWSSecretKey or AWSProfileName
+            //   .\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor(String profileName, String profilesLocation) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 318\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor(String profileName) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 264\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 254\r\n   at Amazon.Runtime.EnvironmentAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 590\r\n   at Amazon.Runtime.FallbackCredentialsFactory.<Reset>b__1() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1117\r\n   at Amazon.Runtime.FallbackCredentialsFactory.GetCredentials(Boolean fallbackToAnonymous) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1137\r\n\r\nException 2 of 4:\r\nSystem.ArgumentException: App.config does not contain credentials information. Either add the AWSAccessKey and AWSSecretKey or AWSProfileName.\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor(String profileName, String profilesLocation) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 318\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor(String profileName) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 264\r\n   at Amazon.Runtime.StoredProfileAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 254\r\n   at Amazon.Runtime.FallbackCredentialsFactory.<Reset>b__2() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1118\r\n   at Amazon.Runtime.FallbackCredentialsFactory.GetCredentials(Boolean fallbackToAnonymous) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1137\r\n\r\nException 3 of 4:\r\nSystem.InvalidOperationException: The environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY were not set with AWS credentials.\r\n   at Amazon.Runtime.EnvironmentVariablesAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 535\r\n   at Amazon.Runtime.FallbackCredentialsFactory.<Reset>b__3() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1119\r\n   at Amazon.Runtime.FallbackCredentialsFactory.GetCredentials(Boolean fallbackToAnonymous) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1137\r\n\r\nException 4 of 4:\r\nAmazon.Runtime.AmazonServiceException: Unable to reach credentials server\r\n   at Amazon.Runtime.InstanceProfileAWSCredentials.GetContents(Uri uri) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1001\r\n   at Amazon.Runtime.InstanceProfileAWSCredentials.<GetAvailableRoles>d__0.MoveNext() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 880\r\n   at Amazon.Runtime.InstanceProfileAWSCredentials.GetFirstRole() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1008\r\n   at Amazon.Runtime.InstanceProfileAWSCredentials..ctor() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 866\r\n   at Amazon.Runtime.FallbackCredentialsFactory.<Reset>b__4() in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1121\r\n   at Amazon.Runtime.FallbackCredentialsFactory.GetCredentials(Boolean fallbackToAnonymous) in d:\\Jenkins\\jobs\\build-sdk-v2\\workspace\\sdk\\src\\AWSSDK_DotNet35\\Amazon.Runtime\\AWSCredentials.cs:line 1137\r\n\r\n"}
+
+
+            //TransferUtility fileTransferUtility = new
+            //    TransferUtility(new AmazonS3Client("AKIAJR5ONMR7TRSCIDNQ", "RiDeSz4fMFD9RjpW6IViKDiocdFuBWROXOiyMPZL",Amazon.RegionEndpoint.SAEast1));
+
+            // 1. Upload a file, file name is used as the object key name.
+            //fileTransferUtility.Upload(@"c:\SUService.log", "existingBucketName");
+            //Console.WriteLine("Upload 1 completed");
+
+
+
+            int[] grades = { 7, 1, 5, 3, 6, 4 };
+
+            int x21 = 1;
+            for (int i = 1; i <= 5; i++)
+            {
+                x21 = 2 * x21;
+            }
+
+            int x2 = 2;
+            int y2 = x2 * x2 * x2;
+
+            for (int i = 0; i < grades.Length / 2; i++)
+            {
+                int tmp = grades[i];
+                grades[i] = grades[grades.Length - i - 1];
+                grades[grades.Length - i - 1] = tmp;
+            }
+
+
+
+            for (int x1 = 0; x1 < grades.Length; x1++)
+            {
+                grades[x1] = (grades[x1] % 5);
+            }
+
+
+
+            Array.Copy(grades, grades, 0);
+            return;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    class personHeightComparer : IComparer<int[]>
+    {
+        public int Compare(int[] x, int[] y)
+        {
+            if (x[0] != y[0])
+                return y[0] - x[0]; //descending by people number
+
+            else return x[1] - y[1]; //ascending by number of people before them
+        }
+    }
+    public static int[][] ReconstructQueue(int[][] people)
+    {
+        Array.Sort(people, new personHeightComparer());
+
+        int[][] result = new int[people.Length][];
+        for (int x = 0; x < result.Length; x++)
+            result[x] = new int[2];
+            
+        for (int x=0; x < people.Length; x++)
+        {
+            int index = people[x][1];
+
+            //to make space for 'index' 
+            //shifting all items 1 position right side
+            for(int y = people.Length - 2; y >= index; y -- )
+            {
+                result[y+1][0] = result[y][0];
+                result[y+1][1] = result[y][1];
+            }
+            //put people[x] at index
+            result[index][0] = people[x][0];
+            result[index][1] = people[x][1];
         }
 
-        private static void reverse(int[] nums, int start)
+        return result;
+    }
+
+    public static IList<int> LargestDivisibleSubset(int[] nums)
+    {
+        //Sort the Array
+        //Array.Sort(nums);
+
+        int[] dp = new int[nums.Length];
+
+        //Initiaize the array to 1, because the longest substring for one element is '1'
+        for (int i = 0; i < nums.Length; i++)
         {
-            int i = start, j = nums.Length - 1;
-            while (i < j)
+            dp[i] = 1;
+        }
+
+        IList<IList<int>> subsetsAtIndex = new List<IList<int>>();
+        int largestSubsetSize = 0;
+        int largestSubsetIndex = 0;
+        for (int i = 0; i < nums.Length; i++)
+        {
+            subsetsAtIndex.Add(new List<int>());
+
+            for (int j = 0; j < i; j++)
             {
-                swap1(nums, i, j);
-                i++;
+                if (nums[i] % nums[j] == 0) //if module is 0
+                {
+                    //dp[i] = Math.Max(dp[i], dp[j] + 1);
+
+                    if (dp[j] + 1 > dp[i])
+                    {
+                        subsetsAtIndex[i].Clear();
+                        subsetsAtIndex[i] = subsetsAtIndex[i].Concat(subsetsAtIndex[j]).ToList();
+
+                        dp[i] = dp[j] + 1;
+                    }
+
+
+                    //update 'largestSubsetSize' and 'largestSubsetIndex' where we got the maximum 'largestSubsetSize'
+                    if (dp[i] > largestSubsetSize)
+                    {
+                            
+                        largestSubsetSize = dp[i];
+                        largestSubsetIndex = i;
+                    }
+                }
+            }
+
+            subsetsAtIndex[i].Add(nums[i]);
+        }
+
+        Console.WriteLine(largestSubsetIndex);
+
+        return subsetsAtIndex[largestSubsetIndex];
+    }
+
+    static IList<IList<int>> result = new List<IList<int>>();
+    public static int Change(int amount, int[] coins)
+    {
+        //Array.Sort(coins);
+
+        //CoinChange(amount, coins, 0, new List<int>());
+        //return result.Count;
+
+        return CoinChange_DP(amount, coins);
+    }
+
+    public static void CoinChange_Recursion(int amount, int[] coins, int index, IList<int> demomination)
+    {
+        if (amount == 0)
+        {
+            result.Add(new List<int>(demomination));
+            return;
+        }
+        else if (amount < 0 || index >= coins.Length)
+            return;
+
+        demomination.Add(coins[index]);
+        CoinChange_Recursion(amount - coins[index], coins, index, demomination);
+
+        demomination.RemoveAt(demomination.Count - 1);
+
+        index++;
+        CoinChange_Recursion(amount, coins, index, demomination);
+    }
+
+    public static int CoinChange_DP(int amount, int[] coins)
+    {
+        int[][] dp = new int[coins.Length + 1][];
+        for(int x=0; x< dp.Length; x++)
+        {
+            dp[x] = new int[amount + 1];
+        }
+
+        for (int x = 0; x <= coins.Length; x++)
+        {
+            dp[x][0] = 1;
+        }
+        for (int x = 0; x <= amount; x++)
+        {
+            dp[0][x] = (x ==0) ? 1 : 0;
+        }
+
+        for (int i = 1; i <= coins.Length; i++)
+        {
+            for (int j = 1; j <= amount; j++)
+            {
+                int remainAmt = j - coins[i - 1];
+                dp[i][j] = (remainAmt >= 0 ? dp[i][remainAmt] : 0) + dp[i - 1][j];
+            }
+        }
+
+        return dp[coins.Length][amount];
+    }
+
+    public static int coinChange_DP_BottomUp1(int[] coins, int amount)
+    {
+
+        int[][] dp = new int[coins.Length + 1][];
+        for (int x = 0; x < dp.Length; x++)
+        {
+            dp[x] = new int[amount + 1];
+
+            //Array.Fill(amount + 1);
+            dp[x] = dp[x].Select(s => (amount + 1)).ToArray();
+        }
+
+        //we have 0 nimimum way to make '0' amount
+        for (int i = 0; i <= coins.Length; i++)
+            dp[i][0] = 0;
+
+        for (int i = 1; i <= coins.Length; i++)
+        {
+            for (int j = 1; j <= amount; j++)
+            {
+                //exclude current coin
+                int MinCountWithOutCoin = dp[i - 1][j]; //exclude current coin, the value is previous coin row
+
+                //include current coin, the total amount is reduced by current coin
+                int remainAmt = j - coins[i - 1];
+                int MinCountWithCoin = int.MaxValue;
+                if(remainAmt >= 0)
+                    MinCountWithCoin = dp[i][remainAmt] + 1;
+
+                dp[i][j] = Math.Min(MinCountWithCoin, MinCountWithOutCoin);
+            }
+        }
+
+        return dp[coins.Length][amount] > (amount) ? -1 : dp[coins.Length][amount];
+    }
+
+    public static IList<string> FindItinerary(IList<IList<string>> tickets)
+    {
+        Dictionary<string, List<string>> d = new Dictionary<string, List<string>>();
+        foreach (IList<string> t in tickets)
+        {
+            string From = t.First();
+            string To = t.Last();
+
+            if (!d.ContainsKey(From))
+                d.Add(From, new List<string>());
+
+            d[From].Add(To);
+        }
+        foreach(var t in d)
+            t.Value.Sort();
+           
+        IList<string> r = new List<string>();
+           
+        Stack<string> s = new Stack<string>();
+        s.Push("JFK");
+
+        while (s.Any())
+        {
+            while(d.ContainsKey(s.Peek()) && d[s.Peek()].Count > 0)
+            {
+                var temp = d[s.Peek()].First();
+                d[s.Peek()].RemoveAt(0);
+                s.Push(temp);
+            }
+            r.Add(s.Pop());
+        }
+
+        return r.Reverse().ToList();
+    }
+
+
+    private static void backtrack(int[] candidates, IList<int> combination, int start, int sumLeft)
+    {
+        if (sumLeft < 0)
+            return;
+
+        if (sumLeft == 0)
+        {
+            result1.Add(new List<int>(combination));
+            return;
+        }
+
+        for (int i = start; i < candidates.Length; i++)
+        {
+            if (i > start && candidates[i - 1] == candidates[i])
+                continue;
+
+            combination.Add(candidates[i]);
+
+            backtrack(candidates, combination, i + 1, sumLeft - candidates[i]);
+
+            combination.RemoveAt(combination.Count - 1);
+        }
+    }
+
+    static IList<IList<int>> result1 = null;
+
+    public static int CombinationSum4_Bottom_Up(int[] coins, int amount)
+    {
+        /*
+        int[] dp = new int[amount+1];
+        dp[0] = 1;
+
+        // give target j, where it can come from
+        for(int i=1; i <= amount; i++) 
+        {
+            for (int j = 0; j < coins.Length; j++) 
+            {
+                var number = i - coins[j];
+                if (number >= 0)
+                {
+                    //combinations[i] += combinations[number];
+                    dp[i] += dp[number];
+                }
+            }
+        }
+
+        return dp[amount];
+
+        /*          ---------> Amount
+                        0  1  2  3  4  5
+            |        =================
+            |     0 |[1] 0  0  0  0  0
+            |     1 |[1] 1  1  1  1  1 
+            V     2 |[1] 1  1  2  2  3
+            coins   5 |[1] 1  1  2  3 [4]
+        */
+
+        //O(N^2)
+        int[][] dp = new int[coins.Length + 1][];
+        for (int x = 0; x < dp.Length; x++)
+        {
+            dp[x] = new int[amount + 1];
+        }
+
+        //we have only 1 way to make '0' amount - i.e doing nothing
+        for (int i = 0; i <= coins.Length; i++)
+            dp[i][0] = 1;
+
+        //with 0 coin, we need 1 to make '0' amount, we cant make other amount.
+        //for (int j = 0; j <= amount; j++)
+        //    dp[0][j] = (j ==0) ? 1 : 0;
+
+        for (int i = 1; i <= coins.Length; i++)
+        {
+            for (int j = 1; j <= amount; j++)
+            {
+                //exclude current coin
+                int countWithOutCoin = dp[i - 1][j]; //exclude current coin, the value is previous coin row
+
+                //include current coin, the total amount is reduced by current coin
+                int remainAmt = j - coins[i - 1];
+                int countWithCoin = remainAmt >= 0 ? dp[i][remainAmt] : 0;
+
+                //total
+                dp[i][j] += countWithCoin + countWithOutCoin;
+            }
+        }
+
+        return dp[coins.Length][amount];
+    }
+
+    public static void NextPermutation1(int[] nums)
+    {
+        //Find the *first descending* element from right
+        int i = nums.Length - 2;
+        while (i >= 0 && nums[i + 1] <= nums[i])
+        {
+            i--;
+        }
+
+        //Find element just bigger than *first descending* element from right, and swap them   
+        if (i >= 0)
+        {
+            int j = nums.Length - 1;
+            while (j >= 0 && nums[j] <= nums[i])
+            {
                 j--;
             }
+            swap(nums, i, j);
         }
 
-        private static void swap1(int[] nums, int i, int j)
+        //Reverse all elements from the element just bigger than *first descending* to then end
+        reverse(nums, i + 1);
+    }
+
+    private static void reverse(int[] nums, int start)
+    {
+        int i = start, j = nums.Length - 1;
+        while (i < j)
         {
-            int temp = nums[i];
-            nums[i] = nums[j];
-            nums[j] = temp;
+            swap1(nums, i, j);
+            i++;
+            j--;
+        }
+    }
+
+    private static void swap1(int[] nums, int i, int j)
+    {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    public static string GetPermutation(int n, int k)
+    {
+        //Permutation of n characters is !n
+        //So calclate factorial for n +1 numbers
+        int[] fact = new int[n + 1];
+        fact[0] = 1;
+        List<int> numbers = new List<int>();
+        for(int x=1; x <= n; x++)
+        {
+            fact[x] = fact[x - 1] * x;
+            numbers.Add(x);
         }
 
-        public static string GetPermutation(int n, int k)
+        k--;
+
+        int numberGroupSize = fact[n] / n;
+        int index = k / numberGroupSize;
+        k = k % numberGroupSize;
+
+        string result = "";
+        while (n > 0)
         {
-            //Permutation of n characters is !n
-            //So calclate factorial for n +1 numbers
-            int[] fact = new int[n + 1];
-            fact[0] = 1;
-            List<int> numbers = new List<int>();
-            for(int x=1; x <= n; x++)
+            result += numbers[index];
+            numbers.RemoveAt(index);
+
+            n--;
+            if (n > 0)
             {
-                fact[x] = fact[x - 1] * x;
-                numbers.Add(x);
+                numberGroupSize = fact[n] / n;
+                index = k / numberGroupSize;
+                k = k % numberGroupSize;
             }
+        }
 
-            k--;
+        return result;
+    }
 
-            int numberGroupSize = fact[n] / n;
-            int index = k / numberGroupSize;
-            k = k % numberGroupSize;
+    public static IList<IList<int>> ThreeSum(int[] nums)
+    {
+        /*Array.Sort(nums);
 
-            string result = "";
-            while (n > 0)
+        Dictionary<int, IList<int>> dict = new Dictionary<int, IList<int>>();
+
+        for (int x = 0; x < nums.Length; x++)
+        {
+            if (!dict.ContainsKey(nums[x]))
+                dict.Add(nums[x], new List<int>());
+
+            dict[nums[x]].Add(x);
+        }
+
+        int total = 0;
+        IList<IList<int>> result = new List<IList<int>>();
+        for (int x = 0; x < nums.Length; x++)
+        {
+            int sum = total - nums[x];
+                
+            for (int y = x+1; y < nums.Length; y++)
             {
-                result += numbers[index];
-                numbers.RemoveAt(index);
+                int diff = sum - nums[y];
 
-                n--;
-                if (n > 0)
+                if (dict.ContainsKey(diff) && dict[diff].Any(w=> w > y))
                 {
-                    numberGroupSize = fact[n] / n;
-                    index = k / numberGroupSize;
-                    k = k % numberGroupSize;
+                    List<int> temp = new List<int>();
+                    temp.Add(nums[x]);
+                    temp.Add(nums[y]);
+                    temp.Add(diff);
+                    result.Add(temp);
                 }
             }
-
-            return result;
         }
 
-        public static IList<IList<int>> ThreeSum(int[] nums)
+        return result;
+        */
+
+        HashSet<KeyValuePair<int, int>> found = new HashSet<KeyValuePair<int, int>>();
+
+        int total = 0;
+        IList<IList<int>> result = new List<IList<int>>();
+        for (int x = 0; x < nums.Length; x++)
         {
-            /*Array.Sort(nums);
+            int sum = total - nums[x];
 
-            Dictionary<int, IList<int>> dict = new Dictionary<int, IList<int>>();
-
-            for (int x = 0; x < nums.Length; x++)
+            HashSet<int> dict = new HashSet<int>();
+            for (int y = x + 1; y < nums.Length; y++)
             {
-                if (!dict.ContainsKey(nums[x]))
-                    dict.Add(nums[x], new List<int>());
+                int diff = sum - nums[y];
 
-                dict[nums[x]].Add(x);
-            }
-
-            int total = 0;
-            IList<IList<int>> result = new List<IList<int>>();
-            for (int x = 0; x < nums.Length; x++)
-            {
-                int sum = total - nums[x];
-                
-                for (int y = x+1; y < nums.Length; y++)
+                if (dict.Contains(diff))
                 {
-                    int diff = sum - nums[y];
+                    int v1 = Math.Min(nums[x], Math.Min(diff, nums[y]));
+                    int v2 = Math.Max(nums[x], Math.Max(diff, nums[y]));
 
-                    if (dict.ContainsKey(diff) && dict[diff].Any(w=> w > y))
+                    if (found.Add(new KeyValuePair<int, int>(v1, v2)))
                     {
                         List<int> temp = new List<int>();
                         temp.Add(nums[x]);
@@ -2784,83 +4277,51 @@ namespace ConsoleApplication1
                         result.Add(temp);
                     }
                 }
+
+                dict.Add(nums[y]);
             }
-
-            return result;
-            */
-
-            HashSet<KeyValuePair<int, int>> found = new HashSet<KeyValuePair<int, int>>();
-
-            int total = 0;
-            IList<IList<int>> result = new List<IList<int>>();
-            for (int x = 0; x < nums.Length; x++)
-            {
-                int sum = total - nums[x];
-
-                HashSet<int> dict = new HashSet<int>();
-                for (int y = x + 1; y < nums.Length; y++)
-                {
-                    int diff = sum - nums[y];
-
-                    if (dict.Contains(diff))
-                    {
-                        int v1 = Math.Min(nums[x], Math.Min(diff, nums[y]));
-                        int v2 = Math.Max(nums[x], Math.Max(diff, nums[y]));
-
-                        if (found.Add(new KeyValuePair<int, int>(v1, v2)))
-                        {
-                            List<int> temp = new List<int>();
-                            temp.Add(nums[x]);
-                            temp.Add(nums[y]);
-                            temp.Add(diff);
-                            result.Add(temp);
-                        }
-                    }
-
-                    dict.Add(nums[y]);
-                }
-            }
-
-            return result;
         }
 
-        public static int WidthOfBinaryTree(TreeNode root)
+        return result;
+    }
+
+    public static int WidthOfBinaryTree(TreeNode root)
+    {
+        int maxWidth = 0;
+        Queue<KeyValuePair<TreeNode, int>> queue = new Queue<KeyValuePair<TreeNode, int>>();
+        queue.Enqueue(new KeyValuePair<TreeNode, int>(root, 0));
+
+        while(queue.Any())
         {
-            int maxWidth = 0;
-            Queue<KeyValuePair<TreeNode, int>> queue = new Queue<KeyValuePair<TreeNode, int>>();
-            queue.Enqueue(new KeyValuePair<TreeNode, int>(root, 0));
+            int count = queue.Count;
 
-            while(queue.Any())
+            bool first = true;
+            int firstVal = 0;
+            int lastVal = 0;
+            while (count > 0)
             {
-                int count = queue.Count;
-
-                bool first = true;
-                int firstVal = 0;
-                int lastVal = 0;
-                while (count > 0)
+                count--;
+                KeyValuePair<TreeNode, int> temp = queue.Dequeue();
+                    
+                if (first)
                 {
-                    count--;
-                    KeyValuePair<TreeNode, int> temp = queue.Dequeue();
-                    
-                    if (first)
-                    {
-                        firstVal = temp.Value;
-                        first = false;
-                    }
-                    if (count == 0) //last value
-                        lastVal = temp.Value;
-                    
-                    if (temp.Key.left != null)
-                        queue.Enqueue(new KeyValuePair<TreeNode, int>(temp.Key.left, 2 * temp.Value + 1));
-                    if (temp.Key.right != null)
-                        queue.Enqueue(new KeyValuePair<TreeNode, int>(temp.Key.right, 2 * temp.Value + 2));
+                    firstVal = temp.Value;
+                    first = false;
                 }
-
-                maxWidth = Math.Max(maxWidth, lastVal - firstVal + 1);
+                if (count == 0) //last value
+                    lastVal = temp.Value;
+                    
+                if (temp.Key.left != null)
+                    queue.Enqueue(new KeyValuePair<TreeNode, int>(temp.Key.left, 2 * temp.Value + 1));
+                if (temp.Key.right != null)
+                    queue.Enqueue(new KeyValuePair<TreeNode, int>(temp.Key.right, 2 * temp.Value + 2));
             }
 
-            return maxWidth;
+            maxWidth = Math.Max(maxWidth, lastVal - firstVal + 1);
         }
+
+        return maxWidth;
+    }
 
 
         public static TreeNode RecoverFromPreorder(string S)
@@ -4481,8 +5942,8 @@ namespace ConsoleApplication1
             }
 
             Recursion(nums, start + 1, combination, subsets);
+
             combination.Add(nums[start + 1]);
-            
             Recursion(nums, start + 1, combination, subsets);
             combination.RemoveAt(combination.Count - 1);
         }

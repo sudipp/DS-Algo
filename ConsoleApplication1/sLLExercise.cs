@@ -620,18 +620,66 @@ namespace ConsoleApplication1
         }
 
 
-        
+        public static bool IsPalindrome(ListNode head)
+        {
+            if (head == null || head.next == null)
+                return true;
+
+            //break and reverse the 2nd half
+            ListNode slow = head, fast = head, prev = null;
+            while (fast != null && fast.next != null)
+            {
+                prev = slow;
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+            //slow is at middle, break on it
+            prev.next = null;
+
+            //reverse it
+            ListNode tempHead = new ListNode(-1);
+            prev = null;
+            while (slow != null)
+            {
+                tempHead.next = slow;
+
+                ListNode next = slow.next;
+
+                slow.next = prev;// slow.next;
+
+                prev = slow;
+
+                slow = next;
+            }
+
+            //compare 2 LLs
+            tempHead = tempHead.next;
+            Console.WriteLine(tempHead.val + ":" + head.val);
+
+            while (head != null)
+            {
+
+                if (head.val != tempHead.val)
+                    return false;
+
+                head = head.next;
+                tempHead = tempHead.next;
+            }
+            return true;
+        }
 
         public static void runTest()
         {
             ListNode l1 = new ListNode(1);
             l1.next = new ListNode(2);
-            l1.next.next = new ListNode(3);
-            l1.next.next.next = new ListNode(4);
-            l1.next.next.next.next = new ListNode(5);
+            l1.next.next = new ListNode(2);
+            l1.next.next.next = new ListNode(3);
+            /*l1.next.next.next.next = new ListNode(5);
             l1.next.next.next.next.next = new ListNode(6);
             l1.next.next.next.next.next.next = new ListNode(7);
             l1.next.next.next.next.next.next.next = new ListNode(8);
+            */
+            IsPalindrome(l1);
 
 
             ListNode l2 = new ListNode(1);

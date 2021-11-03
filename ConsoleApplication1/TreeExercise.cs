@@ -1297,16 +1297,46 @@ namespace ConsoleApplication1
 
         }
 
+        public static void PrintTree(TreeNode root)
+        {
+            PrintTreeUtil(root, 0);
+        }
+        public static void PrintTreeUtil(TreeNode root, int space)
+        {
+            if (root == null)
+                return;
+
+            //space += 10;
+
+            PrintTreeUtil(root.right_ptr, space + 10); 
+
+            Console.WriteLine(new string(' ', space) + root.val);
+
+            PrintTreeUtil(root.left_ptr, space + 10);
+        }
+
         public static void runTest()
         {
 
+
             TreeNode root = new TreeNode(3);
-                root.left_ptr = new TreeNode(1);
-                root.left_ptr.left_ptr= new TreeNode(2);
-                root.left_ptr.left_ptr.right_ptr = new TreeNode(4);
+            root.left_ptr = new TreeNode(1);
+            root.right_ptr = new TreeNode(2);
+            root.left_ptr.left_ptr= new TreeNode(3);
+            root.left_ptr.right_ptr = new TreeNode(4);
+            root.right_ptr.left_ptr = new TreeNode(5);
+            root.right_ptr.left_ptr.left_ptr = new TreeNode(50);
+            root.right_ptr.left_ptr.right_ptr = new TreeNode(51);
+            root.right_ptr.right_ptr = new TreeNode(6);
+            root.right_ptr.right_ptr.left_ptr = new TreeNode(60);
+            root.right_ptr.right_ptr.right_ptr = new TreeNode(61);
             //root.right_ptr = new TreeNode(15);
-                //root.right_ptr.left_ptr = new TreeNode(4);
-                //root.right_ptr.right_ptr = new TreeNode(7);
+            //root.right_ptr.left_ptr = new TreeNode(4);
+            //root.right_ptr.right_ptr = new TreeNode(7);
+
+            PrintTree(root);
+
+
             LargestBST.findLargestBST(root);
             IsSymmetricTree.IsSymmetric(root);
             CloneTree.Clone(root);

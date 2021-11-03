@@ -71,6 +71,7 @@
     <Compile Include="AmazonOA\RobotBoundedInCircle.cs" />
     <Compile Include="AmazonOA\transactionlogs.cs" />
     <Compile Include="ArrayExercise - Copy.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\AddCustomerCommand.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\Document.cs" />
     <Compile Include="DesignPattern\Behavioural\Command\History.cs" />
